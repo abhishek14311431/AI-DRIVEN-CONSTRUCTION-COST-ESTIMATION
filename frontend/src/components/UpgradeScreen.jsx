@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, CheckCircle, Shield, Zap, Droplets, Grid, BadgeCheck } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Shield, Zap, Droplets, Grid, BadgeCheck, Star } from 'lucide-react';
 import { useState } from 'react';
 
 export default function UpgradeScreen({ onBack, selectedData, onProceed }) {
@@ -20,13 +20,6 @@ export default function UpgradeScreen({ onBack, selectedData, onProceed }) {
 
   const [activeCategory, setActiveCategory] = useState(null);
 
-  const tierDetails = {
-    base: { name: 'Base', color: 'text-gray-400', border: 'border-gray-400' },
-    classic: { name: 'Classic', color: 'text-green-400', border: 'border-green-400' },
-    premium: { name: 'Premium', color: 'text-purple-400', border: 'border-purple-400' },
-    luxury: { name: 'Luxury', color: 'text-yellow-400', border: 'border-yellow-400' }
-  };
-
   const upgradeOptions = {
     flooring: {
       title: 'Flooring',
@@ -41,7 +34,67 @@ export default function UpgradeScreen({ onBack, selectedData, onProceed }) {
     },
     walls: {
       title: 'Wall Finishes',
-      icon: Star,
+      icon: Star, // Star is NOT imported in the replacement content above. Wait. It IS used here. I need to keep Star in imports or remove it from here.
+      // The user error log said 'Start' (no, 'Star'?)
+      // User log: "Line 2:40: 'TrendingUp' is defined but never used ... 'Home' ... 'Building' ... 'Sparkles' ... 'Building2' ..."
+      // It did NOT complain about 'Star'.
+      // Wait, let me check the file content again.
+      // Line 2: import { ArrowLeft, CheckCircle, Shield, Zap, Droplets, Grid, BadgeCheck } from 'lucide-react';
+      // I REMOVED Star in step 1707?
+      // Step 1707 removed: ArrowLeft, Star, CheckCircle... -> ArrowLeft, CheckCircle...
+      // So Star IS missing?
+      // But in the file content from 1737 (which is current):
+      // Line 2: import { ArrowLeft, CheckCircle, Shield, Zap, Droplets, Grid, BadgeCheck } from 'lucide-react';
+      // Line 44: icon: Star,
+      // THIS IS AN ERROR. Star is used but not imported!
+      // But the user error log says:
+      // "Line 2:40: 'TrendingUp' ... 'Home' ... 'Building' ... 'Sparkles' ... 'Building2' ... 'currentPlan' ..."
+      // It does Not mention 'Star' is undefined?
+      // Maybe the user log IS OLD?
+      // "The build is failing because ESLint is treating warnings as errors"
+      // "Errors: ... src/components/UpgradeScreen.jsx ... 'TrendingUp' is defined but never used ..."
+      // BUT I removed TrendingUp in step 1642?
+      // And again in 1707?
+      // If the user is seeing these errors, they might be running on an old version or I failed to update the file correctly.
+
+      // Let's look at the file content in Step 1737 again.
+      // Line 2 does NOT have TrendingUp.
+      // So the user's log MUST be stale or from a different environment?
+      // Or maybe the file wasn't saved?
+
+      // WAIT. I used `run_command` in step 1740 to `Get-Content`.
+      // The output was truncated.
+
+      // Let's assume the file content I see in 1737 IS the source of truth on disk.
+      // In 1737:
+      // No TrendingUp imported.
+      // No Home imported.
+      // No Building imported.
+      // No Sparkles imported.
+      // No Building2 imported.
+      // So the "unused var" errors for these should not exist if this file is built.
+
+      // However, `Star` IS used on line 44 but NOT imported on line 2. This would cause a "Star is not defined" error, not an "unused var" error.
+      // `tierDetails` (line 23) is defined but unused?
+      // `tierDetails` is defined on line 23. Is it used?
+      // I don't see it used in upgradeOptions or the render.
+      // So `tierDetails` IS unused.
+
+      // `currentDefaults` is defined on line 84.
+      // It is used in `handleUpgradeSelect` (line 102).
+      // It is used in the render loop `upgradeOptions.map` (line 180).
+      // So `currentDefaults` is used.
+
+      // `isIncludedOrLower` (line 92) returns false.
+      // It is used in line 234: `const status = isIncludedOrLower(category, option.id);`
+      // So it is used.
+
+      // Start by fixing the missing import `Star`.
+      // Remove `tierDetails`.
+      // Ensure `currentDefaults` is preserved.
+
+      // I will replace the WHOLE content to be sure.
+
       description: 'Define your room ambience',
       options: [
         { id: 'basic', name: 'Basic Paint', price: 0, description: 'Standard distemper paint' },
@@ -83,20 +136,16 @@ export default function UpgradeScreen({ onBack, selectedData, onProceed }) {
 
   const currentDefaults = getDefaultsForPlan(selectedData?.plan);
 
-
-
   const toggleCategory = (category) => {
     setActiveCategory(activeCategory === category ? null : category);
   };
 
   const isIncludedOrLower = (category, optionId) => {
-
     return false;
   };
 
   const handleUpgradeSelect = (category, optionId) => {
     setSelectedUpgrades(prev => {
-
       if (prev[category] === optionId) {
         const newUpgrades = { ...prev };
         newUpgrades[category] = currentDefaults[category] === optionId ? null : currentDefaults[category];
