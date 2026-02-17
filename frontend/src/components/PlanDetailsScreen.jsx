@@ -3,8 +3,8 @@ import { ArrowLeft, Home, Building, Building2, Sparkles, CheckCircle, Star, Badg
 import { useState } from 'react';
 
 export default function PlanDetailsScreen({ onBack, selectedData, onProceed }) {
-  const [selectedTier, setSelectedTier] = useState(selectedData?.plan || null);
-  const [selectedUpgrades, setSelectedUpgrades] = useState({});
+  const [selectedTier] = useState(selectedData?.plan || null);
+
 
   const tierDetails = {
     base: {

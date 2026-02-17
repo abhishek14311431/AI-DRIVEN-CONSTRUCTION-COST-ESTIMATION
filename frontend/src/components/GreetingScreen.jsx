@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, ChevronRight, Building, Play, Zap, FileText } from 'lucide-react';
+import { ArrowRight, ChevronRight, Zap } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 

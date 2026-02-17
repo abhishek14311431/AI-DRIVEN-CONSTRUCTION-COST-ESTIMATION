@@ -1,10 +1,10 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function AdditionalQuestionsScreen({ onBack, selectedData, onComplete }) {
   const [answers, setAnswers] = useState(selectedData?.answers || {});
-  const [showSidebar, setShowSidebar] = useState(false);
+
 
   useEffect(() => {
     if (selectedData?.projectType === 'rental-homes') {
@@ -18,7 +18,7 @@ export default function AdditionalQuestionsScreen({ onBack, selectedData, onComp
         }
       }
     }
-  }, [selectedData]);
+  }, [selectedData, answers.bedrooms]);
 
   const getQuestions = () => {
     const isRental = selectedData?.projectType === 'rental-homes';

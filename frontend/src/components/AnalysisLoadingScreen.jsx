@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Loader2, Sparkles, Shield, Cpu, Zap } from 'lucide-react';
+import { Loader2, Shield, Cpu, Zap } from 'lucide-react';
 import { useEffect } from 'react';
 
 export default function AnalysisLoadingScreen({ tier, onComplete }) {

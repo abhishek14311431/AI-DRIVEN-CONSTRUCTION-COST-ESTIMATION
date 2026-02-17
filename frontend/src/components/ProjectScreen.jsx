@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowLeft, Home, Building, Building2, Sparkles, PaintBucket, Sofa, CheckCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -134,7 +134,7 @@ export default function ProjectScreen({
       setShowDimensions(false);
       setShowCustomInputs(false);
     }
-  }, [currentStep, selectedDimension]); // Removed selectedPlotSize from dependency to avoid auto-jumping if not desired
+  }, [currentStep, selectedDimension, setShowDimensions]);
 
   const handleProjectClick = (projectId) => {
     setSelectedProject(projectId);

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle, Download, Save, FileText, PenTool, Sparkles, Calculator } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import { ArrowLeft, CheckCircle, Save, FileText, PenTool, Sparkles, Calculator } from 'lucide-react';
+
 import { API_BASE_URL } from '../services/api';
 
 export default function OrderSummaryScreen({ onBack, onSave, estimateData, selectedData, selectedTier, upgradeCost }) {
@@ -10,7 +10,7 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [projectName, setProjectName] = useState("Abhishek");
-    const [isSaved, setIsSaved] = useState(false);
+
 
     const baseCost = Number(estimateData?.breakdown?.total_cost || 0);
 
@@ -110,7 +110,7 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
             };
             savedProjects.push(newProject);
             localStorage.setItem('savedProjects', JSON.stringify(savedProjects));
-            setIsSaved(true);
+
             alert(`Project for "${projectName}" saved successfully!`);
 
             const response = await fetch(`${API_BASE_URL}/generate-pdf`, {

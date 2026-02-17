@@ -27,8 +27,7 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [wantsUpgrade, setWantsUpgrade] = useState(null);
-    const [wantsPDF, setWantsPDF] = useState(null);
-    const [generating, setGenerating] = useState(false);
+
     const [analyzing, setAnalyzing] = useState(true);
     const [agreed, setAgreed] = useState(false);
     const [signature, setSignature] = useState(false);
