@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, CheckCircle, Shield, Zap, Droplets, Grid, BadgeCheck } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Shield, Zap, Droplets, Grid, BadgeCheck } from 'lucide-react';
 import { useState } from 'react';
 
 export default function UpgradeScreen({ onBack, selectedData, onProceed }) {
