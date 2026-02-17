@@ -67,11 +67,7 @@ function App() {
     setCurrentScreen('analysis-loading');
   };
 
-  const navigateToEstimateFromSummary = (finalData) => {
-    setSelectedData(finalData);
-    setPreviousScreen('summary');
-    setCurrentScreen('estimate');
-  };
+
 
   const handleViewProject = (project) => {
 
