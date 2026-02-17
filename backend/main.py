@@ -41,6 +41,11 @@ from .engines.interior_engine import InteriorEngine
 from .engines.exterior_engine import ExteriorEngine
 
 
+@app.get("/")
+def root():
+    return {"status": "running"}
+
+
 @app.post("/estimate")
 async def estimate(request: EstimateRequest) -> Dict[str, Any]:
 	try:
