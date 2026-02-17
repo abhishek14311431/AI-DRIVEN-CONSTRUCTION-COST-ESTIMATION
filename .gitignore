@@ -43,8 +43,10 @@ dist/
 # Project Specific
 *.pdf
 *.db
-*.txt
 *.log
+!requirements.txt
+!runtime.txt
+final_test_report*.txt
 tmp/
 .temp/
 .DS_Store
