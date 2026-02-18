@@ -210,7 +210,8 @@ export default function SummaryScreen({ onBack, selectedData, onProceed }) {
                                     base: { flooring: 'ceramic', walls: 'basic', electrical: 'basic', plumbing: 'basic', security: 'basic' },
                                     classic: { flooring: 'granite', walls: 'emulsion', electrical: 'branded', plumbing: 'branded', security: 'basic' },
                                     premium: { flooring: 'marble', walls: 'texture', electrical: 'branded', plumbing: 'branded', security: 'advanced' },
-                                    luxury: { flooring: 'italian-marble', walls: 'texture', electrical: 'smart', plumbing: 'luxury', security: 'premium' }
+                                    luxury: { flooring: 'italian-marble', walls: 'texture', electrical: 'smart', plumbing: 'luxury', security: 'premium' },
+                                    'luxury plus': { flooring: 'italian-marble', walls: 'texture', electrical: 'smart', plumbing: 'luxury', security: 'premium' }
                                 };
                                 const plan = selectedData?.plan?.toLowerCase() || 'base';
                                 const defaults = planDefaults[plan] || planDefaults.base;

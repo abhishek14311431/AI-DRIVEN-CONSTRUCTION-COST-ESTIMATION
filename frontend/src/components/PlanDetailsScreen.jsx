@@ -103,6 +103,41 @@ export default function PlanDetailsScreen({ onBack, selectedData, onProceed }) {
         'Designer Modular Kitchen',
         'Smart Home Automation Ready'
       ],
+      upgrades: ['luxury plus']
+    },
+    'luxury plus': {
+      name: 'Luxury Plus',
+      icon: Sparkles,
+      description: 'Ultimate Bespoke Living Experience',
+      color: 'from-amber-400 via-yellow-500 to-orange-600',
+      accentColor: 'text-amber-400',
+      materials: {
+        flooring: 'Imported Botticino Marble',
+        walls: 'PU Finish & Designer Wallpapers',
+        ceiling: 'Acoustic & Decorative False Ceiling',
+        fixtures: 'Gold-Plated / Designer Wellness Suites',
+        electrical: 'Full IoT Ecosystem, AI Control',
+        plumbing: 'Concealed Multi-Zone Systems',
+        elevation: 'Panoramic Glass & Kinetic Facade',
+        automation: 'Complete Voice & App Controls'
+      },
+      features: [
+        'Complete Smart Home IoT Ecosystem',
+        'Private Home Cinema (4K + Atmos)',
+        'Indoor Oxygen-Rich Vertical Garden',
+        'Gourmet Kitchen (Built-in Appliances)',
+        'Biometric Security & Surveillance Hub',
+        'Solar-Powered Hybrid Energy System',
+        'Designer Glass Panoramic Elevator',
+        'Soundproof Study (Leather Panels)',
+        'Motorized Curtains & Lighting Scenes',
+        'Multi-Zone Climate Control (HVAC)',
+        'Grand Entrance (Solid Rosewood)',
+        'Underfloor Heating & Cooling System',
+        'Professional Gym & Yoga Studio',
+        'Imported Wellness Spa & Jacuzzi',
+        'Automatic Kinetic Architectural Elevation'
+      ],
       upgrades: []
     }
   };

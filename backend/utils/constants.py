@@ -26,6 +26,7 @@ TIER_MULTIPLIER: dict[str, float] = {
     "Classic": 1.15,
     "Premium": 1.25,
     "Luxury": 1.45,
+    "Luxury Plus": 1.60,
 }
 
 
@@ -81,6 +82,11 @@ MATERIAL_COSTS: dict[str, dict[str, int]] = {
         "flooring": 1300, 
         "walls": 350,
         "ceiling": 200,
+    },
+    "Luxury Plus": {
+        "flooring": 2200,
+        "walls": 600,
+        "ceiling": 400,
     },
 }
 
@@ -138,5 +144,22 @@ TIER_FEATURES: dict[str, list[str]] = {
         "Smart Home Automation (Basic Integration)",
         "Imported Wellness Sanitary Systems",
         "Designer UPVC/Aluminium Slim Windows"
+    ],
+    "Luxury Plus": [
+        "Imported Italian Botticino Marble Flooring",
+        "Full IoT Smart Home Ecosystem (Voice & App)",
+        "Private Home Cinema with Acoustic Paneling",
+        "Indoor Oxygen-Rich Vertical Garden",
+        "Gourmet Kitchen with Built-in Appliances",
+        "Spa-Grade Wellness Bathroom with Jacuzzi",
+        "Biometric Security & Surveillance Hub",
+        "Solar-Powered Hybrid Energy System",
+        "Designer Glass Elevator (Panoramic View)",
+        "Soundproof Study with Leather Wall Panels",
+        "Motorized Curtains & Lighting Scenes",
+        "Multi-Zone Climate Control (HVAC)",
+        "Grand Entrance Solid Rosewood Carvings",
+        "Underfloor Heating & Cooling System",
+        "Professional Grade Gym & Yoga Studio"
     ]
 }

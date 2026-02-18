@@ -340,6 +340,7 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                                 if (p === 'classic') return 'Classic';
                                 if (p === 'premium') return 'Premium';
                                 if (p === 'luxury') return 'Luxury';
+                                if (p === 'luxury plus') return 'Luxury Plus';
                                 return p.charAt(0).toUpperCase() + p.slice(1);
                             })()}</p>
                         </div>

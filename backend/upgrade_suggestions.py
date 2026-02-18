@@ -14,9 +14,11 @@ def generate_upgrade_suggestions(
     Prices scale with: bedrooms (more rooms = higher cost), family members, and lift requirement.
     """
     suggestions = []
-    tiers = ["Basic", "Classic", "Premium", "Luxury"]
+    tiers = ["Basic", "Classic", "Premium", "Luxury", "Luxury Plus"]
     if project_type == "rental" and "Luxury" in tiers:
         tiers.remove("Luxury")
+    if project_type == "rental" and "Luxury Plus" in tiers:
+        tiers.remove("Luxury Plus")
         
     if current_tier not in tiers:
         current_tier = "Basic"
@@ -31,7 +33,8 @@ def generate_upgrade_suggestions(
     TIER_PERCENTAGE_INCREASES = {
         "Classic": 0.18,  
         "Premium": 0.32,  
-        "Luxury": 0.59    
+        "Luxury": 0.59,
+        "Luxury Plus": 1.6
     }
 
     for i in range(current_index + 1, len(tiers)):
@@ -145,7 +148,8 @@ def estimate_savings(breakdown: Dict[str, Any], tier: str) -> float:
         "Basic": 1.0,
         "Classic": 1.15,
         "Premium": 1.35,
-        "Luxury": 1.6
+        "Luxury": 1.6,
+        "Luxury Plus": 2.2
     }
 
     value_increase = base_cost * (tier_multipliers[tier] - tier_multipliers.get(breakdown.get("selected_tier", "Basic"), 1.0))
@@ -174,6 +178,12 @@ def get_tier_benefits(tier: str, project_type: str = "own_house") -> List[str]:
             "Smart home automation",
             "Ultra-premium appliances and fixtures",
             "State-of-the-art amenities"
+        ],
+        "Luxury Plus": [
+            "Complete Smart Ecosystem & AI Control",
+            "Biometric Security & Surveillance",
+            "High-End Wellness & Spa Features",
+            "Solar Energy & Climate Control Optimization"
         ]
     }
     return benefits.get(tier, [])
