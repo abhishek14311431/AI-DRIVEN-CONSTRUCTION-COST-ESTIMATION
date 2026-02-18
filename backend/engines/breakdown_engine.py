@@ -1,5 +1,6 @@
 from .tier_engine import TierEngine
-from ..utils.constants import FIXED_COSTS, STRUCTURE_BREAKDOWN, FINISH_BREAKDOWN, TIER_FEATURES
+from ..utils.constants import FIXED_COSTS, STRUCTURE_BREAKDOWN, FINISH_BREAKDOWN, TIER_FEATURES as DESCRIPTIVE_TIER_FEATURES
+from .upgrade_engine import FEATURE_COSTS, TIER_FEATURES
 
 
 class BreakdownEngine:
@@ -12,14 +13,36 @@ class BreakdownEngine:
     
     FIXED_COST_KEYS = {"water_sump_cost", "septic_tank_cost", "lift_cost", "rain_water_harvesting_cost"}
     
-    
-    UPGRADE_PRICES = {
-        "flooring": {"granite": 400, "marble": 500, "italian-marble": 600},
-        "walls": {"emulsion": 300, "texture": 450},
-        "electrical": {"branded": 120, "smart": 250},
-        "plumbing": {"branded": 160, "luxury": 350},
-        "kitchen": {"modular": 250, "designer": 450},
-        "security": {"advanced": 150, "premium": 300}
+    # Mapping frontend IDs to UpgradeEngine logical IDs
+    FEATURE_MAPPING = {
+        "flooring": {
+            "granite": "granite_flooring",
+            "marble": "marble_flooring",
+            "italian-marble": "italian_marble"
+        },
+        "walls": {
+            "premium": "premium_paint",
+            "emulsion": "premium_paint",
+            "texture": "texture_paint"
+        },
+        "electrical": {
+            "branded": "modular_electrical",
+            "modular": "modular_electrical",
+            "smart": "smart_automation"
+        },
+        "plumbing": {
+            "branded": "branded_plumbing",
+            "luxury": "imported_plumbing",
+            "imported": "imported_plumbing"
+        },
+        "security": {
+            "digital": "smart_automation",
+            "premium": "smart_automation"
+        },
+        "elevation": {
+            "textured": "stone_elevation",
+            "stone": "stone_elevation"
+        }
     }
 
     INTERIOR_PRICES = {
@@ -45,10 +68,17 @@ class BreakdownEngine:
         if not upgrades:
             return 0.0
             
+        # Get list of features already included in the selected tier to avoid double charging
+        tier_features = TIER_FEATURES.get(self.selected_tier, [])
+        
         for category, option_id in upgrades.items():
-            if category in self.UPGRADE_PRICES and option_id in self.UPGRADE_PRICES[category]:
-                rate = self.UPGRADE_PRICES[category][option_id]
-                total_upgrade_cost += rate * area
+            # Get the logical feature ID for the selected option
+            feature_id = self.FEATURE_MAPPING.get(category, {}).get(option_id)
+            
+            if feature_id and feature_id in FEATURE_COSTS:
+                # Only charge if it's NOT already in the tier defaults
+                if feature_id not in tier_features:
+                    total_upgrade_cost += FEATURE_COSTS[feature_id]
                 
         return total_upgrade_cost
 
@@ -245,7 +275,7 @@ class BreakdownEngine:
             "inflation_adjustment": round(inflation_adjustment),
             "final_cost": round(final_cost),
             "total_cost": round(final_cost),
-            "tier_features": TIER_FEATURES.get(self.selected_tier, []),
+            "tier_features": DESCRIPTIVE_TIER_FEATURES.get(self.selected_tier, []),
             "pin_to_pin_details": detailed_breakdown
         })
         
