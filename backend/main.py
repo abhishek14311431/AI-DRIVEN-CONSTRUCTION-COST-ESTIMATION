@@ -1,6 +1,7 @@
 import sys
 import time
-from typing import Any, Dict
+from typing import Any, Dict, List
+from .engines.upgrade_engine import UpgradeEngine
 
 if sys.platform == "win32":
     try:
@@ -225,4 +226,20 @@ async def generate_pdf_endpoint(payload: Dict[str, Any]):
 		print(f"[ERR] PDF Gen: {str(e)}")
 		import traceback
 		traceback.print_exc()
+		raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/calculate-upgrade")
+async def calculate_upgrade(payload: Dict[str, Any]):
+	try:
+		current_features = payload.get("current_features", [])
+		target_tier = payload.get("target_tier", "Basic")
+		current_total_cost = payload.get("current_total_cost", 0)
+		
+		result = UpgradeEngine.calculate_upgrade_difference(
+			current_features, target_tier, current_total_cost
+		)
+		return result
+	except Exception as e:
+		print(f"[ERR] Upgrade Calc: {str(e)}")
 		raise HTTPException(status_code=500, detail=str(e))
