@@ -198,7 +198,7 @@ function App() {
       {currentScreen === 'upgrade' && (
         <UpgradeScreen
           key="upgrade"
-          onBack={() => setCurrentScreen('floor-plan')}
+          onBack={() => setCurrentScreen('plan-details')}
           selectedData={selectedData}
           onProceed={(finalData) => {
             console.log('Final data with upgrades:', finalData);
@@ -271,7 +271,7 @@ function App() {
           onProceed={(newEstimateOutput) => {
             console.log('Finalizing Upgrade To:', selectedUpgradeTier);
 
-            // Update selectedData with the new plan and relevant breakdown info
+            setEstimateData(newEstimateOutput);
             setSelectedData(prev => ({
               ...prev,
               plan: selectedUpgradeTier,

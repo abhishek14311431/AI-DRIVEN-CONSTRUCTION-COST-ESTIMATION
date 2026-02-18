@@ -12,15 +12,9 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
     const [projectName, setProjectName] = useState("Abhishek");
 
 
-    const baseCost = Number(estimateData?.breakdown?.total_cost || 0);
-
-
-    const effectiveUpgradeCost = upgradeCost > 0 ? upgradeCost :
-        selectedTier === 'Classic' ? Math.round(baseCost * 0.18) :
-            selectedTier === 'Premium' ? Math.round(baseCost * 0.32) :
-                selectedTier === 'Luxury' ? Math.round(baseCost * 0.59) : 0;
-
-    const totalCost = baseCost + effectiveUpgradeCost;
+    const totalCost = Number(estimateData?.breakdown?.total_cost || selectedData?.total_cost || 0);
+    const effectiveUpgradeCost = Number(estimateData?.breakdown?.upgrades_cost ?? upgradeCost ?? 0);
+    const baseCost = totalCost - effectiveUpgradeCost;
 
 
     const startDrawing = (e) => {
@@ -89,6 +83,7 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
                 plan: selectedTier,
                 answers: selectedData.answers || {},
                 upgrades: selectedData.upgrades || {},
+                active_upgrade_features: estimateData?.breakdown?.active_upgrade_features || [],
                 interior: selectedData.interior || null,
                 additionalRequirements: selectedData.additionalRequirements || {},
                 breakdown: estimateData?.breakdown || {},
@@ -307,7 +302,7 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
                     </div>
                 </div>
 
-                {/* 3. Project Deliverables (9 Items) */}
+                {/* 3. Project Deliverables */}
                 <div className="mb-12 pt-12 border-t border-white/5">
                     <div className="flex items-center gap-3 mb-8">
                         <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
@@ -319,29 +314,29 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
                     <div className="rounded-[2.5rem] bg-zinc-900/60 border border-white/10 overflow-hidden backdrop-blur-xl relative">
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-50 pointer-events-none" />
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-20 gap-y-12 p-16 relative z-10">
-                            {[
-                                { cat: 'Flooring', title: 'Premium Granite Flooring', desc: 'Exotic natural granite with premium mirror polish for stairs and living areas.' },
-                                { cat: 'Designer', title: 'Custom Finishes', desc: 'Designer wall putty and premium emulsion paint with custom textures.' },
-                                { cat: 'Joinery', title: 'Teak Wood Main Frame', desc: "Seasoned teak wood frame (5'x3') for enhanced entrance aesthetics." },
-                                { cat: 'Electrical', title: 'Modular Upgrades', desc: 'Legrand/Schneider modular switches with FRLS concealed wiring.' },
-                                { cat: 'Features', title: 'Premium Sanitaryware', desc: 'Jaquar/Cera contemporary collection for all bathrooms.' },
-                                { cat: 'Kitchen', title: 'Granite Platform', desc: 'Black galaxy granite counter with stainless steel sink.' },
-                                { cat: 'Windows', title: 'UPVC Windows', desc: 'High-quality UPVC windows with mosquito mesh & safety grills.' },
-                                { cat: 'Plumbing', title: 'CPVC/UPVC Piping', desc: 'Astral/Ashirvad concealed piping for long-lasting durability.' },
-                                { cat: 'Painting', title: 'Premium Emulsion', desc: 'High-sheen washable emulsion for all internal walls.' }
-                            ].map((item, idx) => (
+                            {(estimateData?.breakdown?.active_upgrade_features || [
+                                { category: 'Flooring', item: 'Premium Granite Flooring', detail: 'Exotic natural granite with premium mirror polish for stairs and living areas.' },
+                                { category: 'Designer', item: 'Custom Finishes', detail: 'Designer wall putty and premium emulsion paint with custom textures.' },
+                                { category: 'Joinery', item: 'Teak Wood Main Frame', detail: "Seasoned teak wood frame (5'x3') for enhanced entrance aesthetics." },
+                                { category: 'Electrical', item: 'Modular Upgrades', detail: 'Legrand/Schneider modular switches with FRLS concealed wiring.' },
+                                { category: 'Features', item: 'Premium Sanitaryware', detail: 'Jaquar/Cera contemporary collection for all bathrooms.' },
+                                { category: 'Kitchen', item: 'Granite Platform', detail: 'Black galaxy granite counter with stainless steel sink.' },
+                                { category: 'Windows', item: 'UPVC Windows', detail: 'High-quality UPVC windows with mosquito mesh & safety grills.' },
+                                { category: 'Plumbing', item: 'CPVC/UPVC Piping', detail: 'Astral/Ashirvad concealed piping for long-lasting durability.' },
+                                { category: 'Painting', item: 'Premium Emulsion', detail: 'High-sheen washable emulsion for all internal walls.' }
+                            ]).map((item, idx) => (
                                 <div key={idx} className="flex flex-col py-8 border-b border-white/5 group hover:bg-white/5 px-6 transition-all rounded-3xl">
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="flex items-center gap-4">
                                             <span className="text-white/10 font-mono text-xs">{String(idx + 1).padStart(2, '0')}</span>
-                                            <span className="text-blue-400 font-black uppercase text-xs tracking-[0.3em]">{item.cat}</span>
+                                            <span className="text-blue-400 font-black uppercase text-xs tracking-[0.3em]">{item.category || item.cat}</span>
                                         </div>
                                         <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20 group-hover:bg-blue-500/20">
                                             <CheckCircle className="w-4 h-4 text-blue-400" />
                                         </div>
                                     </div>
-                                    <h4 className="text-base font-black text-white uppercase tracking-wider mb-2">{item.title}</h4>
-                                    <p className="text-xs text-white/30 font-bold leading-relaxed uppercase tracking-tight">{item.desc}</p>
+                                    <h4 className="text-base font-black text-white uppercase tracking-wider mb-2">{item.item || item.title}</h4>
+                                    <p className="text-xs text-white/30 font-bold leading-relaxed uppercase tracking-tight">{item.detail || item.desc}</p>
                                 </div>
                             ))}
                         </div>

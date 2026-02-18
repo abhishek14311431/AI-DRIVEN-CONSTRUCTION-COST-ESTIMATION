@@ -38,7 +38,7 @@ export default function AnalysisLoadingScreen({ tier, onComplete }) {
                     transition={{ delay: 0.2 }}
                 >
                     <h1 className="text-5xl font-black text-white uppercase tracking-[0.3em] mb-4 font-sansital-black">
-                        ANALYSISING<span className="text-blue-400">...</span>
+                        ANALYZING<span className="text-blue-400">...</span>
                     </h1>
                     <p className="text-blue-400/60 font-black uppercase tracking-[0.5em] text-sm mb-12">
                         Optimizing {tier} Specifications

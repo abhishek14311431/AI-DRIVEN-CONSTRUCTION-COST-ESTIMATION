@@ -136,7 +136,32 @@ class PDFGenerator:
             
             elements.append(Spacer(1, 0.2 * inch))
 
-            elements.append(Paragraph("03. Financial Summary", self.styles['SectionHeading']))
+            # 3. Project Deliverables (Active Upgrades)
+            active_upgrades = self.payload.get("active_upgrade_features", [])
+            if active_upgrades and isinstance(active_upgrades, list):
+                elements.append(Paragraph("03. Customized Project Deliverables", self.styles['SectionHeading']))
+                deliverable_data = [["Deliverable", "Description"]]
+                for feat in active_upgrades:
+                    if isinstance(feat, dict):
+                        item_name = feat.get("item", feat.get("title", "N/A"))
+                        detail = feat.get("detail", feat.get("desc", ""))
+                        deliverable_data.append([
+                            Paragraph(f"<b>{item_name}</b>", self.styles['Normal']),
+                            Paragraph(detail, self.styles['FooterText'])
+                        ])
+                
+                del_table = Table(deliverable_data, colWidths=[2.5*inch, 4*inch])
+                del_table.setStyle(TableStyle([
+                    ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+                    ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#f3f4f6')),
+                    ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+                    ('VALIGN', (0,0), (-1,-1), 'TOP'),
+                    ('PADDING', (0,0), (-1,-1), 6),
+                ]))
+                elements.append(del_table)
+                elements.append(Spacer(1, 0.2 * inch))
+
+            elements.append(Paragraph("04. Financial Summary", self.styles['SectionHeading']))
             
             base_cost = self.payload.get("total_cost", 0)
             upgrades_cost = self.payload.get("upgrades_cost", 0) or 0
@@ -164,7 +189,7 @@ class PDFGenerator:
 
             try:
                 if self.explanation and isinstance(self.explanation, dict):
-                    elements.append(Paragraph("04. Market Analysis & Narrative", self.styles['SectionHeading']))
+                    elements.append(Paragraph("05. Market Analysis & Narrative", self.styles['SectionHeading']))
                     for key in ["project_summary", "cost_distribution_explanation", "tier_upgrade_explanation", "final_summary_statement"]:
                         text = self.explanation.get(key)
                         if text:
@@ -174,7 +199,7 @@ class PDFGenerator:
             except Exception as e:
                 print(f"Warning: Could not process explanation: {e}")
 
-            elements.append(Paragraph("05. Authorization", self.styles['SectionHeading']))
+            elements.append(Paragraph("06. Authorization", self.styles['SectionHeading']))
             terms = [
                 "Valid for 30 days from audit date.",
                 "Based on 2026 Q1 Market Indices.",

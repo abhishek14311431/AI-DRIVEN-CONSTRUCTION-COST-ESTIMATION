@@ -399,7 +399,7 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                         >
                             <Loader2 className="w-16 h-16 text-blue-400" />
                         </motion.div>
-                        <h3 className="text-3xl font-black mb-3 uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">ANALYSISING...</h3>
+                        <h3 className="text-3xl font-black mb-3 uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">ANALYZING...</h3>
                         <p className="text-white/40 uppercase tracking-[0.2em] text-xs font-black">Optimizing Project Specifications</p>
                     </motion.div>
                 )}
@@ -409,7 +409,7 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.3 }}
+                        transition={{ delay: 0.1 }} // Reduced from 0.3s
                         className="relative"
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-2xl" />
@@ -428,7 +428,7 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                     <motion.div
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.5 }}
+                        transition={{ delay: 0.2 }} // Reduced from 0.5s
                         className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-3xl"
                     >
                         <div className="flex items-center justify-between mb-6">
@@ -451,8 +451,8 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                                     initial={{ opacity: 0, y: 20, scale: 0.9 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     transition={{
-                                        delay: 0.7 + i * 0.1,
-                                        duration: 0.5
+                                        delay: 0.3 + i * 0.05,
+                                        duration: 0.4
                                     }}
                                     whileHover={{ scale: 1.03, y: -3 }}
                                     className="p-4 rounded-xl bg-white/[0.02] border border-white/10 hover:border-blue-400/30 hover:bg-white/[0.06] transition-all cursor-pointer"
