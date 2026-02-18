@@ -87,28 +87,27 @@ export default function GreetingScreen({ userName = "Abhishek", onYes, onNo }) {
         animate="visible"
       >
 
-        {/* Top Bar / Brand */}
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center gap-6 mb-24 group"
-        >
-          <div className="relative w-14 h-14 flex items-center justify-center">
-            <div className="absolute inset-0 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 group-hover:border-amber-500/30 transition-all duration-500" />
-            <svg className="w-10 h-10 relative z-10" viewBox="0 0 100 100">
-              <path d="M25 20 v60 h20 M45 80 l15-60 15 60 M50 60 h20" fill="none" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-white font-black text-sm uppercase tracking-[0.4em] leading-none mb-1 text-shadow">Architecture</span>
-            <span className="text-amber-500/80 font-bold text-[9px] uppercase tracking-[0.3em]">Cost Intelligence System</span>
-          </div>
-        </motion.div>
-
 
         <div className="flex flex-col md:flex-row items-end md:items-center justify-between gap-16">
 
           {/* Left Column: Typography Greeting */}
           <div className="flex-1 text-left">
+            {/* Brand Section Integrated Above Greeting */}
+            <motion.div
+              variants={itemVariants}
+              className="flex items-center gap-4 mb-8 group"
+            >
+              <div className="w-12 h-12 flex items-center justify-center bg-black rounded-xl border border-white/10 shadow-xl overflow-hidden">
+                <svg className="w-8 h-8" viewBox="0 0 100 100">
+                  <path d="M25 20 v60 h20 M45 80 l15-60 15 60 M50 60 h20" fill="none" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-white font-black text-sm uppercase tracking-[0.4em] leading-none mb-1 text-shadow">Architecture</span>
+                <span className="text-amber-500/80 font-bold text-[9px] uppercase tracking-[0.3em]">Cost Intelligence System</span>
+              </div>
+            </motion.div>
+
             <motion.div variants={itemVariants} className="overflow-hidden mb-6">
               <h2 className="text-3xl md:text-4xl font-light text-white/50 tracking-tight">
                 {(() => {
