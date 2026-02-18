@@ -110,7 +110,6 @@ export default function GreetingScreen({ userName = "Abhishek", onYes, onNo }) {
           {/* Left Column: Typography Greeting */}
           <div className="flex-1 text-left">
             <motion.div variants={itemVariants} className="overflow-hidden mb-6">
-              <span className="text-white/40 text-[10px] font-black uppercase tracking-[0.6em] block mb-4 border-l-2 border-amber-500 pl-4">System Online // v4.0.26</span>
               <h2 className="text-3xl md:text-4xl font-light text-white/50 tracking-tight">
                 {(() => {
                   const hour = new Date().getHours();
