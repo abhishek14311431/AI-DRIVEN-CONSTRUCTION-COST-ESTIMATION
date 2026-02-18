@@ -61,7 +61,12 @@ export default function AdditionalQuestionsScreen({ onBack, selectedData, onComp
   const additionalQuestions = getQuestions();
 
   const handleAnswer = (questionId, answer) => {
-    setAnswers(prev => ({ ...prev, [questionId]: answer }));
+    // Prevent negative values if answer is numeric
+    let validatedAnswer = answer;
+    if (answer !== '' && !isNaN(answer)) {
+      validatedAnswer = Math.max(1, parseInt(answer)).toString();
+    }
+    setAnswers(prev => ({ ...prev, [questionId]: validatedAnswer }));
   };
 
   const handleBack = () => {
@@ -326,6 +331,7 @@ export default function AdditionalQuestionsScreen({ onBack, selectedData, onComp
                                 initial={{ opacity: 0, scale: 0.8, width: 0 }}
                                 animate={{ opacity: 1, scale: 1, width: '120px' }}
                                 type="number"
+                                min="1"
                                 placeholder="Value"
                                 value={answers[question.id] && !question.options.includes(answers[question.id]) ? answers[question.id] : ''}
                                 onChange={(e) => handleAnswer(question.id, e.target.value)}
@@ -367,6 +373,7 @@ export default function AdditionalQuestionsScreen({ onBack, selectedData, onComp
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.8 + index * 0.1 }}
                         type="number"
+                        min="1"
                         placeholder="Enter value"
                         value={answers[question.id] || ''}
                         onChange={(e) => handleAnswer(question.id, e.target.value)}

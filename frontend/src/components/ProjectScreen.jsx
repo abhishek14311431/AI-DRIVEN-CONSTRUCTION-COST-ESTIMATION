@@ -378,7 +378,8 @@ export default function ProjectScreen({
                           type="number"
                           placeholder="L"
                           value={customLength}
-                          onChange={(e) => setCustomLength(e.target.value)}
+                          onChange={(e) => setCustomLength(e.target.value === '' ? '' : Math.max(1, parseInt(e.target.value)).toString())}
+                          min="1"
                           className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white text-center focus:border-white/30 outline-none transition-colors"
                         />
                         <span className="text-white/50">x</span>
@@ -386,7 +387,8 @@ export default function ProjectScreen({
                           type="number"
                           placeholder="W"
                           value={customWidth}
-                          onChange={(e) => setCustomWidth(e.target.value)}
+                          onChange={(e) => setCustomWidth(e.target.value === '' ? '' : Math.max(1, parseInt(e.target.value)).toString())}
+                          min="1"
                           className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white text-center focus:border-white/30 outline-none transition-colors"
                         />
                       </div>
