@@ -1,12 +1,12 @@
-from ..utils.constants import MATERIAL_COSTS
+from ..utils.constants import TIER_MULTIPLIER, TIER_FEATURES as DESCRIPTIVE_TIER_FEATURES
 
 
 class TierEngine:
 
     def __init__(self, base_finish_cost: float, total_area: float, selected_tier: str):
-        if selected_tier not in MATERIAL_COSTS:
+        if selected_tier not in TIER_MULTIPLIER:
             raise ValueError(
-                f"Invalid selected_tier: {selected_tier}. Valid tiers are: {list(MATERIAL_COSTS.keys())}"
+                f"Invalid selected_tier: {selected_tier}. Valid tiers are: {list(TIER_MULTIPLIER.keys())}"
             )
 
         self.base_finish_cost = base_finish_cost
@@ -15,34 +15,22 @@ class TierEngine:
 
     def apply_tier_upgrade(self) -> dict:
 
-        materials = MATERIAL_COSTS[self.selected_tier]
-        flooring_cost = materials["flooring"] * self.total_area
-        walls_cost = materials["walls"] * self.total_area
-        ceiling_cost = materials["ceiling"] * self.total_area
-        total_material_cost = flooring_cost + walls_cost + ceiling_cost
-
+        tier_multiplier = TIER_MULTIPLIER[self.selected_tier]
+        
         if self.selected_tier == "Basic":
-            upgraded_finish_cost = self.base_finish_cost
             upgrade_difference = 0
-            total_material_cost = 0
-            flooring_cost = 0
-            walls_cost = 0
-            ceiling_cost = 0
+            upgraded_finish_cost = self.base_finish_cost
         else:
-            upgraded_finish_cost = self.base_finish_cost + total_material_cost
-            upgrade_difference = total_material_cost
-
-        tier_multiplier = upgraded_finish_cost / self.base_finish_cost if self.base_finish_cost > 0 else 1.0
+            # Upgrade is calculated as the percentage increase from base finish
+            # This ensures (Base + Upgrade) = Base * Multiplier
+            upgrade_difference = self.base_finish_cost * (tier_multiplier - 1.0)
+            upgraded_finish_cost = self.base_finish_cost + upgrade_difference
 
         return {
             "selected_tier": self.selected_tier,
-            "materials": materials,
-            "flooring_cost": round(flooring_cost),
-            "walls_cost": round(walls_cost),
-            "ceiling_cost": round(ceiling_cost),
-            "total_material_cost": round(total_material_cost),
             "base_finish_cost": round(self.base_finish_cost),
             "upgraded_finish_cost": round(upgraded_finish_cost),
             "upgrade_difference": round(upgrade_difference),
             "tier_multiplier": tier_multiplier,
+            "tier_features": DESCRIPTIVE_TIER_FEATURES.get(self.selected_tier, [])
         }

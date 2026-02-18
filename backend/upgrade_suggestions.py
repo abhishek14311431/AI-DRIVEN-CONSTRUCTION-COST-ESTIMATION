@@ -31,12 +31,16 @@ def generate_upgrade_suggestions(
     lift_cost = breakdown.get("lift_cost", 0) if lift_required else 0
     base_cost_excl_lift = total_cost_with_lift - lift_cost
 
-    TIER_PERCENTAGE_INCREASES = {
-        "Classic": 0.18,  
-        "Premium": 0.32,  
-        "Luxury": 0.59,
-        "Luxury Plus": 1.6
+    TIER_FULL_MULTIPLIERS = {
+        "Basic": 1.00,
+        "Classic": 1.15,
+        "Premium": 1.30,
+        "Luxury": 1.45,
+        "Luxury Plus": 1.60
     }
+    
+    current_multiplier = TIER_FULL_MULTIPLIERS.get(current_tier, 1.00)
+
     # Mapping frontend IDs to UpgradeEngine logical IDs (Consistent with BreakdownEngine)
     FEATURE_MAPPING = {
         "flooring": {
@@ -75,13 +79,12 @@ def generate_upgrade_suggestions(
     for i in range(current_index + 1, len(tiers)):
         next_tier = tiers[i]
         
-        if next_tier in TIER_PERCENTAGE_INCREASES:
-            percentage_increase = TIER_PERCENTAGE_INCREASES[next_tier]
-            upgrade_cost = base_cost_excl_lift * percentage_increase
-        else:
-            upgrade_cost = calculate_upgrade_cost(
-                breakdown, current_tier, next_tier, family_details, lift_required
-            )
+        # Rule: Luxury Plus is only available as an upgrade if current tier is Luxury
+        if next_tier == "Luxury Plus" and current_tier != "Luxury":
+            continue
+
+        target_multiplier = TIER_FULL_MULTIPLIERS.get(next_tier, 1.0)
+        upgrade_cost = base_cost_excl_lift * (target_multiplier - current_multiplier)
 
         # 2) DEDUCTION LOGIC: If a custom upgrade is already in the target tier, 
         # its cost should be deducted from the upgrade_cost (since it's now INCLUDED in the tier price)

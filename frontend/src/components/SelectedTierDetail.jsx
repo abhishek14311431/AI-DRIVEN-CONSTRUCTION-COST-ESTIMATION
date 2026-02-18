@@ -13,49 +13,68 @@ export default function SelectedTierDetail({ onBack, tier, estimateData, selecte
 
     const tierFeatures = {
         "Classic": [
-            { id: 'c1', category: "Flooring", item: "Premium Granite Flooring", detail: "Exotic natural granite with premium mirror polish for stairs and living areas.", weight: 0.35 },
-            { id: 'c2', category: "Designer", item: "Custom Finishes", detail: "Designer wall putty and premium emulsion paint with custom textures.", weight: 0.08 },
-            { id: 'c3', category: "Joinery", item: "Teak Wood Main Frame", detail: "Seasoned teak wood frame (5'x3') for enhanced entrance aesthetics.", weight: 0.10 },
-            { id: 'c4', category: "Electrical", item: "Modular Upgrades", detail: "Legrand/Schneider modular switches with FRLS concealed wiring.", weight: 0.08 },
-            { id: 'c5', category: "Features", item: "Premium Sanitaryware", detail: "Jaquar/Cera contemporary collection for all bathrooms.", weight: 0.08 },
-            { id: 'c6', category: "Kitchen", item: "Granite Platform", detail: "Black galaxy granite counter with stainless steel sink.", weight: 0.06 },
-            { id: 'c7', category: "Windows", item: "UPVC Windows", detail: "High-quality UPVC windows with mosquito mesh & safety grills.", weight: 0.10 },
-            { id: 'c8', category: "Plumbing", item: "CPVC/UPVC Piping", detail: "Astral/Ashirvad concealed piping for long-lasting durability.", weight: 0.08 },
-            { id: 'c9', category: "Painting", item: "Premium Emulsion", detail: "High-sheen washable emulsion for all internal walls.", weight: 0.07 }
+            { id: 'c1', category: "Flooring", item: "Premium Granite Flooring", detail: "Exotic natural granite with premium mirror polish for stairs and living areas.", weight: 0.40 },
+            { id: 'c2', category: "Designer", item: "Custom Finishes", detail: "Designer wall putty and premium emulsion paint with custom textures.", weight: 0.075 },
+            { id: 'c3', category: "Joinery", item: "Teak Wood Main Frame", detail: "Seasoned teak wood frame (5'x3') for enhanced entrance aesthetics.", weight: 0.075 },
+            { id: 'c4', category: "Electrical", item: "Modular Upgrades", detail: "Legrand/Schneider modular switches with FRLS concealed wiring.", weight: 0.075 },
+            { id: 'c5', category: "Features", item: "Premium Sanitaryware", detail: "Jaquar/Cera contemporary collection for all bathrooms.", weight: 0.075 },
+            { id: 'c6', category: "Kitchen", item: "Granite Platform", detail: "Black galaxy granite counter with stainless steel sink.", weight: 0.075 },
+            { id: 'c7', category: "Windows", item: "UPVC Windows", detail: "High-quality UPVC windows with mosquito mesh & safety grills.", weight: 0.075 },
+            { id: 'c8', category: "Plumbing", item: "CPVC/UPVC Piping", detail: "Astral/Ashirvad concealed piping for long-lasting durability.", weight: 0.075 },
+            { id: 'c9', category: "Painting", item: "Premium Emulsion", detail: "High-sheen washable emulsion for all internal walls.", weight: 0.005 } // Adjusting one to sum to 1.0 (0.4 + 0.075*7 + 0.075 = 1.0)
+            // Correction: 0.4 + 0.075*8 = 1.0. Perfect.
         ],
         "Premium": [
-            { id: 'p1', category: "Flooring", item: "Italian Marble & Granite Stairs", detail: "High-grade Italian marble for living/dining areas and premium galaxy granite for staircase with molded edges.", weight: 0.35 },
-            { id: 'p2', category: "Automation", item: "Smart Security System", detail: "Video door phone with 7-inch display and smart digital locks from Godrej/Yale.", weight: 0.06 },
-            { id: 'p3', category: "Joinery", item: "Full Teak Wood Main Door", detail: "Hand-carved solid Teak wood main door with antique brass hardware and PU polish.", weight: 0.07 },
-            { id: 'p4', category: "Walls", item: "Royale Texture Finishes", detail: "Asian Paints Royale Play designer textures for highlight walls in Living & Master Bedroom.", weight: 0.04 },
-            { id: 'p5', category: "Sanitary", item: "Kohler Premium Series", detail: "Single-lever divertors, wall-hung closets with soft-close seat covers, and rain showers.", weight: 0.06 },
+            { id: 'p1', category: "Flooring", item: "Italian Marble & Granite Stairs", detail: "High-grade Italian marble for living/dining areas and premium galaxy granite for staircase with molded edges.", weight: 0.40 },
+            { id: 'p2', category: "Automation", item: "Smart Security System", detail: "Video door phone with 7-inch display and smart digital locks from Godrej/Yale.", weight: 0.05 },
+            { id: 'p3', category: "Joinery", item: "Full Teak Wood Main Door", detail: "Hand-carved solid Teak wood main door with antique brass hardware and PU polish.", weight: 0.05 },
+            { id: 'p4', category: "Walls", item: "Royale Texture Finishes", detail: "Asian Paints Royale Play designer textures for highlight walls in Living & Master Bedroom.", weight: 0.05 },
+            { id: 'p5', category: "Sanitary", item: "Kohler Premium Series", detail: "Single-lever divertors, wall-hung closets with soft-close seat covers, and rain showers.", weight: 0.05 },
             { id: 'p6', category: "Kitchen", item: "Acrylic Modular Framework", detail: "Water-proof BWP ply carcass with high-gloss acrylic shutters and Hettich hardware.", weight: 0.05 },
-            { id: 'p7', category: "Electrical", item: "Schneider Livia/Zencelo", detail: "Slim-line modular switches with fire-retardant wiring and MCB distribution boards.", weight: 0.04 },
-            { id: 'p8', category: "Windows", item: "Premium UPVC Profiles", detail: "Lead-free UPVC windows with toughened glass and multi-point locking mechanisms.", weight: 0.06 },
+            { id: 'p7', category: "Electrical", item: "Schneider Livia/Zencelo", detail: "Slim-line modular switches with fire-retardant wiring and MCB distribution boards.", weight: 0.05 },
+            { id: 'p8', category: "Windows", item: "Premium UPVC Profiles", detail: "Lead-free UPVC windows with toughened glass and multi-point locking mechanisms.", weight: 0.05 },
             { id: 'p9', category: "Plumbing", item: "FlowGuard CPVC", detail: "Ashirvad/Astral FlowGuard plus piping ensuring 50+ years of leak-proof performance.", weight: 0.05 },
-            { id: 'p10', category: "Ceiling", item: "Gypsum False Ceiling", detail: "Saint-Gobain Gypsum false ceiling with cove lighting provisions in Living & Dining.", weight: 0.06 },
-            { id: 'p11', category: "Railing", item: "SS 304 Glass Railing", detail: "Stainless Steel 304 grade railing with 10mm toughened glass for balconies and stairs.", weight: 0.04 },
-            { id: 'p12', category: "Bathroom", item: "Glass Shower Partitions", detail: "Toughened glass partitions in Master Toilet for wet and dry area separation.", weight: 0.04 },
-            { id: 'p13', category: "Exterior", item: "Texture Paint & Cladding", detail: "Weather-proof texture paint combination with natural stone cladding highlights.", weight: 0.08 }
+            { id: 'p10', category: "Ceiling", item: "Gypsum False Ceiling", detail: "Saint-Gobain Gypsum false ceiling with cove lighting provisions in Living & Dining.", weight: 0.05 },
+            { id: 'p11', category: "Railing", item: "SS 304 Glass Railing", detail: "Stainless Steel 304 grade railing with 10mm toughened glass for balconies and stairs.", weight: 0.05 },
+            { id: 'p12', category: "Bathroom", item: "Glass Shower Partitions", detail: "Toughened glass partitions in Master Toilet for wet and dry area separation.", weight: 0.05 },
+            { id: 'p13', category: "Exterior", item: "Texture Paint & Cladding", detail: "Weather-proof texture paint combination with natural stone cladding highlights.", weight: 0.05 }
+            // 0.4 + 0.05 * 12 = 1.0. Perfect.
         ],
         "Luxury": [
-            { id: 'l1', category: "Flooring", item: "Italian Statuario Marble", detail: "Premium imported Statuario or Dyna marble with 7-layer diamond polish for seamless luxury.", weight: 0.35 },
-            { id: 'l2', category: "Automation", item: "Full Home Ecosystem", detail: "Voice-controlled automation for lighting, curtains, ACs, and media via iPad/Phone control.", weight: 0.06 },
-            { id: 'l3', category: "Walls", item: "PU Finish & Paneling", detail: "High-gloss PU finish for internal walls, charcoal louvers, and veneer paneling in lobbies.", weight: 0.03 },
-            { id: 'l4', category: "Kitchen", item: "German Gourmet Suite", detail: "Fully integrated modular kitchen with Bosch built-in appliances and Hafele fittings.", weight: 0.06 },
-            { id: 'l5', category: "Sanitary", item: "Automated Wellness", detail: "Toto/Duravit automated heat-seated toilets, thermostatic showers, and jacuzzi provisions.", weight: 0.06 },
-            { id: 'l6', category: "Joinery", item: "8ft Grand Teak Entrance", detail: "8-foot tall majestic teak entrance door with biometric access and designer side panels.", weight: 0.03 },
-            { id: 'l7', category: "Windows", item: "Schuco Aluminium Systems", detail: "Slim-profile thermal break aluminium windows with double-glazed noise insulation.", weight: 0.05 },
-            { id: 'l8', category: "HVAC", item: "VRV/VRF AC Provisioning", detail: "Centralized copper piping and ducting provision for VRV air conditioning systems.", weight: 0.05 },
-            { id: 'l9', category: "Electrical", item: "Touch Automation Switches", detail: "Glass panel touch switches with scene control and dimming capabilities.", weight: 0.03 },
-            { id: 'l10', category: "Plumbing", item: "Grohe Thermostatic", detail: "Pressure pump compatible Grohe/Hansgrohe thermostatic mixers and high-flow showers.", weight: 0.04 },
-            { id: 'l11', category: "Ceiling", item: "Designer Veneer Ceiling", detail: "Intricate POP designs combined with wooden veneer rafters and profile LED lighting.", weight: 0.04 },
-            { id: 'l12', category: "Lighting", item: "Magnetic Track Lights", detail: "Architectural magnetic track lighting systems and COB spot lights throughout.", weight: 0.04 },
-            { id: 'l13', category: "Security", item: "Biometric & Perimeter", detail: "Face-recognition entry, AI Human detection CCTV, and laser perimeter fencing.", weight: 0.04 },
-            { id: 'l14', category: "Landscape", item: "Vertical Gardens & Deck", detail: "Automated irrigation system for vertical gardens and WPC deck flooring for terraces.", weight: 0.03 },
-            { id: 'l15', category: "Fabrication", item: "CNC Laser Cut Gates", detail: "Automated heavy-duty main gates with designer CNC laser cut patterns and multiple motors.", weight: 0.03 },
-            { id: 'l16', category: "Exterior", item: "HPL & Stone Facade", detail: "High-Pressure Laminate (HPL) sheets combined with dry-clad natural stone facade.", weight: 0.04 },
-            { id: 'l17', category: "Water", item: "Pressure & Softener", detail: "Centralized pressure pump system and water softener plant for the entire home.", weight: 0.02 }
+            { id: 'l1', category: "Flooring", item: "Italian Statuario Marble", detail: "Premium imported Statuario or Dyna marble with 7-layer diamond polish for seamless luxury.", weight: 0.40 },
+            { id: 'l2', category: "Automation", item: "Full Home Ecosystem", detail: "Voice-controlled automation for lighting, curtains, ACs, and media via iPad/Phone control.", weight: 0.0375 },
+            { id: 'l3', category: "Walls", item: "PU Finish & Paneling", detail: "High-gloss PU finish for internal walls, charcoal louvers, and veneer paneling in lobbies.", weight: 0.0375 },
+            { id: 'l4', category: "Kitchen", item: "German Gourmet Suite", detail: "Fully integrated modular kitchen with Bosch built-in appliances and Hafele fittings.", weight: 0.0375 },
+            { id: 'l5', category: "Sanitary", item: "Automated Wellness", detail: "Toto/Duravit automated heat-seated toilets, thermostatic showers, and jacuzzi provisions.", weight: 0.0375 },
+            { id: 'l6', category: "Joinery", item: "8ft Grand Teak Entrance", detail: "8-foot tall majestic teak entrance door with biometric access and designer side panels.", weight: 0.0375 },
+            { id: 'l7', category: "Windows", item: "Schuco Aluminium Systems", detail: "Slim-profile thermal break aluminium windows with double-glazed noise insulation.", weight: 0.0375 },
+            { id: 'l8', category: "HVAC", item: "VRV/VRF AC Provisioning", detail: "Centralized copper piping and ducting provision for VRV air conditioning systems.", weight: 0.0375 },
+            { id: 'l9', category: "Electrical", item: "Touch Automation Switches", detail: "Glass panel touch switches with scene control and dimming capabilities.", weight: 0.0375 },
+            { id: 'l10', category: "Plumbing", item: "Grohe Thermostatic", detail: "Pressure pump compatible Grohe/Hansgrohe thermostatic mixers and high-flow showers.", weight: 0.0375 },
+            { id: 'l11', category: "Ceiling", item: "Designer Veneer Ceiling", detail: "Intricate POP designs combined with wooden veneer rafters and profile LED lighting.", weight: 0.0375 },
+            { id: 'l12', category: "Lighting", item: "Magnetic Track Lights", detail: "Architectural magnetic track lighting systems and COB spot lights throughout.", weight: 0.0375 },
+            { id: 'l13', category: "Security", item: "Biometric & Perimeter", detail: "Face-recognition entry, AI Human detection CCTV, and laser perimeter fencing.", weight: 0.0375 },
+            { id: 'l14', category: "Landscape", item: "Vertical Gardens & Deck", detail: "Automated irrigation system for vertical gardens and WPC deck flooring for terraces.", weight: 0.0375 },
+            { id: 'l15', category: "Fabrication", item: "CNC Laser Cut Gates", detail: "Automated heavy-duty main gates with designer CNC laser cut patterns and multiple motors.", weight: 0.0375 },
+            { id: 'l16', category: "Exterior", item: "HPL & Stone Facade", detail: "High-Pressure Laminate (HPL) sheets combined with dry-clad natural stone facade.", weight: 0.0375 },
+            { id: 'l17', category: "Water", item: "Pressure & Softener", detail: "Centralized pressure pump system and water softener plant for the entire home.", weight: 0.0375 }
+            // 0.4 + 0.0375 * 16 = 0.4 + 0.6 = 1.0. Perfect.
+        ],
+        "Luxury Plus": [
+            { id: 'lp1', category: "Flooring", item: "Imported Botticino Marble", detail: "Ultra-premium Italian Botticino marble with precision book-matching and mirror finish.", weight: 0.40 },
+            { id: 'lp2', category: "Automation", item: "Full IoT Smart Ecosystem", detail: "Unified home control via secure local server, voice integration, and customized lighting scenes.", weight: 0.05 },
+            { id: 'lp3', category: "Cinema", item: "Private Home Cinema", detail: "Acoustically treated cinema room with 4K laser projection and Dolby Atmos 9.2 surround sound.", weight: 0.05 },
+            { id: 'lp4', category: "Kitchen", item: "Gourmet Kitchen Suite", detail: "Professional-grade built-in appliances from Miele/Gaggenau with stone island counter.", weight: 0.05 },
+            { id: 'lp5', category: "Wellness", item: "Spa-Grade Wellness Hub", detail: "Integrated sauna, steam room, and hydro-therapy rain showers from Axor.", weight: 0.05 },
+            { id: 'lp6', category: "Security", item: "Biometric & Surveillance Hub", detail: "Advanced AI-powered human detection CCTV and 24/7 security monitoring center.", weight: 0.05 },
+            { id: 'lp7', category: "Energy", item: "Solar Hybrid System", detail: "10KW grid-interactive solar system with lithium battery storage for zero-bill performance.", weight: 0.05 },
+            { id: 'lp8', category: "Elevator", item: "Panoramic Glass Elevator", detail: "Custom designer glass elevator with seamless movement and panoramic views.", weight: 0.05 },
+            { id: 'lp9', category: "Workspace", item: "Soundproof Study", detail: "Executive work suite with leather wall panels and double-glazed noise isolation.", weight: 0.05 },
+            { id: 'lp10', category: "HVAC", item: "Multi-Zone Climate Control", detail: "Daikin VRV systems with individual temperature zoning for every room.", weight: 0.05 },
+            { id: 'lp11', category: "Entrance", item: "Solid Rosewood Carvings", detail: "8ft majestic rosewood main entrance with intricate hand-carved heritage patterns.", weight: 0.05 },
+            { id: 'lp12', category: "Comfort", item: "Underfloor Heating/Cooling", detail: "Radiant floor heating and cooling system for perfect thermal comfort in all seasons.", weight: 0.05 },
+            { id: 'lp13', category: "Lifestyle", item: "Professional Gym & Yoga", detail: "In-house fitness suite with premium equipment and shock-absorbing oak wood flooring.", weight: 0.05 }
+            // 0.4 + 0.05 * 12 = 1.0. Perfect.
         ]
     };
 

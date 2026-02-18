@@ -303,8 +303,6 @@ function App() {
           selectedTier={selectedData?.selected_tier || selectedUpgradeTier || 'Base'}
           upgradeCost={selectedData?.upgrades_cost || 0}
           onSave={() => {
-            alert('Project saved successfully!');
-
             setCurrentScreen('saved');
           }}
         />

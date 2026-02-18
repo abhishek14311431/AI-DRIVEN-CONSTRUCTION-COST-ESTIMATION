@@ -2,14 +2,14 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle, Save, FileText, PenTool, Sparkles, Calculator } from 'lucide-react';
 
-import { API_BASE_URL } from '../services/api';
-
 export default function OrderSummaryScreen({ onBack, onSave, estimateData, selectedData, selectedTier, upgradeCost }) {
     const [signature, setSignature] = useState(null);
     const [agreed, setAgreed] = useState(false);
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [projectName, setProjectName] = useState("Abhishek");
+    const [saving, setSaving] = useState(false);
+    const [savedMessage, setSavedMessage] = useState(false);
 
 
     const totalCost = Number(estimateData?.breakdown?.total_cost || selectedData?.total_cost || 0);
@@ -74,8 +74,10 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
         setSignature(null);
     };
 
-    const handleGeneratePDF = async () => {
+    const handleSaveProject = () => {
         try {
+            setSaving(true);
+
             const pdfData = {
                 project_type: selectedData.projectType,
                 plot_size: selectedData.dimensions || selectedData.plotSize,
@@ -96,7 +98,6 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
                 client_name: projectName
             };
 
-
             const savedProjects = JSON.parse(localStorage.getItem('savedProjects') || '[]');
             const newProject = {
                 id: Date.now(),
@@ -106,28 +107,14 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
             savedProjects.push(newProject);
             localStorage.setItem('savedProjects', JSON.stringify(savedProjects));
 
-            alert(`Project for "${projectName}" saved successfully!`);
+            setSavedMessage(true);
 
-            const response = await fetch(`${API_BASE_URL}/generate-pdf`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(pdfData),
-            });
-
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Project_Agreement_${projectName}_${Date.now()}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            }
+            setTimeout(() => {
+                if (onSave) onSave();
+            }, 2500);
 
         } catch (err) {
-
+            setSaving(false);
         }
     };
 
@@ -151,7 +138,7 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
                                 </div>
                                 <h1 className="text-4xl font-black text-white uppercase tracking-tighter leading-none">Project Agreement</h1>
                             </div>
-                            <p className="text-white/30 text-[10px] uppercase tracking-[0.4em] mt-1 font-black">Official Project Estimate & Specification Audit</p>
+                            <p className="text-white/30 text-[10px] uppercase tracking-[0.4em] mt-1 font-black">Official Project Estimate & Specification</p>
                         </div>
                     </div>
                     <div className="flex flex-col items-end">
@@ -213,9 +200,9 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
                     </div>
                     <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                         <div className="text-center md:text-left">
-                            <h2 className="text-xs font-black text-white/50 uppercase tracking-[0.4em] mb-4 font-sansital-black">Investment Audit</h2>
+                            <h2 className="text-xs font-black text-white/50 uppercase tracking-[0.4em] mb-4 font-sansital-black">Investment Overview</h2>
                             <p className="text-6xl lg:text-7xl font-black text-white tracking-tighter drop-shadow-2xl">₹{totalCost.toLocaleString('en-IN')}</p>
-                            <p className="text-white/60 text-xs mt-4 font-bold uppercase tracking-[0.2em] leading-none">Total Comprehensive Project Value Audit</p>
+                            <p className="text-white/60 text-xs mt-4 font-bold uppercase tracking-[0.2em] leading-none">Total Comprehensive Project Value</p>
                         </div>
                         <div className="flex gap-10">
                             <div className="px-20 py-12 rounded-[3rem] bg-white/10 border border-white/10 backdrop-blur-md hover:bg-white/20 transition-all min-w-[450px]">
@@ -386,7 +373,7 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
                                 </div>
                             )}
                         </div>
-                        <p className="text-center text-xs text-white/20 mt-8 font-black uppercase tracking-[0.4em]">Encrypted Digital Validation Stamp: 2026.SECURE.AUDIT</p>
+                        <p className="text-center text-xs text-white/20 mt-8 font-black uppercase tracking-[0.4em]">Encrypted Digital Validation Stamp: 2026.SECURE</p>
                     </div>
 
                     {/* Terms & Market Analysis */}
@@ -430,14 +417,29 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
                     </div>
                 </div>
 
+                {/* Success Toast */}
+                {savedMessage && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 px-12 py-6 rounded-[2rem] bg-green-500/90 backdrop-blur-xl border border-green-400/30 shadow-2xl shadow-green-500/30 flex items-center gap-4"
+                    >
+                        <CheckCircle className="w-7 h-7 text-black" />
+                        <div>
+                            <p className="text-black font-black text-lg uppercase tracking-wider">Project Saved Successfully!</p>
+                            <p className="text-black/70 text-sm font-bold">Redirecting to saved projects...</p>
+                        </div>
+                    </motion.div>
+                )}
+
                 <div className="flex flex-col md:flex-row gap-6 justify-center mt-12 mb-20 pb-20">
                     <button
-                        disabled={!signature || !agreed}
-                        onClick={handleGeneratePDF}
-                        className={`px-16 py-6 rounded-[2rem] font-black text-xl uppercase tracking-[0.2em] flex items-center justify-center gap-4 transition-all shadow-2xl ${(!signature || !agreed) ? 'bg-white/5 text-white/10 cursor-not-allowed border border-white/5' : 'bg-green-400 text-black hover:bg-green-300 hover:scale-105 active:scale-95 shadow-green-400/20'}`}
+                        disabled={!signature || !agreed || saving}
+                        onClick={handleSaveProject}
+                        className={`px-16 py-6 rounded-[2rem] font-black text-xl uppercase tracking-[0.2em] flex items-center justify-center gap-4 transition-all shadow-2xl ${(!signature || !agreed || saving) ? 'bg-white/5 text-white/10 cursor-not-allowed border border-white/5' : 'bg-green-400 text-black hover:bg-green-300 hover:scale-105 active:scale-95 shadow-green-400/20'}`}
                     >
                         <Save className="w-7 h-7" />
-                        Finalize & Save Audit
+                        {saving ? 'Saving...' : 'Finalize & Save'}
                     </button>
                 </div>
             </div>
