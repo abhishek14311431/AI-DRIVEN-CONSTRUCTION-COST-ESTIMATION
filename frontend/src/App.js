@@ -268,8 +268,20 @@ function App() {
           tier={selectedUpgradeTier}
           estimateData={estimateData}
           selectedData={selectedData}
-          onProceed={(finalData) => {
-            console.log('Final data from tier detail:', finalData);
+          onProceed={(newEstimateOutput) => {
+            console.log('Finalizing Upgrade To:', selectedUpgradeTier);
+
+            // Update selectedData with the new plan and relevant breakdown info
+            setSelectedData(prev => ({
+              ...prev,
+              plan: selectedUpgradeTier,
+              // We keep the custom upgrades, but backend logic now subtracts overlaps
+              // The total cost and breakdown are now sourced from the new estimate
+              total_cost: newEstimateOutput?.breakdown?.total_cost || prev.total_cost,
+              upgrades_cost: newEstimateOutput?.breakdown?.upgrades_cost || 0,
+              breakdown: newEstimateOutput?.breakdown,
+              explanation: newEstimateOutput?.explanation
+            }));
 
             setCurrentScreen('order-summary');
           }}

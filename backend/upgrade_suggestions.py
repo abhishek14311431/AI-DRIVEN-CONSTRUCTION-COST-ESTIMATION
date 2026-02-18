@@ -1,5 +1,6 @@
 from typing import Dict, List, Any, Optional, Tuple
 from .utils.constants import MATERIAL_COSTS
+from .engines.upgrade_engine import TIER_FEATURES, FEATURE_COSTS
 
 
 def generate_upgrade_suggestions(
@@ -36,6 +37,40 @@ def generate_upgrade_suggestions(
         "Luxury": 0.59,
         "Luxury Plus": 1.6
     }
+    # Mapping frontend IDs to UpgradeEngine logical IDs (Consistent with BreakdownEngine)
+    FEATURE_MAPPING = {
+        "flooring": {
+            "granite": "granite_flooring",
+            "marble": "marble_flooring",
+            "italian-marble": "italian_marble"
+        },
+        "walls": {
+            "premium": "premium_paint",
+            "emulsion": "premium_paint",
+            "texture": "texture_paint"
+        },
+        "electrical": {
+            "branded": "modular_electrical",
+            "modular": "modular_electrical",
+            "smart": "smart_automation"
+        },
+        "plumbing": {
+            "branded": "branded_plumbing",
+            "luxury": "imported_plumbing",
+            "imported": "imported_plumbing"
+        },
+        "security": {
+            "digital": "smart_automation",
+            "premium": "smart_automation"
+        },
+        "elevation": {
+            "textured": "stone_elevation",
+            "stone": "stone_elevation"
+        }
+    }
+
+    # Get already selected custom upgrades from the breakdown
+    current_upgrades = breakdown.get("upgrades", {})
 
     for i in range(current_index + 1, len(tiers)):
         next_tier = tiers[i]
@@ -48,14 +83,29 @@ def generate_upgrade_suggestions(
                 breakdown, current_tier, next_tier, family_details, lift_required
             )
 
+        # 2) DEDUCTION LOGIC: If a custom upgrade is already in the target tier, 
+        # its cost should be deducted from the upgrade_cost (since it's now INCLUDED in the tier price)
+        absorbed_cost = 0.0
+        target_tier_features = TIER_FEATURES.get(next_tier, [])
+        
+        for category, option_id in current_upgrades.items():
+            feature_id = FEATURE_MAPPING.get(category, {}).get(option_id)
+            if feature_id and feature_id in target_tier_features:
+                # This upgrade is now part of the tier bundle
+                absorbed_cost += FEATURE_COSTS.get(feature_id, 0)
+        
+        # Subtract the already-paid component from the incremental upgrade cost
+        final_upgrade_cost = max(0, upgrade_cost - absorbed_cost)
+
         savings = estimate_savings(breakdown, next_tier)
         benefits = get_tier_benefits(next_tier, project_type=project_type)
 
         suggestion = {
             "tier": next_tier,
-            "upgrade_cost": round(upgrade_cost),
+            "upgrade_cost": round(final_upgrade_cost),
+            "absorbed_custom_upgrades_cost": round(absorbed_cost),
             "estimated_savings": savings,
-            "roi_years": round(upgrade_cost / max(savings, 1), 1) if savings > 0 else "N/A",
+            "roi_years": round(final_upgrade_cost / max(savings, 1), 1) if savings > 0 else "N/A",
             "benefits": benefits,
             "description": benefits[0] if benefits else f"Upgrade to {next_tier} tier",
         }

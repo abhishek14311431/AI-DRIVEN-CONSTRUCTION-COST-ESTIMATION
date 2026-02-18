@@ -142,6 +142,13 @@ export default function UpgradeScreen({ onBack, selectedData, onProceed }) {
   };
 
   const isIncludedOrLower = (category, optionId) => {
+    const defaultId = currentDefaults[category];
+    const options = upgradeOptions[category]?.options || [];
+    const defaultIndex = options.findIndex(o => o.id === defaultId);
+    const optionIndex = options.findIndex(o => o.id === optionId);
+
+    if (optionId === defaultId) return 'included';
+    if (optionIndex < defaultIndex) return 'lower';
     return false;
   };
 
