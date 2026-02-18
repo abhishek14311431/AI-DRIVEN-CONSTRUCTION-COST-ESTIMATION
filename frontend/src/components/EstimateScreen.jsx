@@ -10,12 +10,12 @@ function AnimatedCounter({ value, delay = 0, prefix = '₹' }) {
     useEffect(() => {
         const timeout = setTimeout(() => {
             const controls = animate(0, value, {
-                duration: 2,
+                duration: 1.2,
                 ease: [0.25, 0.1, 0.25, 1],
                 onUpdate: (v) => setDisplayValue(Math.floor(v))
             });
             return controls.stop;
-        }, delay);
+        }, delay / 2);
         return () => clearTimeout(timeout);
     }, [value, delay]);
 
@@ -147,7 +147,7 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                         setSignature(true);
                         setProjectName(selectedData.client_name || "Abhishek");
                     }
-                }, 2000);
+                }, 500);
             } catch (err) {
                 console.error("Estimate Error:", err);
                 setError(`Estimation Error: ${err.message}`);
@@ -298,11 +298,14 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                     >
                         <div className="flex items-center gap-4 mb-1">
                             <svg className="w-8 h-8" viewBox="0 0 100 100">
-                                <path d="M25 20 v60 h20 M45 80 l15-60 15 60 M50 60 h20" fill="none" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+                                <g fill="white" transform="translate(10, 15) scale(0.8)">
+                                    <path d="M0 0 h24 v12 h-10 v44 h20 v12 h-34 v-12 h10 v-44 h-10 z" />
+                                    <path d="M30 68 h12 l5 -15 h26 l5 15 h14 l-26 -68 h-18 l-18 68 z M49 41 l9 -30 l9 30 h-18 z" />
+                                </g>
                             </svg>
                             <h1 className="text-4xl md:text-5xl font-black text-white">Cost Intelligence</h1>
                         </div>
-                        <p className="text-blue-400 text-[10px] tracking-[0.5em] uppercase font-black opacity-60">Professional Audit System v4.0</p>
+
                     </motion.div>
 
                     <div className="w-24 hidden md:block" />

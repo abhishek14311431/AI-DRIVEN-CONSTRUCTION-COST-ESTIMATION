@@ -91,20 +91,23 @@ export default function GreetingScreen({ userName = "Abhishek", onYes, onNo }) {
         <div className="flex flex-col md:flex-row items-end md:items-center justify-between gap-16">
 
           {/* Left Column: Typography Greeting */}
-          <div className="flex-1 text-left">
-            {/* Brand Section Integrated Above Greeting */}
+          <div className="flex-1 text-left flex flex-col justify-center">
+            {/* Brand Section Integrated Above Greeting - Tighter Spacing */}
             <motion.div
               variants={itemVariants}
-              className="flex items-center gap-4 mb-8 group"
+              className="flex items-center gap-4 mb-4 group"
             >
-              <div className="w-12 h-12 flex items-center justify-center bg-black rounded-xl border border-white/10 shadow-xl overflow-hidden">
-                <svg className="w-8 h-8" viewBox="0 0 100 100">
-                  <path d="M25 20 v60 h20 M45 80 l15-60 15 60 M50 60 h20" fill="none" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+              <div className="w-12 h-12 flex items-center justify-center bg-black rounded-xl border border-white/20 shadow-2xl overflow-hidden p-1.5">
+                <svg className="w-full h-full" viewBox="0 0 100 100">
+                  <g fill="white" transform="translate(10, 15) scale(0.8)">
+                    <path d="M0 0 h24 v12 h-10 v44 h20 v12 h-34 v-12 h10 v-44 h-10 z" />
+                    <path d="M30 68 h12 l5 -15 h26 l5 15 h14 l-26 -68 h-18 l-18 68 z M49 41 l9 -30 l9 30 h-18 z" />
+                  </g>
                 </svg>
               </div>
               <div className="flex flex-col">
-                <span className="text-white font-black text-sm uppercase tracking-[0.4em] leading-none mb-1 text-shadow">Architecture</span>
-                <span className="text-amber-500/80 font-bold text-[9px] uppercase tracking-[0.3em]">Cost Intelligence System</span>
+                <span className="text-white font-black text-sm uppercase tracking-[0.4em] leading-none mb-1">Architecture</span>
+                <span className="text-amber-500 font-bold text-[9px] uppercase tracking-[0.3em]">Cost Intelligence System</span>
               </div>
             </motion.div>
 
