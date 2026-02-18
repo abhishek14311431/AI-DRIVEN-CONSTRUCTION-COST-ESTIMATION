@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 export default function AdditionalQuestionsScreen({ onBack, selectedData, onComplete }) {
   const [answers, setAnswers] = useState(selectedData?.answers || {});
+  const [customActive, setCustomActive] = useState({});
 
 
   useEffect(() => {
@@ -289,7 +290,7 @@ export default function AdditionalQuestionsScreen({ onBack, selectedData, onComp
                       </div>
                     ) : question.type === 'options' ? (
                       <div className="flex flex-wrap gap-3 justify-center">
-                        {question.options.map((option, optionIndex) => (
+                        {question.options.filter(o => o !== 'Custom').map((option, optionIndex) => (
                           <motion.button
                             key={option}
                             initial={{ opacity: 0, scale: 0.8 }}
@@ -297,7 +298,10 @@ export default function AdditionalQuestionsScreen({ onBack, selectedData, onComp
                             transition={{ delay: 0.8 + index * 0.1 + optionIndex * 0.05 }}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => handleAnswer(question.id, option)}
+                            onClick={() => {
+                              handleAnswer(question.id, option);
+                              setCustomActive(prev => ({ ...prev, [question.id]: false }));
+                            }}
                             className={`px-5 py-2 rounded-xl text-white font-bold text-base ${answers[question.id] === option ? 'ring-4 ring-yellow-400' : ''}`}
                             style={{
                               background: answers[question.id] === option
@@ -315,23 +319,46 @@ export default function AdditionalQuestionsScreen({ onBack, selectedData, onComp
                           </motion.button>
                         ))}
                         {question.custom && (
-                          <motion.input
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.9 + index * 0.1 }}
-                            type="number"
-                            placeholder="Custom"
-                            value={answers[question.id] && !question.options.includes(answers[question.id]) ? answers[question.id] : ''}
-                            onChange={(e) => handleAnswer(question.id, e.target.value)}
-                            className="px-4 py-2 rounded-xl text-white text-center font-semibold w-24"
-                            style={{
-                              background: 'rgba(255, 255, 255, 0.1)',
-                              backdropFilter: 'blur(15px)',
-                              border: '2px solid rgba(255, 255, 255, 0.3)',
-                              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
-                              fontFamily: "'Montserrat', sans-serif",
-                            }}
-                          />
+                          <div className="flex items-center gap-3">
+                            {customActive[question.id] || (answers[question.id] && !question.options.includes(answers[question.id])) ? (
+                              <motion.input
+                                autoFocus
+                                initial={{ opacity: 0, scale: 0.8, width: 0 }}
+                                animate={{ opacity: 1, scale: 1, width: '120px' }}
+                                type="number"
+                                placeholder="Value"
+                                value={answers[question.id] && !question.options.includes(answers[question.id]) ? answers[question.id] : ''}
+                                onChange={(e) => handleAnswer(question.id, e.target.value)}
+                                className="px-4 py-2 rounded-xl text-white text-center font-bold"
+                                style={{
+                                  background: 'rgba(255, 215, 0, 0.2)',
+                                  backdropFilter: 'blur(15px)',
+                                  border: '2px solid rgba(255, 215, 0, 0.4)',
+                                  boxShadow: '0 0 20px rgba(255, 215, 0, 0.2)',
+                                  fontFamily: "'Montserrat', sans-serif",
+                                }}
+                              />
+                            ) : (
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => {
+                                  setCustomActive(prev => ({ ...prev, [question.id]: true }));
+                                  handleAnswer(question.id, '');
+                                }}
+                                className="px-5 py-2 rounded-xl text-white font-bold text-base"
+                                style={{
+                                  background: 'rgba(255, 255, 255, 0.1)',
+                                  backdropFilter: 'blur(15px)',
+                                  border: '2px solid rgba(255, 255, 255, 0.3)',
+                                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
+                                  fontFamily: "'Montserrat', sans-serif",
+                                }}
+                              >
+                                Custom
+                              </motion.button>
+                            )}
+                          </div>
                         )}
                       </div>
                     ) : (
