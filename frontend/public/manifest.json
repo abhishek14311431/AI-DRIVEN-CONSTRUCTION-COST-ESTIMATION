@@ -1,6 +1,6 @@
 {
-  "short_name": "Cost Estimator",
-  "name": "AI-Driven Construction Cost Estimator",
+  "short_name": "LA | Cost AI",
+  "name": "LA | Professional Construction Cost Estimation",
   "icons": [
     {
       "src": "favicon.svg",
@@ -10,6 +10,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#4F46E5",
+  "theme_color": "#000000",
   "background_color": "#000000"
 }

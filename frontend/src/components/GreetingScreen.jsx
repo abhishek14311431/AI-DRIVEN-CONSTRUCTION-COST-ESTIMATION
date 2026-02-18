@@ -88,9 +88,23 @@ export default function GreetingScreen({ userName = "Abhishek", onYes, onNo }) {
       >
 
         {/* Top Bar / Brand */}
-        {/* Top Bar / Brand Removed as per request */}
-        <motion.div variants={itemVariants} className="absolute top-10 left-8 md:left-12 flex items-center gap-3 opacity-0">
-          {/* Hidden but keeping layout space if needed, or just removing visible elements */}
+        <motion.div
+          variants={itemVariants}
+          className="absolute top-10 left-8 md:left-12 flex items-center gap-6 group"
+        >
+          <div className="relative w-14 h-14 flex items-center justify-center">
+            <div className="absolute inset-0 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 group-hover:border-amber-500/30 transition-all duration-500" />
+            <svg className="w-10 h-10 relative z-10" viewBox="0 0 100 100">
+              <g fill="white" transform="translate(10, 15) scale(0.8)">
+                <path d="M0 0 h24 v12 h-10 v44 h20 v12 h-34 v-12 h10 v-44 h-10 z" />
+                <path d="M30 68 h12 l5 -15 h26 l5 15 h14 l-26 -68 h-18 l-18 68 z M49 41 l9 -30 l9 30 h-18 z" />
+              </g>
+            </svg>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-white font-black text-sm uppercase tracking-[0.4em] leading-none mb-1">Architecture</span>
+            <span className="text-white/40 font-bold text-[9px] uppercase tracking-[0.3em]">Cost Intelligence System</span>
+          </div>
         </motion.div>
 
 
@@ -98,8 +112,9 @@ export default function GreetingScreen({ userName = "Abhishek", onYes, onNo }) {
 
           {/* Left Column: Typography Greeting */}
           <div className="flex-1 text-left">
-            <motion.div variants={itemVariants} className="overflow-hidden mb-2">
-              <h2 className="text-2xl md:text-3xl font-light text-white/70 font-serif italic tracking-wide">
+            <motion.div variants={itemVariants} className="overflow-hidden mb-4">
+              <span className="text-amber-500 text-xs font-black uppercase tracking-[0.5em] block mb-2">Systems Online // 2026 Audit Active</span>
+              <h2 className="text-4xl md:text-5xl font-light text-white/90 font-serif leading-tight">
                 {(() => {
                   const hour = new Date().getHours();
                   if (hour < 12) return "Good Morning,";
@@ -109,30 +124,30 @@ export default function GreetingScreen({ userName = "Abhishek", onYes, onNo }) {
               </h2>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="relative">
-              {/* The Name - Massive & Bold */}
+            <motion.div variants={itemVariants} className="relative mb-10">
+              {/* The Name - Elegant & Sophisticated */}
               <h1
-                className="text-[5rem] md:text-[9rem] font-black text-white leading-[0.9] tracking-tighter transition-all duration-500 hover:text-amber-500"
+                className="text-[4rem] md:text-[7rem] font-black text-white leading-[0.8] tracking-tighter"
                 style={{
-                  fontFamily: "'Montserrat', sans-serif",
+                  fontFamily: "'Space Grotesk', sans-serif",
                   textShadow: '0 4px 30px rgba(0, 0, 0, 0.5)'
                 }}
               >
-                ABHISHEK
+                {userName.toUpperCase()}
               </h1>
 
-              {/* Decorative line */}
+              {/* Decorative accent */}
               <motion.div
                 initial={{ width: 0 }}
-                animate={{ width: 200 }}
+                animate={{ width: 120 }}
                 transition={{ delay: 1.5, duration: 1 }}
-                className="h-2 bg-amber-500 mt-6"
+                className="h-1 bg-gradient-to-r from-amber-500 to-transparent mt-6"
               />
             </motion.div>
 
-            <motion.p variants={itemVariants} className="mt-8 text-white/60 text-lg md:text-xl max-w-lg leading-relaxed border-l-2 border-white/20 pl-6">
-              Your design intelligence system is ready. <br />
-              Let's architect the future of living.
+            <motion.p variants={itemVariants} className="mt-8 text-white/50 text-base md:text-lg max-w-md leading-relaxed border-l border-white/20 pl-6 uppercase tracking-widest font-medium">
+              Intelligence system ready. <br />
+              <span className="text-white/80">Architectural analysis for the next generation of living.</span>
             </motion.p>
           </div>
 
