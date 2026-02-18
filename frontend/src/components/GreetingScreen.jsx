@@ -123,10 +123,10 @@ export default function GreetingScreen({ userName = "Abhishek", onYes, onNo }) {
 
             <motion.div variants={itemVariants} className="relative mb-12">
               <h1
-                className="text-[5rem] md:text-[9.5rem] font-black text-white leading-[0.85] tracking-tighter"
+                className="text-[5.5rem] md:text-[8.5rem] font-black text-white leading-[0.8] tracking-tighter"
                 style={{
-                  fontFamily: "'Orbitron', sans-serif",
-                  textShadow: '0 10px 40px rgba(0, 0, 0, 0.8), 0 0 100px rgba(255,255,255,0.05)'
+                  fontFamily: "'Montserrat', sans-serif",
+                  textShadow: '0 20px 50px rgba(0, 0, 0, 0.5)'
                 }}
               >
                 {userName.toUpperCase()}
