@@ -64,11 +64,53 @@ function App() {
 
   const [selectedUpgradeTier, setSelectedUpgradeTier] = useState(null);
 
-  const handleUpgradeSelect = (upgradeData, tier) => {
-    // Store the upgrade result provisionally
-    setProvisionalEstimate(upgradeData);
+  const handleUpgradeSelect = async (baseData, tier) => {
+    setPreviousScreen('estimate');
     setSelectedUpgradeTier(tier);
     setCurrentScreen('analysis-loading');
+
+    try {
+      const normalizeFloors = (f) => {
+        if (!f) return 1;
+        if (typeof f === 'number') return f;
+        const match = String(f).toLowerCase().match(/g\+(\d+)/);
+        if (match) return parseInt(match[1]) + 1;
+        return parseInt(f) || 1;
+      };
+
+      const payload = {
+        project_type: selectedData.projectType,
+        plot_size: selectedData.dimensions || selectedData.plotSize,
+        floors: normalizeFloors(selectedData.floors),
+        zone: selectedData.zone || "Zone 1",
+        selected_tier: tier,
+        site_type: selectedData.plotSize?.includes('double') ? 'double' : (selectedData.plotSize?.includes('half') ? 'half' : 'full'),
+        family_details: selectedData.answers || {},
+        lift_required: selectedData.answers?.lift === "Yes",
+        generate_pdf: false,
+        upgrades: selectedData.upgrades || {},
+        interior: selectedData.interior || null,
+        dimensions: selectedData.dimensions || "",
+        compound_wall: selectedData.additionalRequirements?.compoundWall || false,
+        rain_water_harvesting: selectedData.additionalRequirements?.rainWater || false
+      };
+
+      const response = await fetch(`${API_BASE_URL}/estimate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setProvisionalEstimate(data);
+        return data;
+      } else {
+        console.error("Upgrade fetch failed:", response.status);
+      }
+    } catch (err) {
+      console.error("Upgrade error:", err);
+    }
   };
 
 
