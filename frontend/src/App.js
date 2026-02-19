@@ -62,8 +62,9 @@ function App() {
 
   const [selectedUpgradeTier, setSelectedUpgradeTier] = useState(null);
 
-  const handleUpgradeSelect = (estimateData, tier) => {
-    setEstimateData(estimateData);
+  const handleUpgradeSelect = (upgradeData, tier) => {
+    // Store the upgrade result provisionally
+    setProvisionalEstimate(upgradeData);
     setSelectedUpgradeTier(tier);
     setCurrentScreen('analysis-loading');
   };
@@ -269,10 +270,11 @@ function App() {
           key="tier-detail"
           onBack={() => {
             setProvisionalEstimate(null);
+            setSelectedUpgradeTier('Base');
             setCurrentScreen('estimate');
           }}
           tier={selectedUpgradeTier}
-          estimateData={estimateData}
+          estimateData={provisionalEstimate || estimateData}
           selectedData={selectedData}
           onProceed={(newEstimateOutput) => {
             console.log('Finalizing Upgrade To:', selectedUpgradeTier);
@@ -291,16 +293,10 @@ function App() {
           onBack={() => {
             // Explicitly reset any provisional selections if the user goes back
             setProvisionalEstimate(null);
+            setSelectedUpgradeTier('Base');
 
-            // If the user was trying an upgrade and goes back, 
-            // ensure we revert any temporary plan changes in the UI context
-            if (selectedUpgradeTier !== 'Base') {
-              // CurrentScreen is set back to estimate, which will 
-              // re-render based on the original estimateData/selectedData
-              setCurrentScreen('estimate');
-            } else {
-              setCurrentScreen('estimate');
-            }
+            // Revert back to the estimate screen
+            setCurrentScreen('estimate');
           }}
           estimateData={provisionalEstimate || estimateData} // Use provisional data if available
           selectedData={selectedData}
