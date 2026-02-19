@@ -11,6 +11,10 @@ export default function ProjectScreen({
   setSelectedPlotSize,
   selectedDimension,
   setSelectedDimension,
+  selectedCity,
+  setSelectedCity,
+  selectedState,
+  setSelectedState,
   currentStep,
   setCurrentStep,
   customLength,
@@ -157,7 +161,9 @@ export default function ProjectScreen({
       const data = {
         projectType: selectedProject,
         plotSize: selectedPlotSize,
-        dimensions: dimensionId
+        dimensions: dimensionId,
+        city: selectedCity,
+        state: selectedState
       };
       onAdditionalQuestions(data);
     }
@@ -169,7 +175,9 @@ export default function ProjectScreen({
       const data = {
         projectType: selectedProject,
         plotSize: selectedPlotSize,
-        dimensions: dim
+        dimensions: dim,
+        city: selectedCity,
+        state: selectedState
       };
       onAdditionalQuestions(data);
     }
@@ -301,6 +309,28 @@ export default function ProjectScreen({
                     <p className="text-lg font-bold text-white tracking-wide">{plotSizes.find(p => p.id === selectedPlotSize)?.name}</p>
                   </div>
                 )}
+                <div className="p-4 rounded-xl hover:bg-white/5 transition-colors col-span-2 flex gap-4">
+                  <div className="flex-1">
+                    <p className="text-xs text-white/50 uppercase tracking-widest font-bold mb-1">City</p>
+                    <input
+                      type="text"
+                      placeholder="Delhi"
+                      value={selectedCity}
+                      onChange={(e) => setSelectedCity(e.target.value)}
+                      className="w-full bg-transparent border-b border-white/20 focus:border-blue-400 outline-none text-white font-bold py-1 placeholder:text-white/20"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-white/50 uppercase tracking-widest font-bold mb-1">State</p>
+                    <input
+                      type="text"
+                      placeholder="Delhi"
+                      value={selectedState}
+                      onChange={(e) => setSelectedState(e.target.value)}
+                      className="w-full bg-transparent border-b border-white/20 focus:border-blue-400 outline-none text-white font-bold py-1 placeholder:text-white/20"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

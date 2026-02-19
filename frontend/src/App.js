@@ -22,10 +22,12 @@ function App() {
   const [selectedData, setSelectedData] = useState(null);
   const [estimateData, setEstimateData] = useState(null);
   const [isReadOnly, setIsReadOnly] = useState(false);
-  const [projectStep, setProjectStep] = useState('project-selection');
+  const [currentStep, setCurrentStep] = useState('project-selection');
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedPlotSize, setSelectedPlotSize] = useState(null);
   const [selectedDimension, setSelectedDimension] = useState(null);
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedState, setSelectedState] = useState('');
   const [customLength, setCustomLength] = useState('');
   const [customWidth, setCustomWidth] = useState('');
   const [showDimensions, setShowDimensions] = useState(false);
@@ -33,7 +35,7 @@ function App() {
 
   const handleAdditionalQuestions = (data) => {
     setSelectedData(data);
-    setProjectStep('dimension-selection');
+    setCurrentStep('dimension-selection');
     setCurrentScreen('additional-questions');
   };
 
@@ -45,7 +47,7 @@ function App() {
 
   const handleAdditionalQuestionsBack = () => {
     setCurrentScreen('project');
-    setProjectStep('dimension-selection');
+    setCurrentStep('dimension-selection');
   };
 
   const handleEstimate = (finalData) => {
@@ -106,6 +108,8 @@ function App() {
     setSelectedProject(null);
     setSelectedPlotSize(null);
     setSelectedDimension(null);
+    setSelectedCity('');
+    setSelectedState('');
     setCustomLength('');
     setCustomWidth('');
     setShowDimensions(false);
@@ -138,8 +142,12 @@ function App() {
           setSelectedPlotSize={setSelectedPlotSize}
           selectedDimension={selectedDimension}
           setSelectedDimension={setSelectedDimension}
-          currentStep={projectStep}
-          setCurrentStep={setProjectStep}
+          selectedCity={selectedCity}
+          setSelectedCity={setSelectedCity}
+          selectedState={selectedState}
+          setSelectedState={setSelectedState}
+          currentStep={currentStep}
+          setCurrentStep={setCurrentStep}
           customLength={customLength}
           setCustomLength={setCustomLength}
           customWidth={customWidth}

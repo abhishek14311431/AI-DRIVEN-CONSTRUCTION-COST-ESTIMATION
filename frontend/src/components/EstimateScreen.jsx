@@ -137,7 +137,6 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                 setEstimateData(data);
                 setLoading(false);
 
-
                 setTimeout(() => {
                     setAnalyzing(false);
 
@@ -159,7 +158,6 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
     }, [selectedData, isReadOnly]);
 
     useEffect(() => {
-
         if (!analyzing && isReadOnly && selectedData?.signature && canvasRef.current) {
             const canvas = canvasRef.current;
             const ctx = canvas.getContext('2d');
@@ -173,7 +171,6 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
     }, [analyzing, isReadOnly, selectedData?.signature]);
 
     const handleSaveProject = async () => {
-
         try {
             const canvas = canvasRef.current;
             const signatureImage = signature ? canvas.toDataURL('image/png') : null;
@@ -194,10 +191,11 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                 upgrades_cost: isReadOnly ? (selectedData.upgrades_cost || estimateData?.breakdown?.upgrades_cost || 0) : (estimateData?.breakdown?.upgrades_cost || 0),
                 signature: signatureImage || (isReadOnly ? selectedData.signature : null),
                 project_id: isReadOnly ? (selectedData.project_id || `AI-PNR-2026-${Date.now().toString().slice(-6)}`) : `AI-PNR-2026-${Date.now().toString().slice(-6)}`,
+                city: selectedData.city || 'N/A',
+                state: selectedData.state || 'N/A',
                 generated_at: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
                 client_name: projectName
             };
-
 
             if (!isReadOnly && !isSaved) {
                 const savedProjects = JSON.parse(localStorage.getItem('savedProjects') || '[]');
@@ -223,14 +221,10 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                     if (onHome) onHome();
                 }, 5000);
             }
-
         } catch (err) {
             console.error("Save Error:", err);
-
         }
     };
-
-
 
     if (loading) return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900">
@@ -306,7 +300,6 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                             </div>
                             <h1 className="text-4xl md:text-5xl font-black text-white">Cost Intelligence</h1>
                         </div>
-
                     </motion.div>
 
                     <div className="w-24 hidden md:block" />
@@ -338,53 +331,18 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                         </div>
                         <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10">
                             <p className="text-xs text-white/40 uppercase tracking-wider font-bold mb-1">Plan</p>
-                            <p className="text-base font-bold capitalize">{(() => {
-                                const p = (selectedData?.plan || 'classic').toLowerCase();
-                                if (p === 'base') return 'Base';
-                                if (p === 'classic') return 'Classic';
-                                if (p === 'premium') return 'Premium';
-                                if (p === 'luxury') return 'Luxury';
-                                if (p === 'luxury plus') return 'Luxury Plus';
-                                return p.charAt(0).toUpperCase() + p.slice(1);
-                            })()}</p>
+                            <p className="text-base font-bold capitalize">{selectedData?.plan || 'Classic'}</p>
                         </div>
-                        {selectedData?.answers?.bedrooms && (
-                            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10">
-                                <p className="text-xs text-white/40 uppercase tracking-wider font-bold mb-1">Bedrooms</p>
-                                <p className="text-base font-bold">{selectedData.answers.bedrooms}</p>
-                            </div>
-                        )}
-                        {(selectedData?.answers?.['family-size'] || selectedData?.answers?.['total-members']) && (
-                            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10">
-                                <p className="text-xs text-white/40 uppercase tracking-wider font-bold mb-1">Members</p>
-                                <p className="text-base font-bold">{selectedData.answers['family-size'] || selectedData.answers['total-members']}</p>
-                            </div>
-                        )}
+                        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10">
+                            <p className="text-xs text-white/40 uppercase tracking-wider font-bold mb-1">Location</p>
+                            <p className="text-base font-bold truncate">{selectedData?.city && selectedData?.state ? `${selectedData.city}, ${selectedData.state}` : 'N/A'}</p>
+                        </div>
                         <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10">
                             <p className="text-xs text-white/40 uppercase tracking-wider font-bold mb-1">Lift</p>
                             <p className="text-base font-bold">
-                                {selectedData?.projectType === 'rental-homes' && selectedData?.plotSize !== 'double-site' ? 'N/A' : (selectedData?.answers?.lift || 'No')}
+                                {selectedData?.answers?.lift || 'No'}
                             </p>
                         </div>
-                        {selectedData?.projectType === 'rental-homes' && (
-                            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10">
-                                <p className="text-xs text-white/40 uppercase tracking-wider font-bold mb-1">Parking</p>
-                                <p className="text-base font-bold">{selectedData?.answers?.parking || 'No'}</p>
-                            </div>
-                        )}
-                        <div className={`p-4 rounded-xl ${selectedData?.interior ? 'bg-purple-500/10 border-purple-400/20' : 'bg-white/[0.02] border-white/10'} border`}>
-                            <p className={`text-xs uppercase tracking-wider font-bold mb-1 ${selectedData?.interior ? 'text-purple-400/60' : 'text-white/40'}`}>Interior</p>
-                            <p className="text-base font-bold capitalize">{selectedData?.interior || 'None'}</p>
-                        </div>
-                        {selectedData?.additionalRequirements && Object.values(selectedData.additionalRequirements).some(v => v) && (
-                            <div className="p-4 rounded-xl bg-green-500/10 border border-green-400/20">
-                                <p className="text-xs text-green-400/60 uppercase tracking-wider font-bold mb-1">Extras</p>
-                                <div className="flex gap-1">
-                                    {selectedData.additionalRequirements.compoundWall && <CheckCircle2 className="w-4 h-4 text-green-400" />}
-                                    {selectedData.additionalRequirements.rainWater && <CheckCircle2 className="w-4 h-4 text-green-400" />}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </motion.div>
 
@@ -408,127 +366,109 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                     </motion.div>
                 )}
 
-                {/* Total Cost - Only show after analyzing */}
+                {/* Main Content */}
                 {!analyzing && (
-                    <motion.div
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.1 }}
-                        className="relative"
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-2xl" />
-                        <div className="relative p-10 rounded-3xl bg-gradient-to-br from-blue-500/[0.05] via-purple-500/[0.05] to-pink-500/[0.05] border-2 border-white/10 backdrop-blur-3xl text-center">
-                            <p className="text-white/50 text-sm mb-3 uppercase tracking-widest font-bold">
-                                {isReadOnly ? "Saved Total Investment" : "Total Investment"}
-                            </p>
-                            <h2 className="text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-4">
-                                <AnimatedCounter value={isReadOnly ? (selectedData.total_cost || baseCost) : baseCost} delay={400} />
-                            </h2>
-                            <p className="text-white/40 text-sm">
-                                {isReadOnly ? `Finalized Audit for ${selectedData.client_name || projectName}` : "Complete construction estimate"}
-                            </p>
-                        </div>
-                    </motion.div>
-                )}
+                    <div className="space-y-8">
+                        {/* Total Cost */}
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="relative"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-2xl" />
+                            <div className="relative p-10 rounded-3xl bg-gradient-to-br from-blue-500/[0.05] via-purple-500/[0.05] to-pink-500/[0.05] border-2 border-white/10 backdrop-blur-3xl text-center">
+                                <p className="text-white/50 text-sm mb-3 uppercase tracking-widest font-bold">
+                                    {isReadOnly ? "Saved Total Investment" : "Total Investment"}
+                                </p>
+                                <h2 className="text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-4">
+                                    <AnimatedCounter value={isReadOnly ? (selectedData.total_cost || baseCost) : baseCost} delay={400} />
+                                </h2>
+                                <p className="text-white/40 text-sm">
+                                    {isReadOnly ? `Finalized Audit for ${selectedData.client_name || projectName}` : "Complete construction estimate"}
+                                </p>
+                            </div>
+                        </motion.div>
 
-                {/* Cost Breakdown - Animated one by one */}
-                {!analyzing && (
-                    <motion.div
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.2 }} // Reduced from 0.5s
-                        className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-3xl"
-                    >
-                        <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-6">
+                        {/* Cost Breakdown */}
+                        <motion.div
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-3xl"
+                        >
+                            <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">
                                     <Calculator className="w-5 h-5 text-purple-400" />
                                     <h3 className="text-xl font-black">Detailed Breakdown</h3>
                                 </div>
-                                <div className="h-4 w-px bg-white/10" />
-                                <p className="text-base font-black text-blue-400 uppercase tracking-[0.2em]">
-                                    {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                                </p>
                             </div>
-                        </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                            {pinToPinDetails.map((item, i) => (
-                                <motion.div
-                                    key={i}
-                                    initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    transition={{
-                                        delay: 0.3 + i * 0.05,
-                                        duration: 0.4
-                                    }}
-                                    whileHover={{ scale: 1.03, y: -3 }}
-                                    className="p-4 rounded-xl bg-white/[0.02] border border-white/10 hover:border-blue-400/30 hover:bg-white/[0.06] transition-all cursor-pointer"
-                                >
-                                    <p className="text-sm text-white/30 uppercase font-bold tracking-wider mb-2">{item.category}</p>
-                                    <p className="text-base font-bold text-white/70 mb-3 leading-tight min-h-[32px]">{item.item}</p>
-                                    <p className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-                                        <AnimatedCounter value={item.amount} delay={700 + i * 100} />
-                                    </p>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                                {pinToPinDetails.map((item, i) => (
+                                    <motion.div
+                                        key={i}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.1 + i * 0.05 }}
+                                        className="p-4 rounded-xl bg-white/[0.02] border border-white/10"
+                                    >
+                                        <p className="text-sm text-white/30 uppercase font-bold tracking-wider mb-2">{item.category}</p>
+                                        <p className="text-base font-bold text-white/70 mb-3 leading-tight min-h-[32px]">{item.item}</p>
+                                        <p className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                                            <AnimatedCounter value={item.amount} delay={500 + i * 100} />
+                                        </p>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </motion.div>
 
-                {/* Market Analysis & Upgrades */}
-                {!analyzing && (
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                            {/* LEFT COLUMN: Market Analysis & Digital Sign */}
-                            <div className="space-y-6">
+                        {/* Lower Sections */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* Left Side: Market Analysis & Digital Auth */}
+                            <div className="space-y-8">
                                 <motion.div
-                                    initial={{ y: 20, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    transition={{ delay: 1 }}
+                                    initial={{ x: -20, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
                                     className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-3xl"
                                 >
                                     <div className="flex items-center gap-3 mb-6">
                                         <TrendingUp className="w-6 h-6 text-blue-400" />
                                         <h3 className="text-2xl font-black">Market Analysis</h3>
                                     </div>
-                                    <div className="p-8 rounded-2xl bg-blue-500/5 border border-blue-500/20 relative overflow-hidden">
+                                    <div className="p-8 rounded-2xl bg-blue-500/5 border border-blue-500/20">
                                         <p className="text-white/80 text-xl leading-relaxed font-bold">
-                                            As per <span className="text-blue-400 font-black">2026 market rates</span>, <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400"><AnimatedCounter value={baseCost} delay={1200} /></span> is the best fit as your professional estimation.
+                                            As per <span className="text-blue-400 font-black">2026 market rates</span>, <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400"><AnimatedCounter value={baseCost} delay={1000} /></span> is the professional estimation for your site location in {selectedData?.city || 'India'}.
                                         </p>
                                     </div>
                                 </motion.div>
 
                                 {(wantsUpgrade === false || isReadOnly) && (
                                     <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="p-8 rounded-3xl bg-zinc-900/60 border border-white/10 backdrop-blur-3xl flex flex-col"
+                                        initial={{ y: 20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-3xl space-y-6"
                                     >
-                                        <div className="flex justify-between items-center mb-6">
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex items-center gap-2 text-green-400">
-                                                    <PenTool className="w-6 h-6" />
-                                                    <span className="font-black uppercase tracking-widest text-sm">
-                                                        {isReadOnly ? `Digitally Signed by ${selectedData.client_name || projectName}` : 'Digital Authorization'}
-                                                    </span>
-                                                </div>
-                                                {!isReadOnly && (
-                                                    <div className="mt-4 flex flex-col gap-2">
-                                                        <label className="text-xs text-white/50 uppercase tracking-widest font-bold">Client Name for Project</label>
-                                                        <input
-                                                            type="text"
-                                                            value={projectName}
-                                                            onChange={(e) => setProjectName(e.target.value)}
-                                                            className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-lg font-bold focus:outline-none focus:border-green-500/50 transition-all"
-                                                            placeholder="Enter client name..."
-                                                        />
-                                                    </div>
-                                                )}
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <PenTool className="w-6 h-6 text-green-400" />
+                                                <h3 className="font-black uppercase tracking-widest text-lg">Digital Authorization</h3>
                                             </div>
-                                            {!isReadOnly && <button onClick={clearSignature} className="text-xs font-black text-red-400 uppercase tracking-widest underline underline-offset-4">Reset</button>}
+                                            {!isReadOnly && <button onClick={clearSignature} className="text-xs font-black text-red-400 uppercase tracking-widest underline">Reset</button>}
                                         </div>
-                                        <div className={`bg-white rounded-[2rem] h-[280px] relative overflow-hidden ${isReadOnly ? 'cursor-default' : 'cursor-crosshair touch-none'} border-8 border-white/5`}>
+
+                                        {!isReadOnly && (
+                                            <div className="flex flex-col gap-2">
+                                                <label className="text-xs text-white/50 uppercase tracking-widest font-bold">Client Name</label>
+                                                <input
+                                                    type="text"
+                                                    value={projectName}
+                                                    onChange={(e) => setProjectName(e.target.value)}
+                                                    className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-bold"
+                                                    placeholder="Enter name..."
+                                                />
+                                            </div>
+                                        )}
+
+                                        <div className="bg-white rounded-2xl h-[200px] relative overflow-hidden border-4 border-white/10">
                                             <canvas
                                                 ref={canvasRef}
                                                 width={1000}
@@ -543,193 +483,103 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                                                 onTouchEnd={!isReadOnly ? stopDrawing : undefined}
                                             />
                                             {(!signature && !selectedData?.signature) && (
-                                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
-                                                    <p className="text-black font-black uppercase tracking-[0.4em] text-lg">Sign Here</p>
+                                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+                                                    <p className="text-black font-black uppercase tracking-[0.4em]">Sign Here</p>
                                                 </div>
                                             )}
                                         </div>
-                                        <p className="text-center text-[10px] text-white/20 mt-6 font-black uppercase tracking-widest">Secure 2026 validation stamp active</p>
+
+                                        <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 cursor-pointer" onClick={() => !isReadOnly && setAgreed(!agreed)}>
+                                            <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center ${agreed ? 'bg-blue-500 border-blue-500' : 'border-white/20'}`}>
+                                                {agreed && <CheckCircle className="w-4 h-4" />}
+                                            </div>
+                                            <span className="text-xs font-bold text-white/70 uppercase">I authorize these specifications.</span>
+                                        </div>
                                     </motion.div>
                                 )}
                             </div>
 
-                            {/* RIGHT COLUMN: Smart Upgrades & Terms */}
-                            <div className="space-y-6">
+                            {/* Right Side: Smart Upgrades */}
+                            <div className="space-y-8">
                                 <motion.div
-                                    initial={{ y: 20, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    transition={{ delay: 1 }}
+                                    initial={{ x: 20, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
                                     className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-3xl"
                                 >
                                     <div className="flex items-center gap-3 mb-6">
                                         <Sparkles className="w-6 h-6 text-cyan-400" />
-                                        <h3 className="text-2xl font-black">
-                                            {isReadOnly ? 'Applied Upgrade Features' : 'Smart Upgrades'}
-                                        </h3>
+                                        <h3 className="text-2xl font-black">{isReadOnly ? 'Applied Features' : 'Smart Upgrades'}</h3>
                                     </div>
 
                                     {isReadOnly ? (
-                                        <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                                            {(selectedData?.active_upgrade_features || estimateData?.breakdown?.active_upgrade_features || []).map((feat, idx) => (
-                                                <motion.div
-                                                    key={idx}
-                                                    initial={{ opacity: 0, x: 20 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    transition={{ delay: 1.2 + idx * 0.05 }}
-                                                    className="p-4 rounded-xl bg-white/[0.05] border border-white/10"
-                                                >
-                                                    <div className="flex items-center justify-between mb-1">
+                                        <div className="space-y-3">
+                                            {(selectedData?.active_upgrade_features || []).map((feat, idx) => (
+                                                <div key={idx} className="p-4 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-between">
+                                                    <div>
                                                         <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">{feat.category}</span>
-                                                        <CheckCircle className="w-4 h-4 text-cyan-400" />
+                                                        <p className="text-base font-bold text-white">{feat.item}</p>
                                                     </div>
-                                                    <p className="text-base font-bold text-white uppercase">{feat.item}</p>
-                                                    <p className="text-[10px] text-white/40 font-medium uppercase tracking-tight mt-1 leading-relaxed">{feat.detail}</p>
-                                                </motion.div>
+                                                    <CheckCircle className="w-5 h-5 text-cyan-400" />
+                                                </div>
                                             ))}
-                                            {!(selectedData?.active_upgrade_features?.length || estimateData?.breakdown?.active_upgrade_features?.length) && (
-                                                <p className="text-white/30 text-center py-8 font-black uppercase tracking-widest">Base Project (No Upgrades Applied)</p>
+                                            {!(selectedData?.active_upgrade_features?.length) && (
+                                                <p className="text-white/30 text-center py-4 uppercase font-black text-xs">Base Project Only</p>
                                             )}
                                         </div>
                                     ) : (
                                         <>
-                                            <p className="text-white/60 text-base mb-8 leading-relaxed">
-                                                Upgrade costs tailored to your project — based on bedrooms, family size, and lift.
-                                            </p>
-
+                                            <p className="text-white/60 mb-6">Enhance your property with our AI-curated upgrades.</p>
                                             <div className="flex gap-4 mb-8">
-                                                <motion.button
-                                                    whileHover={{ scale: 1.02 }}
-                                                    whileTap={{ scale: 0.98 }}
-                                                    onClick={() => setWantsUpgrade(true)}
-                                                    className={`flex-1 px-8 py-5 rounded-2xl font-black text-xl transition-all border ${wantsUpgrade === true
-                                                        ? 'bg-blue-500/20 border-blue-500/50 text-blue-400'
-                                                        : 'bg-white/[0.02] border-white/10 text-white/50 hover:bg-white/[0.05] hover:border-white/20'
-                                                        }`}
-                                                >
-                                                    YES
-                                                </motion.button>
-                                                <motion.button
-                                                    whileHover={{ scale: 1.02 }}
-                                                    whileTap={{ scale: 0.98 }}
-                                                    onClick={() => setWantsUpgrade(false)}
-                                                    className={`flex-1 px-8 py-5 rounded-2xl font-black text-xl transition-all border ${wantsUpgrade === false
-                                                        ? 'bg-green-500/20 border-green-500/50 text-green-400 shadow-lg shadow-green-500/10'
-                                                        : 'bg-white/[0.02] border-white/10 text-white/50 hover:bg-white/[0.05] hover:border-white/20'
-                                                        }`}
-                                                >
-                                                    NO (Finalize Estimate)
-                                                </motion.button>
+                                                <button onClick={() => setWantsUpgrade(true)} className={`flex-1 py-4 rounded-xl font-black border transition-all ${wantsUpgrade === true ? 'bg-blue-500/20 border-blue-500 text-blue-400' : 'border-white/10'}`}>YES</button>
+                                                <button onClick={() => setWantsUpgrade(false)} className={`flex-1 py-4 rounded-xl font-black border transition-all ${wantsUpgrade === false ? 'bg-green-500/20 border-green-500 text-green-400' : 'border-white/10'}`}>NO</button>
                                             </div>
 
                                             {wantsUpgrade === true && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    className="space-y-4"
-                                                >
+                                                <div className="space-y-3">
                                                     {upgradeSuggestions.map((upgrade, i) => (
-                                                        <motion.div
+                                                        <div
                                                             key={i}
-                                                            initial={{ opacity: 0, x: 20 }}
-                                                            animate={{ opacity: 1, x: 0 }}
-                                                            transition={{ delay: i * 0.1 }}
-                                                            whileHover={{ scale: 1.02, x: 5 }}
-                                                            className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-cyan-400/30 hover:bg-white/[0.04] cursor-pointer transition-all"
+                                                            className="p-4 rounded-xl bg-white/[0.02] border border-white/10 hover:border-cyan-400/50 cursor-pointer transition-all"
                                                             onClick={() => onUpgradeSelect(estimateData, upgrade.tier)}
                                                         >
-                                                            <div className="flex items-center justify-between mb-2">
-                                                                <h4 className="text-xl font-black text-white">{upgrade.tier}</h4>
-                                                                <p className="text-base font-bold text-cyan-400">+₹{upgrade.upgrade_cost.toLocaleString('en-IN')}</p>
+                                                            <div className="flex justify-between items-center mb-1">
+                                                                <h4 className="font-black text-white">{upgrade.tier}</h4>
+                                                                <span className="text-cyan-400 font-bold">+₹{upgrade.upgrade_cost.toLocaleString('en-IN')}</span>
                                                             </div>
-                                                            <p className="text-sm text-white/50 leading-relaxed">{upgrade.description}</p>
-                                                        </motion.div>
+                                                            <p className="text-xs text-white/40">{upgrade.description}</p>
+                                                        </div>
                                                     ))}
-                                                </motion.div>
+                                                </div>
                                             )}
                                         </>
                                     )}
                                 </motion.div>
 
-                                {(wantsUpgrade === false || isReadOnly) && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="p-8 rounded-3xl bg-zinc-900/60 border border-white/10 backdrop-blur-3xl flex flex-col justify-between"
+                                {/* Final Action - Only if NO upgrade or isReadOnly view is finished */}
+                                {!isReadOnly && wantsUpgrade === false && (
+                                    <motion.button
+                                        initial={{ y: 20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        whileHover={{ scale: 1.02 }}
+                                        disabled={!signature || !agreed || isSaved}
+                                        onClick={handleSaveProject}
+                                        className={`w-full py-8 rounded-3xl font-black text-2xl uppercase tracking-widest transition-all ${(!signature || !agreed || isSaved) ? 'bg-white/5 text-white/10 grayscale' : 'bg-blue-500 text-white shadow-lg shadow-blue-500/20 hover:bg-blue-400'}`}
                                     >
-                                        <div className="space-y-6 mb-8">
-                                            <div className="flex items-center gap-2 text-blue-400 mb-2">
-                                                <Calculator className="w-5 h-5" />
-                                                <h4 className="font-black text-white uppercase tracking-widest text-sm">Terms and Analysis</h4>
-                                            </div>
-                                            <ul className="space-y-4">
-                                                {[
-                                                    'Estimate valid for 30 days from audit date.',
-                                                    'Price locked to current Q1 2026 market indices.',
-                                                    'Structural stability & material standards guaranteed.'
-                                                ].map((t, idx) => (
-                                                    <li key={idx} className="flex items-start gap-4 text-sm text-white/60 font-bold uppercase tracking-wide leading-snug">
-                                                        <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
-                                                        {t}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                        <label onClick={!isReadOnly ? () => setAgreed(!agreed) : undefined} className={`flex items-center gap-4 cursor-pointer group p-6 rounded-2xl bg-white/5 transition-all border border-white/10 ${!isReadOnly ? 'hover:bg-white/10' : ''}`}>
-                                            <div className={`w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all ${agreed ? 'bg-blue-500 border-blue-500 shadow-lg shadow-blue-500/20' : 'border-white/20'}`}>
-                                                {agreed && <CheckCircle className="w-5 h-5 text-white" />}
-                                            </div>
-                                            <span className="text-xs text-white/80 font-black uppercase tracking-widest select-none leading-relaxed">I authorize the above specifications and market analysis for project finalization.</span>
-                                        </label>
-                                    </motion.div>
+                                        {isSaved ? 'PROJECT SAVED' : 'FINALIZE & SAVE'}
+                                    </motion.button>
                                 )}
                             </div>
                         </div>
-
-                        {/* FINAL ACTION BUTTONS: Now full width below the columns */}
-                        {wantsUpgrade === false && !isReadOnly && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="flex flex-col md:flex-row gap-4 mt-6"
-                            >
-                                <motion.button
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    disabled={!signature || !agreed || isSaved}
-                                    onClick={handleSaveProject}
-                                    className={`flex-1 py-6 rounded-3xl font-black text-lg uppercase tracking-[0.2em] flex items-center justify-center gap-4 transition-all shadow-2xl ${(!signature || !agreed || isSaved) ? 'bg-white/5 text-white/10 cursor-not-allowed border border-white/5' : 'bg-blue-500 text-white hover:bg-blue-400 shadow-blue-500/30'}`}
-                                >
-                                    {isSaved ? <CheckCircle className="w-6 h-6 text-green-400" /> : <Save className="w-6 h-6" />}
-                                    {isSaved ? 'Project Saved Successfully' : 'Finalize & Save Project'}
-                                </motion.button>
-                            </motion.div>
-                        )}
                     </div>
                 )}
             </motion.div>
 
-            {/* Save Success Toast */}
+            {/* Save Toast */}
             {saveToast.show && (
-                <motion.div
-                    initial={{ opacity: 0, y: 100, scale: 0.8 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 100, scale: 0.8 }}
-                    className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[100] px-10 py-6 rounded-[2.5rem] bg-zinc-900/90 border-2 border-green-500/50 shadow-[0_0_50px_rgba(16,185,129,0.3)] backdrop-blur-3xl flex items-center gap-6 min-w-[500px]"
-                >
-                    <div className="w-12 h-12 rounded-2xl bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/40 shrink-0">
-                        <CheckCircle className="w-7 h-7 text-white" />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                        <p className="text-white font-black text-xl uppercase tracking-wider">{saveToast.message.split('.')[0]}</p>
-                        <p className="text-green-400 font-bold text-sm uppercase tracking-[0.2em]">Redirecting you to front page...</p>
-                    </div>
-                    <motion.div
-                        initial={{ width: "100%" }}
-                        animate={{ width: "0%" }}
-                        transition={{ duration: 5, ease: "linear" }}
-                        className="absolute bottom-0 left-0 h-1.5 bg-green-500 rounded-full"
-                    />
-                </motion.div>
+                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] px-8 py-4 rounded-2xl bg-zinc-900 border-2 border-green-500 shadow-2xl flex items-center gap-4">
+                    <CheckCircle className="text-green-500" />
+                    <p className="text-white font-bold">{saveToast.message}</p>
+                </div>
             )}
         </div>
     );

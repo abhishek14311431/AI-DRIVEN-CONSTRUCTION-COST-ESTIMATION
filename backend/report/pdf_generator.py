@@ -80,6 +80,18 @@ class PDFGenerator:
 
     def generate_pdf(self) -> None:
         try:
+            def draw_background(canvas, doc):
+                canvas.saveState()
+                # Draw a subtle watermark/background if needed
+                # For now, we'll just add a subtle "CONFIDENTIAL" or "CERTIFIED" if desired
+                # or a professional gray line at the bottom
+                canvas.setStrokeColor(colors.lightgrey)
+                canvas.setLineWidth(1)
+                canvas.line(0.75*inch, 0.5*inch, 7.75*inch, 0.5*inch)
+                canvas.setFont('Helvetica-Oblique', 8)
+                canvas.drawRightString(7.75*inch, 0.4*inch, "AI-Driven Construction Intelligence | 2026 Audit")
+                canvas.restoreState()
+
             doc = SimpleDocTemplate(self.output_stream, pagesize=(8.5*inch, 11*inch), 
                                    leftMargin=0.75*inch, rightMargin=0.75*inch, 
                                    topMargin=0.75*inch, bottomMargin=0.75*inch)
@@ -99,6 +111,7 @@ class PDFGenerator:
             elements.append(Paragraph("01. Project Specifications", self.styles['SectionHeading']))
             spec_data = [
                 ["Project Type", str(self.payload.get('project_type', 'N/A')).replace('-', ' ').title()],
+                ["Location", f"{self.payload.get('city', 'N/A')}, {self.payload.get('state', 'N/A')}"],
                 ["Plot Details", str(self.payload.get('plot_size', 'N/A'))],
                 ["Floors", str(self.payload.get('floors', 'N/A'))],
                 ["Selected Plan/Tier", str(self.payload.get('plan', 'Base')).upper()],
@@ -235,7 +248,7 @@ class PDFGenerator:
             else:
                 elements.append(Paragraph("<b>Authorization:</b> Online verification pending signature.", self.styles['Normal']))
 
-            doc.build(elements)
+            doc.build(elements, onFirstPage=draw_background, onLaterPages=draw_background)
         except Exception as e:
             print(f"Critical error in PDF generation: {e}")
             import traceback

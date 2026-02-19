@@ -100,6 +100,8 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
                 upgrades_cost: effectiveUpgradeCost,
                 signature: signature,
                 project_id: `AI-PNR-2026-${Date.now().toString().slice(-6)}`,
+                city: selectedData.city || 'N/A',
+                state: selectedData.state || 'N/A',
                 generated_at: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
                 client_name: projectName
             };
@@ -345,7 +347,12 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
                                     <PenTool className="w-6 h-6 text-green-400" />
                                     <h3 className="font-black text-white uppercase tracking-[0.2em] text-base font-sansital-black">Digital Authorization</h3>
                                 </div>
-                                <div className="mt-4 flex flex-col gap-2">
+                                <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                                    <p className="text-[10px] text-white/30 uppercase tracking-widest font-black mb-1">Location</p>
+                                    <p className="text-lg font-bold text-white leading-tight truncate">{selectedData?.city && selectedData?.state ? `${selectedData.city}, ${selectedData.state}` : 'N/A'}</p>
+                                </div>
+                                <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                                    <p className="text-[10px] text-white/30 uppercase tracking-widest font-black mb-1">Internal Reference</p>
                                     <label className="text-xs text-white/50 uppercase tracking-widest font-bold">Client Name for Project</label>
                                     <input
                                         type="text"
