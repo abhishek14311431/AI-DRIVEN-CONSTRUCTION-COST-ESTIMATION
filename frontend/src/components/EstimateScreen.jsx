@@ -22,7 +22,7 @@ function AnimatedCounter({ value, delay = 0, prefix = '₹' }) {
     return <span>{prefix}{displayValue.toLocaleString('en-IN')}</span>;
 }
 
-export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, onViewBreakdown, onSave, onHome, isReadOnly = false }) {
+export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, onViewBreakdown, onSave, onHome, onDataUpdate, isReadOnly = false }) {
     const [estimateData, setEstimateData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
