@@ -204,16 +204,19 @@ export default function EstimateScreen({ onBack, selectedData, onUpgradeSelect, 
                 const newProject = {
                     id: Date.now(),
                     ...pdfData,
+                    source: 'COST_ESTIMATION',
                     saved_at: new Date().toISOString()
                 };
                 savedProjects.push(newProject);
                 localStorage.setItem('savedProjects', JSON.stringify(savedProjects));
                 setIsSaved(true);
+
+                if (onSave) onSave(newProject);
+
                 setSaveToast({
                     show: true,
                     message: `Project for "${projectName}" has been saved. Redirecting you to home page in 5 seconds...`
                 });
-
 
                 setTimeout(() => {
                     setSaveToast({ show: false, message: "" });

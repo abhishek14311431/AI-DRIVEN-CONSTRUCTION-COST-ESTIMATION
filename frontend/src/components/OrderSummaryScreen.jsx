@@ -108,6 +108,7 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
             const newProject = {
                 id: Date.now(),
                 ...pdfData,
+                source: 'PROJECT_AGREEMENT',
                 saved_at: new Date().toISOString()
             };
             savedProjects.push(newProject);
@@ -115,9 +116,7 @@ export default function OrderSummaryScreen({ onBack, onSave, estimateData, selec
 
             setSavedMessage(true);
 
-            setTimeout(() => {
-                if (onSave) onSave();
-            }, 2500);
+            if (onSave) onSave(newProject);
 
         } catch (err) {
             setSaving(false);

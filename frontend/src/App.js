@@ -241,7 +241,10 @@ function App() {
           selectedData={selectedData}
           onUpgradeSelect={handleUpgradeSelect}
           onViewBreakdown={handleViewBreakdown}
-          onSave={resetApp}
+          onSave={(data) => {
+            console.log('Saving from Cost Estimation:', data);
+            resetApp();
+          }}
           onHome={resetApp}
           isReadOnly={isReadOnly}
         />
@@ -295,7 +298,8 @@ function App() {
           selectedData={selectedData}
           selectedTier={provisionalEstimate?.selected_tier || selectedData?.plan || selectedUpgradeTier || 'Base'}
           upgradeCost={provisionalEstimate?.upgrades_cost || selectedData?.upgrades_cost || 0}
-          onSave={() => {
+          onSave={(data) => {
+            console.log('Saving from Project Agreement:', data);
             // Commit the provisional data only when saved
             if (provisionalEstimate) {
               setEstimateData(provisionalEstimate);
@@ -308,7 +312,7 @@ function App() {
                 explanation: provisionalEstimate.explanation
               }));
             }
-            setCurrentScreen('saved');
+            resetApp();
           }}
         />
       )}

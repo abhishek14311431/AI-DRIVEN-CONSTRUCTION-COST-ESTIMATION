@@ -85,9 +85,12 @@ class PDFGenerator:
                                    topMargin=0.75*inch, bottomMargin=0.75*inch)
             elements = []
 
-            elements.append(Paragraph("Construction Cost Audit 2026", self.styles['CenterTitle']))
+            # Determine Title based on Source
+            source = self.payload.get('source', 'COST_ESTIMATION')
+            title_text = "Project Agreement & Construction Audit" if source == 'PROJECT_AGREEMENT' else "Construction Cost Estimate"
+            elements.append(Paragraph(title_text, self.styles['CenterTitle']))
             
-            gen_date = self.payload.get('generated_at', 'Feb 17, 2026')
+            gen_date = self.payload.get('generated_at', 'Feb 19, 2026')
             project_id = self.payload.get('project_id', f"AUDIT-{uuid.uuid4().hex[:8].upper()}")
             elements.append(Paragraph(f"<b>Audit Date:</b> {gen_date}", self.styles['Normal']))
             elements.append(Paragraph(f"<b>Project ID:</b> {project_id}", self.styles['Normal']))
@@ -98,7 +101,8 @@ class PDFGenerator:
                 ["Project Type", str(self.payload.get('project_type', 'N/A')).replace('-', ' ').title()],
                 ["Plot Details", str(self.payload.get('plot_size', 'N/A'))],
                 ["Floors", str(self.payload.get('floors', 'N/A'))],
-                ["Interior Tier", str(self.payload.get('interior', 'None')).title()],
+                ["Selected Plan/Tier", str(self.payload.get('plan', 'Base')).upper()],
+                ["Interior Package", str(self.payload.get('interior', 'None')).title()],
             ]
             
             spec_table = Table(spec_data, colWidths=[2*inch, 4.5*inch])
@@ -112,12 +116,15 @@ class PDFGenerator:
             elements.append(Spacer(1, 0.2 * inch))
 
             try:
-                elements.append(Paragraph("02. Technical Cost Audit", self.styles['SectionHeading']))
+                elements.append(Paragraph("02. Base Construction Breakdown", self.styles['SectionHeading']))
                 breakdown_items = self.breakdown.get("pin_to_pin_details", []) if isinstance(self.breakdown, dict) else []
                 if breakdown_items and isinstance(breakdown_items, list):
                     table_data = [["Category", "Item Description", "Amount"]]
                     for item in breakdown_items:
                         if isinstance(item, dict):
+                            # Skip upgrade items in the base list for clarity if we show them separately later
+                            if item.get("category") == "ADD-ONS" and "Upgrade" in item.get("item", ""):
+                                continue
                             table_data.append([
                                 item.get("category", ""),
                                 item.get("item", ""),
@@ -145,9 +152,9 @@ class PDFGenerator:
 
             # 3. Project Deliverables (Active Upgrades)
             active_upgrades = self.upgrades
-            if active_upgrades and isinstance(active_upgrades, list):
-                elements.append(Paragraph("03. Customized Project Deliverables", self.styles['SectionHeading']))
-                deliverable_data = [["Deliverable", "Description"]]
+            if active_upgrades and isinstance(active_upgrades, list) and len(active_upgrades) > 0:
+                elements.append(Paragraph("03. Customized Upgrade Breakdown", self.styles['SectionHeading']))
+                deliverable_data = [["Feature", "Detailed Specification"]]
                 for feat in active_upgrades:
                     if isinstance(feat, dict):
                         item_name = feat.get("item", feat.get("title", "N/A"))
@@ -180,9 +187,9 @@ class PDFGenerator:
             ]
             
             if upgrades_cost > 0:
-                summary_data.append(["Premium Quality Upgrades", self._format_currency(upgrades_cost)])
+                summary_data.append([f"{self.payload.get('plan', 'Tier')} Quality Upgrades", self._format_currency(upgrades_cost)])
                 
-            summary_data.append([Paragraph("<b>Final Turnkey Investment</b>", self.styles['Normal']), 
+            summary_data.append([Paragraph("<b>Final Customized Investment</b>", self.styles['Normal']), 
                                 Paragraph(f"<b>{self._format_currency(final_total)}</b>", self.styles['Normal'])])
 
             summary_table = Table(summary_data, colWidths=[4.5*inch, 2*inch])
@@ -197,7 +204,7 @@ class PDFGenerator:
 
             try:
                 if self.explanation and isinstance(self.explanation, dict):
-                    elements.append(Paragraph("05. Market Analysis & Narrative", self.styles['SectionHeading']))
+                    elements.append(Paragraph("05. AI Strategy & Justification", self.styles['SectionHeading']))
                     for key in ["project_summary", "cost_distribution_explanation", "tier_upgrade_explanation", "final_summary_statement"]:
                         text = self.explanation.get(key)
                         if text:
