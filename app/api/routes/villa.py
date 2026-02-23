@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.schemas.villa_schema import VillaCreate, VillaResponse
 from app.engines.villa_engine import VillaEngine
@@ -8,9 +8,12 @@ from app.database.session import get_db
 router = APIRouter()
 
 @router.post("/estimate", response_model=VillaResponse)
-def estimate_villa(data: VillaCreate, db: Session = Depends(get_db)):
-    result = VillaEngine.estimate_cost(data.dict())
-    return result
+def estimate_villa(data: VillaCreate):
+    try:
+        result = VillaEngine.estimate_cost(data.dict())
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/save")
 def save_villa(data: VillaCreate, db: Session = Depends(get_db)):

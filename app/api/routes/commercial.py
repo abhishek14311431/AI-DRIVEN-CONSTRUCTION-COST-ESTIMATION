@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.schemas.commercial_schema import CommercialCreate, CommercialResponse
 from app.engines.commercial_engine import CommercialEngine
@@ -8,9 +8,12 @@ from app.database.session import get_db
 router = APIRouter()
 
 @router.post("/estimate", response_model=CommercialResponse)
-def estimate_commercial(data: CommercialCreate, db: Session = Depends(get_db)):
-    result = CommercialEngine.estimate_cost(data.dict())
-    return result
+def estimate_commercial(data: CommercialCreate):
+    try:
+        result = CommercialEngine.estimate_cost(data.dict())
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/save")
 def save_commercial(data: CommercialCreate, db: Session = Depends(get_db)):

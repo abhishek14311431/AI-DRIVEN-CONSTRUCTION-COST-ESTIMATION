@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.schemas.interior_schema import InteriorCreate, InteriorResponse
 from app.engines.interior_engine import InteriorEngine
@@ -8,9 +8,12 @@ from app.database.session import get_db
 router = APIRouter()
 
 @router.post("/estimate", response_model=InteriorResponse)
-def estimate_interior(data: InteriorCreate, db: Session = Depends(get_db)):
-    result = InteriorEngine.estimate_cost(data.dict())
-    return result
+def estimate_interior(data: InteriorCreate):
+    try:
+        result = InteriorEngine.estimate_cost(data.dict())
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/save")
 def save_interior(data: InteriorCreate, db: Session = Depends(get_db)):

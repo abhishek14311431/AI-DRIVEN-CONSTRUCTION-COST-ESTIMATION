@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.schemas.own_house_schema import OwnHouseCreate, OwnHouseResponse, GradeFacilitiesResponse
 from app.engines.own_house_engine import OwnHouseEngine
@@ -14,8 +14,11 @@ def get_grade_facilities():
 
 @router.post("/estimate", response_model=OwnHouseResponse)
 def estimate_own_house(data: OwnHouseCreate):
-    result = OwnHouseEngine.estimate_cost(data.dict())
-    return result
+    try:
+        result = OwnHouseEngine.estimate_cost(data.dict())
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/save")
 def save_own_house(data: OwnHouseCreate, db: Session = Depends(get_db)):
