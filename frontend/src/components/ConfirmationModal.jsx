@@ -96,40 +96,44 @@ const ConfirmationModal = ({
                         display: 'flex',
                         gap: '1rem',
                         justifyContent: 'center',
-                        marginTop: '2rem'
+                        marginTop: '2rem',
+                        flexWrap: type === 'success' || type === 'error' ? 'wrap' : 'nowrap'
                     }}>
-                        <button
-                            onClick={onCancel}
-                            disabled={isLoading}
-                            style={{
-                                padding: '0.9rem 2rem',
-                                borderRadius: '10px',
-                                border: '1.5px solid rgba(255, 255, 255, 0.2)',
-                                background: 'rgba(255, 255, 255, 0.08)',
-                                color: '#fff',
-                                fontSize: '0.95rem',
-                                fontWeight: 700,
-                                cursor: isLoading ? 'not-allowed' : 'pointer',
-                                transition: 'all 0.25s ease',
-                                fontFamily: "'Outfit', sans-serif",
-                                letterSpacing: '0.5px',
-                                textTransform: 'uppercase',
-                                opacity: isLoading ? 0.5 : 1,
-                                minWidth: '120px'
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!isLoading) {
-                                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                            }}
-                        >
-                            {cancelText}
-                        </button>
+                        {/* Show cancel button only for warning/info types */}
+                        {(type === 'warning' || type === 'info') && (
+                            <button
+                                onClick={onCancel}
+                                disabled={isLoading}
+                                style={{
+                                    padding: '0.9rem 2rem',
+                                    borderRadius: '10px',
+                                    border: '1.5px solid rgba(255, 255, 255, 0.2)',
+                                    background: 'rgba(255, 255, 255, 0.08)',
+                                    color: '#fff',
+                                    fontSize: '0.95rem',
+                                    fontWeight: 700,
+                                    cursor: isLoading ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.25s ease',
+                                    fontFamily: "'Outfit', sans-serif",
+                                    letterSpacing: '0.5px',
+                                    textTransform: 'uppercase',
+                                    opacity: isLoading ? 0.5 : 1,
+                                    minWidth: '120px'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isLoading) {
+                                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                                }}
+                            >
+                                {cancelText}
+                            </button>
+                        )}
                         <button
                             onClick={onConfirm}
                             disabled={isLoading}
@@ -148,7 +152,9 @@ const ConfirmationModal = ({
                                 textTransform: 'uppercase',
                                 opacity: isLoading ? 0.7 : 1,
                                 minWidth: '120px',
-                                position: 'relative'
+                                position: 'relative',
+                                // Make it full width for single button (success/error types)
+                                width: (type === 'success' || type === 'error') ? '100%' : 'auto'
                             }}
                             onMouseEnter={(e) => {
                                 if (!isLoading) {

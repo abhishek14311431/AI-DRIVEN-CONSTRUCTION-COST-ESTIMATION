@@ -5,6 +5,7 @@ import ProjectSelection from './pages/ProjectSelection';
 import ProjectWizard from './pages/ProjectWizard';
 import EstimationResult from './pages/EstimationResult';
 import Archives from './pages/Archives';
+import SmartUpgradeBreakdown from './pages/SmartUpgradeBreakdown';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
@@ -17,6 +18,8 @@ function App() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [savedId, setSavedId] = useState(null);
+  const [upgradeGrade, setUpgradeGrade] = useState(null);
+  const [upgradeData, setUpgradeData] = useState(null);
 
   useEffect(() => { loadProjects(); }, []);
 
@@ -82,6 +85,23 @@ function App() {
     finally { setLoading(false); }
   };
 
+  const handleSmartUpgrade = (grade) => {
+    setUpgradeGrade(grade);
+    setView('upgrade');
+  };
+
+  const handleConfirmUpgrade = (upgradedData) => {
+    setUpgradeData(upgradedData);
+    // Update result with new totals
+    setResult({
+      ...result,
+      total_cost: upgradedData.totalAmount,
+      upgrade_applied: true,
+      upgrade_details: upgradedData
+    });
+    setView('result');
+  };
+
   const wizardStepBgs = [
     'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=2200&q=95',  // Step 0: Plot & Dimensions
     'https://images.unsplash.com/photo-1444723121867-7a241cacace9?auto=format&fit=crop&w=2200&q=95',  // Step 1: Floor & Grade Plan
@@ -97,7 +117,8 @@ function App() {
     const staticBgs = {
       dashboard: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=2000&q=80',
       selection: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=2000&q=80',
-      result: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=2000&q=80'
+      result: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=2000&q=80',
+      upgrade: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=2000&q=80'
     };
     return staticBgs[view] || staticBgs.dashboard;
   };
@@ -122,6 +143,7 @@ function App() {
             setView={setView}
             handleNext={handleNext}
             API_BASE_URL={API_BASE_URL}
+            onSmartUpgrade={handleSmartUpgrade}
           />
         )}
 
@@ -132,6 +154,17 @@ function App() {
             setView={setView}
             saveProject={saveProject}
             API_BASE_URL={API_BASE_URL}
+            onSmartUpgrade={handleSmartUpgrade}
+          />
+        )}
+
+        {view === 'upgrade' && (
+          <SmartUpgradeBreakdown
+            result={result}
+            projectInputs={inputs}
+            upgradeGrade={upgradeGrade}
+            setView={setView}
+            onConfirmUpgrade={handleConfirmUpgrade}
           />
         )}
 

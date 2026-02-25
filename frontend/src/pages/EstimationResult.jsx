@@ -13,7 +13,7 @@ const AnimatedConstructionLogo = () => {
     );
 };
 
-const EstimationResult = ({ result, savedId, setView, saveProject }) => {
+const EstimationResult = ({ result, savedId, setView, saveProject, onSmartUpgrade }) => {
     // Standardizing format to match 2026 Smart Breakdown engine
     const breakdown = Array.isArray(result.breakdown) ? result.breakdown : [];
 
@@ -77,10 +77,129 @@ const EstimationResult = ({ result, savedId, setView, saveProject }) => {
                 <div style={{ fontSize: '8rem', fontWeight: 1000, letterSpacing: '-6px', margin: '1.5rem 0', color: '#fff', textShadow: '0 0 60px rgba(103,232,249,0.3)' }}>
                     ₹{typeof result.total_cost === 'number' ? result.total_cost.toLocaleString('en-IN') : result.total_cost}
                 </div>
-                <button className="btn-primary" onClick={saveProject} style={{ padding: '1.2rem 3rem', fontSize: '1.1rem' }}>
-                    SECURE THIS VALUATION
-                </button>
+                <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <button className="btn-primary" onClick={saveProject} style={{ padding: '1.2rem 3rem', fontSize: '1.1rem' }}>
+                        SECURE THIS VALUATION
+                    </button>
+                    <button 
+                        onClick={() => setView('selection')} 
+                        style={{ 
+                            padding: '1.2rem 3rem', 
+                            fontSize: '1.1rem',
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            color: '#fff',
+                            borderRadius: '12px',
+                            cursor: 'pointer',
+                            fontWeight: 800,
+                            transition: '0.3s'
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                        }}
+                    >
+                        NEW PROJECT
+                    </button>
+                </div>
             </div>
+
+            {/* Smart Upgrades Section */}
+            {onSmartUpgrade && (
+                <div style={{
+                    padding: '3rem',
+                    background: 'linear-gradient(135deg, rgba(251,146,60,0.1), rgba(251,146,60,0.05))',
+                    border: '1px solid rgba(251,146,60,0.3)',
+                    borderRadius: '20px',
+                    marginBottom: '3rem'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                        <div style={{ fontSize: '2rem' }}>✨</div>
+                        <h3 style={{ fontSize: '1.6rem', fontWeight: 900, margin: 0 }}>Smart Upgrades Available</h3>
+                    </div>
+                    <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.6)', marginBottom: '2rem', margin: '0 0 2rem 0', lineHeight: 1.6 }}>
+                        Enhance your property with premium finishes! Choose from our curated upgrade options. Each grade comes with specific premium materials tailored to maximize your investment.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
+                        <button
+                            onClick={() => onSmartUpgrade('Classic')}
+                            style={{
+                                padding: '2rem',
+                                background: 'linear-gradient(135deg, rgba(100,116,139,0.2), rgba(100,116,139,0.1))',
+                                border: '1px solid rgba(100,116,139,0.4)',
+                                borderRadius: '14px',
+                                color: '#fff',
+                                cursor: 'pointer',
+                                transition: '0.3s',
+                                textAlign: 'left'
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(100,116,139,0.35), rgba(100,116,139,0.2))';
+                                e.currentTarget.style.boxShadow = '0 0 20px rgba(100,116,139,0.3)';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(100,116,139,0.2), rgba(100,116,139,0.1))';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}
+                        >
+                            <div style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.5rem' }}>🔷 Classic</div>
+                            <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>Granite Premium Grade Flooring & Stairs</div>
+                        </button>
+
+                        <button
+                            onClick={() => onSmartUpgrade('Premium')}
+                            style={{
+                                padding: '2rem',
+                                background: 'linear-gradient(135deg, rgba(168,85,247,0.2), rgba(168,85,247,0.1))',
+                                border: '1px solid rgba(168,85,247,0.4)',
+                                borderRadius: '14px',
+                                color: '#fff',
+                                cursor: 'pointer',
+                                transition: '0.3s',
+                                textAlign: 'left'
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(168,85,247,0.35), rgba(168,85,247,0.2))';
+                                e.currentTarget.style.boxShadow = '0 0 20px rgba(168,85,247,0.3)';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(168,85,247,0.2), rgba(168,85,247,0.1))';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}
+                        >
+                            <div style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.5rem' }}>💎 Premium</div>
+                            <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>Imported Italian Marble & Luxury Amenities</div>
+                        </button>
+
+                        <button
+                            onClick={() => onSmartUpgrade('Elite')}
+                            style={{
+                                padding: '2rem',
+                                background: 'linear-gradient(135deg, rgba(234,179,8,0.2), rgba(234,179,8,0.1))',
+                                border: '1px solid rgba(234,179,8,0.4)',
+                                borderRadius: '14px',
+                                color: '#fff',
+                                cursor: 'pointer',
+                                transition: '0.3s',
+                                textAlign: 'left'
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(234,179,8,0.35), rgba(234,179,8,0.2))';
+                                e.currentTarget.style.boxShadow = '0 0 20px rgba(234,179,8,0.3)';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(234,179,8,0.2), rgba(234,179,8,0.1))';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}
+                        >
+                            <div style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.5rem' }}>👑 Elite</div>
+                            <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>Ultra Luxury Italian Marble + Home Automation</div>
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
                 {breakdown.map((item, idx) => (
