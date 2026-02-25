@@ -88,6 +88,30 @@ export const projectConfigs = {
                     },
                     { label: 'Lift / Elevator Required?', field: 'lift_required', type: 'toggle' },
                     { label: 'Pooja Room?', field: 'pooja_room', type: 'toggle' },
+                    {
+                        label: 'Vastu Factor - Main Entrance Direction',
+                        field: 'vastu_direction',
+                        type: 'number-custom',
+                        hasCustom: false,
+                        options: [
+                            { value: 'north', label: 'North', desc: 'Prosperity & Wisdom' },
+                            { value: 'south', label: 'South', desc: 'Wealth & Fame' },
+                            { value: 'east', label: 'East', desc: 'Health & Energy' },
+                            { value: 'west', label: 'West', desc: 'Stability & Support' }
+                        ]
+                    },
+                    {
+                        label: 'Zone Details',
+                        field: 'zone_details',
+                        type: 'number-custom',
+                        hasCustom: false,
+                        options: [
+                            { value: 'A', label: 'Zone A', desc: 'Premium Location' },
+                            { value: 'B', label: 'Zone B', desc: 'Standard Location' },
+                            { value: 'C', label: 'Zone C', desc: 'Economy Location' }
+                        ]
+                    },
+                    { label: 'Extra Guest Bedroom on Terrace?', field: 'terrace_guest_bedroom', type: 'toggle', budgetImpact: 2.25 },
                 ]
             },
             {

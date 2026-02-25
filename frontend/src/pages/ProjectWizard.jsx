@@ -6,7 +6,36 @@ const STEP_LABELS = [
     'Floor Plan', 'Review', 'Interiors', 'Add-ons', 'Cost Est.'
 ];
 
+const AnimatedConstructionLogo = () => {
+    return (
+        <div className="construction-logo active" style={{ perspective: '1000px' }}>
+            <div className="blueprint-grid" />
+            <div className="building-block-1" />
+            <div className="building-block-2" />
+            <div className="building-block-3" />
+            <div className="connecting-line line-1" />
+            <div className="connecting-line line-2" />
+        </div>
+    );
+};
+
 const InfoPill = ({ inputs, config }) => {
+    // Map vastu direction to display text with meaning
+    const vastuMap = {
+        north: 'North - Prosperity & Wisdom',
+        south: 'South - Wealth & Fame',
+        east: 'East - Health & Energy',
+        west: 'West - Stability & Support'
+    };
+
+    // Map interior package to display text
+    const interiorMap = {
+        'none': 'No Interior',
+        'base': 'Base Interior',
+        'semi': 'Semi Interior',
+        'full_furnished': 'Full Furnished'
+    };
+
     const items = [
         { label: 'PROJECT', value: config.title },
         { label: 'PLOT', value: inputs.plot_size ? (inputs.plot_size === 'full' ? 'Full Site' : 'Double Site') : null },
@@ -15,6 +44,8 @@ const InfoPill = ({ inputs, config }) => {
         { label: 'GRADE', value: inputs.structural_style || null },
         { label: 'BEDROOMS', value: inputs.bedrooms ? `${inputs.bedrooms} BHK` : null },
         { label: 'LIFT', value: inputs.lift_required === true ? 'Yes' : inputs.lift_required === false ? 'No' : null },
+        { label: 'VASTU', value: inputs.vastu_direction ? vastuMap[inputs.vastu_direction.toLowerCase()] : null },
+        { label: 'INTERIOR', value: inputs.interior_package && inputs.interior_package !== 'none' ? interiorMap[inputs.interior_package] : null },
     ].filter(item => item.value);
 
     return (
@@ -28,8 +59,8 @@ const InfoPill = ({ inputs, config }) => {
                 <React.Fragment key={item.label}>
                     {i > 0 && <div style={{ width: '1px', height: '2.8rem', background: 'rgba(255,255,255,0.12)' }} />}
                     <div style={{ textAlign: 'left' }}>
-                        <div style={{ fontSize: '0.6rem', letterSpacing: '2px', color: 'rgba(255,255,255,0.4)', fontWeight: 800 }}>{item.label}</div>
-                        <div style={{ fontSize: '0.95rem', fontWeight: 700, marginTop: '0.2rem' }}>{item.value}</div>
+                        <div style={{ fontSize: '0.69rem', letterSpacing: '2px', color: 'rgba(255,255,255,0.4)', fontWeight: 800 }}>{item.label}</div>
+                        <div style={{ fontSize: '1.0925rem', fontWeight: 700, marginTop: '0.2rem' }}>{item.value}</div>
                     </div>
                 </React.Fragment>
             ))}
@@ -39,21 +70,44 @@ const InfoPill = ({ inputs, config }) => {
 
 const WizardShell = ({ children, config, step, inputs, onBack, onNext, nextLabel, nextDisabled, total, showTopNext = true }) => (
     <main className="animate" style={{ width: '100vw', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '3rem 0 6rem', overflowY: 'auto', background: 'transparent' }}>
-        {/* Top bar */}
-        <div style={{ width: '92vw', maxWidth: '1584px', display: 'flex', alignItems: 'center', justifyContent: showTopNext ? 'space-between' : 'flex-start', marginBottom: '2.5rem', gap: '1.5rem', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                <img src="/logo.svg" alt="Logo" style={{ width: '40px', height: '40px', filter: 'drop-shadow(0 0 10px rgba(253, 185, 49, 0.3))' }} />
+        {/* Top bar - Centered Layout */}
+        <div style={{ width: '92vw', maxWidth: '1584px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem', gap: '1.5rem', flexWrap: 'nowrap' }}>
+            {/* Left Side - Logo & Back Button */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', flexShrink: 0 }}>
+                <div style={{ 
+                    width: '56px', 
+                    height: '56px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    background: 'linear-gradient(135deg, rgba(0,242,255,0.1), rgba(124,58,237,0.1))',
+                    border: '2px solid rgba(0,242,255,0.2)',
+                    borderRadius: '12px',
+                    padding: '0.6rem'
+                }}>
+                    <AnimatedConstructionLogo />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 900, letterSpacing: '2.5px', color: '#00f2ff', textTransform: 'uppercase' }}>AI Builder</div>
+                    <div style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '1px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Est. 2026</div>
+                </div>
                 <button onClick={onBack} style={{
-                    padding: '0.9rem 2rem', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.15)',
+                    padding: '0.9rem 1.5rem', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.15)',
                     background: 'linear-gradient(145deg, rgba(12,14,20,0.8), rgba(16,18,26,0.66))', backdropFilter: 'blur(30px) saturate(170%)',
                     color: '#fff', fontSize: '1rem', fontWeight: 600, cursor: 'pointer',
                     display: 'flex', alignItems: 'center', gap: '0.6rem', letterSpacing: '0.5px',
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.2s ease', whiteSpace: 'nowrap'
                 }}>
                     ← Back
                 </button>
             </div>
-            <InfoPill inputs={inputs} config={config} />
+            
+            {/* Centered InfoPill */}
+            <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <InfoPill inputs={inputs} config={config} />
+            </div>
+            
+            {/* Right Side - Next Button */}
             {showTopNext && (
                 <button onClick={() => { if (!nextDisabled) onNext(); }} style={{
                     padding: '0.9rem 2rem', borderRadius: '100px',
@@ -62,11 +116,12 @@ const WizardShell = ({ children, config, step, inputs, onBack, onNext, nextLabel
                     backdropFilter: 'blur(20px)', color: nextDisabled ? 'rgba(255,255,255,0.3)' : '#fff',
                     fontSize: '1rem', fontWeight: 600, cursor: nextDisabled ? 'not-allowed' : 'pointer',
                     display: 'flex', alignItems: 'center', gap: '0.6rem', letterSpacing: '0.5px',
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease', whiteSpace: 'nowrap', flexShrink: 0
                 }}>
                     {nextLabel || 'Next ?'}
                 </button>
             )}
+            {!showTopNext && <div style={{ width: '120px' }} />}
         </div>
 
         {/* Content */}
@@ -256,7 +311,7 @@ const SignaturePad = ({ onSave, onClear }) => {
 };
 
 const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNext }) => {
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1';
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
     const [estData, setEstData] = useState(null);
     const [loadingEst, setLoadingEst] = useState(false);
     const [displayTotal, setDisplayTotal] = useState(0);
@@ -271,6 +326,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [showUpgradeOptions, setShowUpgradeOptions] = useState(false);
+    const [termsAccepted, setTermsAccepted] = useState(false);
 
     const config = projectConfigs[projectType] || projectConfigs.own_house;
     const currentStep = config.steps[step];
@@ -324,29 +380,152 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
         return () => clearInterval(timer);
     }, [countStarted, estData, currentStep.type]);
 
-    const fetchEstimation = async (isBackground = false) => {
+    // Prepare request payload with defaults for missing required fields
+    const prepareEstimationPayload = () => {
+        const payload = { ...inputs };
+        
+        // Define required fields with defaults based on project type
+        const requiredDefaults = {
+            plot_size: 'full',
+            dimensions: '30x40',
+            floor: 'G+2',
+            bedrooms: 3,
+            structural_style: 'Base',
+            zone: 'B',
+            lift_required: false,
+            interior_package: 'none',
+            include_compound_wall: false,
+            include_rainwater_harvesting: false,
+            include_car_parking: false,
+            family_count: 5,
+            children_count: 2,
+            grandparents_living: false,
+            pooja_room: false
+        };
+        
+        // Merge with defaults if missing
+        Object.keys(requiredDefaults).forEach(key => {
+            if (payload[key] === undefined || payload[key] === null || payload[key] === '') {
+                payload[key] = requiredDefaults[key];
+            }
+        });
+        
+        return payload;
+    };
+
+    const fetchEstimation = async (isBackground = false, retryCount = 0) => {
+        const maxRetries = 3;
+        
         if (!isBackground) setLoadingEst(true);
+        
         try {
+            // Validate minimum required fields
+            if (!inputs.plot_size || !inputs.dimensions) {
+                if (!isBackground) {
+                    setEstData({ 
+                        error: true, 
+                        message: "Please complete required fields: Plot Size and Dimensions" 
+                    });
+                }
+                if (!isBackground) setLoadingEst(false);
+                return;
+            }
+
             const endpoint = `${API_BASE_URL}/${projectType.replace('_', '-')}/estimate`;
+            const payload = prepareEstimationPayload();
+            
+            console.log(`[Attempt ${retryCount + 1}/${maxRetries + 1}] Fetching from:`, endpoint);
+            console.log('Payload:', payload);
+
+            // Set a timeout for the fetch
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
             const res = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(inputs)
+                body: JSON.stringify(payload),
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             if (res.ok) {
                 const data = await res.json();
                 setEstData(data);
                 if (!isBackground) {
                     setDisplayTotal(data.total_cost || 0);
+                    console.log('✓ Estimation loaded successfully:', data.total_cost);
                 }
+            } else if (res.status >= 500 && retryCount < maxRetries) {
+                // Server error - retry with exponential backoff
+                console.warn(`Server error ${res.status}, retrying...`);
+                await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+                return fetchEstimation(isBackground, retryCount + 1);
             } else if (!isBackground) {
-                const errData = await res.json();
-                setEstData({ error: true, message: errData.detail || "Verification Failed" });
+                try {
+                    const errData = await res.json();
+                    let errorMsg = `API Error ${res.status}`;
+                    
+                    // Parse validation errors from Pydantic
+                    if (Array.isArray(errData.detail)) {
+                        const missingFields = errData.detail
+                            .filter(e => e.type === 'missing')
+                            .map(e => e.loc[e.loc.length - 1])
+                            .join(', ');
+                        if (missingFields) {
+                            errorMsg = `Missing required fields: ${missingFields}`;
+                        }
+                    } else if (typeof errData.detail === 'string') {
+                        errorMsg = errData.detail;
+                    }
+                    
+                    setEstData({ 
+                        error: true, 
+                        message: errorMsg
+                    });
+                } catch {
+                    setEstData({ 
+                        error: true, 
+                        message: `Server Error ${res.status}. Please ensure backend is running and try again.` 
+                    });
+                }
             }
         } catch (err) {
-            console.error(err);
-            if (!isBackground) setEstData({ error: true, message: "Network Connectivity Issue" });
+            console.error('Estimation fetch error:', err.message);
+            
+            if (err.name === 'AbortError') {
+                if (retryCount < maxRetries) {
+                    console.warn('Request timeout, retrying...');
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+                    return fetchEstimation(isBackground, retryCount + 1);
+                }
+                if (!isBackground) {
+                    setEstData({ 
+                        error: true, 
+                        message: "Request timeout. Ensure backend is running at " + API_BASE_URL 
+                    });
+                }
+            } else if (err.message.includes('Failed to fetch')) {
+                if (retryCount < maxRetries) {
+                    console.warn('Network error, retrying...');
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+                    return fetchEstimation(isBackground, retryCount + 1);
+                }
+                if (!isBackground) {
+                    setEstData({ 
+                        error: true, 
+                        message: "Cannot reach API server. Check if backend is running on port 8000." 
+                    });
+                }
+            } else {
+                if (!isBackground) {
+                    setEstData({ 
+                        error: true, 
+                        message: `Error: ${err.message}` 
+                    });
+                }
+            }
         } finally {
             if (!isBackground) setLoadingEst(false);
         }
@@ -387,7 +566,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
             if (res.ok) {
                 setSaveSuccess(true);
                 setTimeout(() => {
-                    window.location.href = '/';
+                    setView('archives');
                 }, 6000);
             } else {
                 const errData = await res.json();
@@ -409,7 +588,184 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
         const right = currentStep.rightSide;
         const leftValue = inputs[left.field];
         const rightOptions = leftValue ? (right.optionsByParent?.[leftValue] || []) : [];
-        const canProceed = Boolean(leftValue && inputs[right.field]);
+        const rightValue = inputs[right.field];
+        const canProceed = Boolean(leftValue && rightValue);
+
+        // Plot Dimension Visualization Component
+        const PlotDiagramVisualization = () => {
+            if (!rightValue) return null;
+            
+            const [width, depth] = rightValue.split('x').map(Number);
+            const sqFt = width * depth;
+            const sqM = (sqFt * 0.092903).toFixed(2);
+            
+            // Calculate scale for visualization (max 300px)
+            const maxDim = Math.max(width, depth);
+            const scale = 300 / maxDim;
+            const scaledWidth = width * scale;
+            const scaledDepth = depth * scale;
+            
+            return (
+                <div style={{
+                    marginTop: '1rem',
+                    padding: '1rem',
+                    background: 'linear-gradient(135deg, rgba(0,242,255,0.08), rgba(124,58,237,0.06))',
+                    border: '2px solid rgba(0,242,255,0.25)',
+                    borderRadius: '1.8rem',
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '1.5rem',
+                    alignItems: 'start'
+                }}>
+                    {/* LEFT: Information Panels */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                        {/* Plot Size */}
+                        <div style={{
+                            padding: '1rem',
+                            background: 'rgba(0,242,255,0.1)',
+                            border: '1px solid rgba(0,242,255,0.3)',
+                            borderRadius: '1rem'
+                        }}>
+                            <div style={{ fontSize: '0.7rem', color: '#00f2ff', fontWeight: 700, letterSpacing: '1.5px', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+                                Plot Size
+                            </div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#fff' }}>
+                                {leftValue === 'full' ? 'Full Site' : 'Double Site'}
+                            </div>
+                        </div>
+                        
+                        {/* Dimensions */}
+                        <div style={{
+                            padding: '1rem',
+                            background: 'rgba(32,227,178,0.1)',
+                            border: '1px solid rgba(32,227,178,0.3)',
+                            borderRadius: '1rem'
+                        }}>
+                            <div style={{ fontSize: '0.7rem', color: '#20e3b2', fontWeight: 700, letterSpacing: '1.5px', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+                                Dimensions
+                            </div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#fff' }}>
+                                {width}' × {depth}'
+                            </div>
+                        </div>
+
+                        {/* Total Area */}
+                        <div style={{
+                            padding: '1rem',
+                            background: 'rgba(124,58,237,0.1)',
+                            border: '1px solid rgba(124,58,237,0.3)',
+                            borderRadius: '1rem'
+                        }}>
+                            <div style={{ fontSize: '0.7rem', color: '#a78bfa', fontWeight: 700, letterSpacing: '1.5px', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
+                                Total Area
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1.2rem' }}>
+                                <div>
+                                    <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.6)', marginBottom: '0.3rem', fontWeight: 600 }}>sq ft</div>
+                                    <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#fff' }}>
+                                        {sqFt.toLocaleString()}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.6)', marginBottom: '0.3rem', fontWeight: 600 }}>sq m</div>
+                                    <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#fff' }}>
+                                        {sqM}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* RIGHT: SVG Diagram */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', justifyContent: 'flex-start' }}>
+                        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#00f2ff', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
+                            Plot Layout
+                        </div>
+                        
+                        <svg width="368" height="368" viewBox="0 0 380 380" style={{ background: 'rgba(20,25,40,0.5)', borderRadius: '1rem', border: '1px solid rgba(0,242,255,0.3)' }}>
+                            {/* Grid background */}
+                            <defs>
+                                <pattern id="smallGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(0,242,255,0.1)" strokeWidth="0.5"/>
+                                </pattern>
+                            </defs>
+                            <rect width="380" height="380" fill="url(#smallGrid)" />
+                            
+                            {/* Plot area */}
+                            <rect 
+                                x={(380 - scaledWidth) / 2} 
+                                y={(380 - scaledDepth) / 2} 
+                                width={scaledWidth} 
+                                height={scaledDepth}
+                                fill="url(#plotGrad)"
+                                stroke="#00f2ff"
+                                strokeWidth="3"
+                            />
+                            
+                            {/* Gradient for plot */}
+                            <defs>
+                                <linearGradient id="plotGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style={{stopColor:'rgba(0,242,255,0.3)', stopOpacity:1}} />
+                                    <stop offset="100%" style={{stopColor:'rgba(32,227,178,0.2)', stopOpacity:1}} />
+                                </linearGradient>
+                            </defs>
+                            
+                            {/* Width dimension */}
+                            <line 
+                                x1={(380 - scaledWidth) / 2} 
+                                y1={360} 
+                                x2={(380 - scaledWidth) / 2 + scaledWidth} 
+                                y2={360}
+                                stroke="#20e3b2"
+                                strokeWidth="2"
+                            />
+                            <circle cx={(380 - scaledWidth) / 2} cy="360" r="3" fill="#20e3b2" />
+                            <circle cx={(380 - scaledWidth) / 2 + scaledWidth} cy="360" r="3" fill="#20e3b2" />
+                            <text 
+                                x={190} 
+                                y="375" 
+                                textAnchor="middle" 
+                                fill="#20e3b2" 
+                                fontSize="14" 
+                                fontWeight="700"
+                            >
+                                {width}'
+                            </text>
+                            
+                            {/* Depth dimension */}
+                            <line 
+                                x1="20" 
+                                y1={(380 - scaledDepth) / 2} 
+                                x2="20" 
+                                y2={(380 - scaledDepth) / 2 + scaledDepth}
+                                stroke="#00f2ff"
+                                strokeWidth="2"
+                            />
+                            <circle cx="20" cy={(380 - scaledDepth) / 2} r="3" fill="#00f2ff" />
+                            <circle cx="20" cy={(380 - scaledDepth) / 2 + scaledDepth} r="3" fill="#00f2ff" />
+                            <text 
+                                x="8" 
+                                y={190} 
+                                textAnchor="middle" 
+                                fill="#00f2ff" 
+                                fontSize="14" 
+                                fontWeight="700"
+                                transform={`rotate(-90 8 ${190})`}
+                            >
+                                {depth}'
+                            </text>
+                            
+                            {/* Compass */}
+                            <g transform="translate(330, 30)">
+                                <circle cx="0" cy="0" r="15" fill="rgba(0,242,255,0.1)" stroke="rgba(0,242,255,0.4)" strokeWidth="1"/>
+                                <line x1="0" y1="-12" x2="0" y2="-18" stroke="#00f2ff" strokeWidth="2"/>
+                                <text x="0" y="-20" textAnchor="middle" fill="#00f2ff" fontSize="10" fontWeight="700">N</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            );
+        };
 
         const plotImages = {
             full: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1800&q=95',
@@ -495,6 +851,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                             )}
                         </div>
                     </div>
+                    {rightValue && <PlotDiagramVisualization />}
                 </GlassCard>
                 <BottomStepButton
                     label={canProceed ? 'NEXT ->' : 'SELECT PLOT SIZE AND DIMENSION TO CONTINUE'}
@@ -514,7 +871,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                     <h2 style={{ fontSize: '2.8rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, marginBottom: '2.2rem' }}>{currentStep.title}</h2>
 
                     <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.1rem', opacity: 0.72, letterSpacing: '2px' }}>BUILDING HEIGHT</h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.2rem', marginBottom: '2rem' }}>
                         {currentStep.floorOptions.map(opt => {
                             const isActive = inputs[currentStep.floorField] === opt.value;
                             return (
@@ -522,43 +879,93 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                     onClick={() => setField(currentStep.floorField, opt.value)}
                                     style={{
                                         cursor: 'pointer',
-                                        borderRadius: '1.2rem',
+                                        borderRadius: '1.4rem',
                                         overflow: 'hidden',
-                                        minHeight: '210px',
+                                        minHeight: '240px',
                                         position: 'relative',
-                                        border: isActive ? '2px solid rgba(145,229,255,0.85)' : '1px solid rgba(255,255,255,0.2)',
-                                        boxShadow: isActive ? '0 0 24px rgba(116,224,255,0.35), inset 0 0 20px rgba(255,255,255,0.2)' : '0 8px 24px rgba(0,0,0,0.18)'
+                                        border: isActive ? '3px solid rgba(0,242,255,0.8)' : '2px solid rgba(255,255,255,0.15)',
+                                        boxShadow: isActive ? '0 0 30px rgba(0,242,255,0.4), inset 0 0 20px rgba(0,242,255,0.1)' : '0 8px 24px rgba(0,0,0,0.25)',
+                                        transition: 'all 0.3s ease'
                                     }}>
-                                    <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${opt.img})`, backgroundSize: 'cover', backgroundPosition: 'center', transform: 'scale(1.16)', filter: 'saturate(1.15) contrast(1.08)', opacity: 0.82 }} />
-                                    <div style={{ position: 'relative', height: '100%', padding: '1.15rem', background: 'linear-gradient(to top, rgba(10,18,35,0.62), rgba(10,18,35,0.12))', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                                        <div style={{ fontSize: '1.08rem', fontWeight: 800 }}>{opt.label}</div>
-                                        <div style={{ fontSize: '0.84rem', opacity: 0.76, marginTop: '0.28rem' }}>{opt.desc}</div>
+                                    <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${opt.img})`, backgroundSize: 'cover', backgroundPosition: 'center', transform: 'scale(1.2)', filter: 'saturate(1.2) contrast(1.1) brightness(0.95)', opacity: 0.85 }} />
+                                    
+                                    {/* G+ Badge */}
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '1rem',
+                                        right: '1rem',
+                                        background: isActive ? 'linear-gradient(135deg, rgba(0,242,255,0.9), rgba(32,227,178,0.7))' : 'rgba(0,242,255,0.7)',
+                                        padding: '0.6rem 1rem',
+                                        borderRadius: '0.8rem',
+                                        fontSize: '1.4rem',
+                                        fontWeight: 900,
+                                        color: '#fff',
+                                        textShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                                        border: '2px solid rgba(255,255,255,0.3)',
+                                        boxShadow: isActive ? '0 0 16px rgba(0,242,255,0.6)' : 'none',
+                                        zIndex: 10,
+                                        letterSpacing: '1px'
+                                    }}>
+                                        {opt.value}
+                                    </div>
+                                    
+                                    <div style={{ position: 'relative', height: '100%', padding: '1.4rem', background: 'linear-gradient(to top, rgba(10,18,35,0.75), rgba(10,18,35,0.2))', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                                        <div style={{ fontSize: '1.3rem', fontWeight: 900, letterSpacing: '0.5px' }}>{opt.desc}</div>
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
 
-                    <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.1rem', opacity: 0.72, letterSpacing: '2px' }}>CONSTRUCTION GRADE</h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1.3rem', opacity: 0.88, letterSpacing: '2px', textTransform: 'uppercase' }}>CONSTRUCTION GRADE</h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.2rem' }}>
                         {currentStep.gradeOptions.map(opt => {
                             const isActive = inputs[currentStep.gradeField] === opt.value;
+                            const gradeColors = {
+                                'Base': { bg: 'rgba(100,116,139,0.5)', border: 'rgba(100,116,139,0.8)', glow: 'rgba(100,116,139,0.4)' },
+                                'Classic': { bg: 'rgba(59,130,246,0.5)', border: 'rgba(59,130,246,0.8)', glow: 'rgba(59,130,246,0.4)' },
+                                'Premium': { bg: 'rgba(168,85,247,0.5)', border: 'rgba(168,85,247,0.8)', glow: 'rgba(168,85,247,0.4)' },
+                                'Elite': { bg: 'rgba(236,72,153,0.5)', border: 'rgba(236,72,153,0.8)', glow: 'rgba(236,72,153,0.4)' }
+                            };
+                            const colors = gradeColors[opt.value] || gradeColors['Base'];
+                            
                             return (
                                 <div key={opt.value}
                                     onClick={() => setField(currentStep.gradeField, opt.value)}
                                     style={{
                                         cursor: 'pointer',
-                                        borderRadius: '1.2rem',
+                                        borderRadius: '1.4rem',
                                         overflow: 'hidden',
-                                        minHeight: '210px',
+                                        minHeight: '240px',
                                         position: 'relative',
-                                        border: isActive ? '2px solid rgba(145,229,255,0.85)' : '1px solid rgba(255,255,255,0.2)',
-                                        boxShadow: isActive ? '0 0 24px rgba(116,224,255,0.35), inset 0 0 20px rgba(255,255,255,0.2)' : '0 8px 24px rgba(0,0,0,0.18)'
+                                        border: isActive ? `3px solid ${colors.border}` : '2px solid rgba(255,255,255,0.15)',
+                                        boxShadow: isActive ? `0 0 30px ${colors.glow}, inset 0 0 20px ${colors.bg}` : '0 8px 24px rgba(0,0,0,0.25)',
+                                        transition: 'all 0.3s ease'
                                     }}>
-                                    <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${opt.img})`, backgroundSize: 'cover', backgroundPosition: 'center', transform: 'scale(1.16)', filter: 'saturate(1.15) contrast(1.08)', opacity: 0.82 }} />
-                                    <div style={{ position: 'relative', height: '100%', padding: '1.15rem', background: 'linear-gradient(to top, rgba(10,18,35,0.62), rgba(10,18,35,0.12))', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                                        <div style={{ fontSize: '1.08rem', fontWeight: 800 }}>{opt.label}</div>
-                                        <div style={{ fontSize: '0.84rem', opacity: 0.76, marginTop: '0.28rem' }}>{opt.desc}</div>
+                                    <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${opt.img})`, backgroundSize: 'cover', backgroundPosition: 'center', transform: 'scale(1.2)', filter: 'saturate(1.2) contrast(1.1) brightness(0.95)', opacity: 0.85 }} />
+                                    
+                                    {/* Grade Badge */}
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '1rem',
+                                        right: '1rem',
+                                        background: isActive ? `linear-gradient(135deg, ${colors.border}, ${colors.border}cc)` : colors.bg,
+                                        padding: '0.6rem 1rem',
+                                        borderRadius: '0.8rem',
+                                        fontSize: '1.2rem',
+                                        fontWeight: 900,
+                                        color: '#fff',
+                                        textShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                                        border: '2px solid rgba(255,255,255,0.3)',
+                                        boxShadow: isActive ? `0 0 16px ${colors.glow}` : 'none',
+                                        zIndex: 10,
+                                        letterSpacing: '1px'
+                                    }}>
+                                        ★ {opt.value}
+                                    </div>
+                                    
+                                    <div style={{ position: 'relative', height: '100%', padding: '1.4rem', background: 'linear-gradient(to top, rgba(10,18,35,0.75), rgba(10,18,35,0.2))', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                                        <div style={{ fontSize: '1.3rem', fontWeight: 900, letterSpacing: '0.5px' }}>{opt.desc}</div>
                                     </div>
                                 </div>
                             );
@@ -586,7 +993,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
 
         return (
             <WizardShell config={config} step={step} inputs={inputs} onBack={onBack} onNext={handleNext} total={total} showTopNext={false}>
-                <GlassCard>
+                <GlassCard style={{ minHeight: 'auto', padding: '3rem 4rem 2.2rem' }}>
                     <h2 style={{ fontSize: '2.8rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, marginBottom: '2rem' }}>{currentStep.title}</h2>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.9rem' }}>
@@ -646,9 +1053,14 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                                                 color: '#fff',
                                                                 cursor: 'pointer',
                                                                 fontSize: '1.02rem',
-                                                                fontWeight: 700
+                                                                fontWeight: 700,
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                alignItems: 'center',
+                                                                gap: '0.4rem'
                                                             }}>
-                                                            {opt.label || optValue}
+                                                            <div>{opt.label || optValue}</div>
+                                                            {opt.desc && <div style={{ fontSize: '0.85rem', opacity: 0.75, fontWeight: 500 }}>{opt.desc}</div>}
                                                         </button>
                                                     );
                                                 })}
@@ -687,96 +1099,80 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                     </div>
 
                 </GlassCard>
-                <BottomStepButton
-                    label={canProceed ? 'NEXT ->' : 'FILL ALL DETAILS TO CONTINUE'}
-                    disabled={!canProceed}
-                    onClick={() => { if (canProceed) handleNext(); }}
-                />
+                <div style={{ marginTop: '-15px' }}>
+                    <BottomStepButton
+                        label={canProceed ? 'NEXT ->' : 'FILL ALL DETAILS TO CONTINUE'}
+                        disabled={!canProceed}
+                        onClick={() => { if (canProceed) handleNext(); }}
+                    />
+                </div>
             </WizardShell>
         );
     }
     /* STEP 6: Review Your Plan */
     if (currentStep.type === 'review') {
-        const baseFacilities = [
-            { title: 'Structure', detail: 'Standard RCC framed structure with IS-compliant design mix and workmanship.' },
-            { title: 'Foundation', detail: 'Standard RCC footing foundation with appropriate soil excavation and PCC bed.' },
-            { title: 'Masonry', detail: 'High-quality Solid/AAC block walls for durable external and internal partitions.' },
-            { title: 'Flooring', detail: 'Premium Ceramic/Vitrified tiles in all rooms with specialized anti-skid tiles in wet areas.' },
-            { title: 'Staircase', detail: 'RCC staircase finished with Polished Granite treads and risers with matching skirting.' },
-            { title: 'Doors', detail: 'Decorative Main door plus high-quality flush doors with standard hardware.' },
-            { title: 'Windows', detail: 'Powder-coated Aluminum/uPVC sliding windows with integrated safety grills.' },
-            { title: 'Electrical', detail: 'Concealed copper wiring with branded modular switches and safety MCB setup.' },
-            { title: 'Terrace', detail: 'Waterproofed terrace with weathering course and oriented rainwater outlets.' },
-            { title: 'Plumbing', detail: 'Branded CPVC/PVC plumbing network with standard-grade sanitary fixtures.' },
-            { title: 'Plaster & Putty', detail: 'Smooth internal plaster with double-coat wall putty for a refined finish.' },
-            { title: 'Painting', detail: 'Interior emulsion and weather-shield exterior paint for lasting aesthetics.' },
-            { title: 'Waterproofing', detail: 'Specialized chemical waterproofing for terrace, toilets, and balcony areas.' }
-        ];
-
-        const gradeUpgrades = {
-            Classic: {
-                Structure: 'Enhanced RCC structure with tighter rebar detailing and superior concrete quality control.',
-                Foundation: 'Upgraded foundation system with enhanced reinforcement and stricter curing protocols.',
-                Masonry: 'Superior masonry work with improved joint finishing and precision corner detailing.',
-                Flooring: 'High-grade Granite flooring (18mm) across living areas for a durable and timeless finish.',
-                Staircase: 'Premium 18mm Granite staircase with full bull-nosing and high-gloss polish.',
-                Doors: 'Teak wood main door frame and premium skin doors with upgraded designer hardware.',
-                Windows: 'Upgraded uPVC windows with thicker sections and improved sound/dust insulation.',
-                Electrical: 'Enhanced electrical planning with more points and premium branded modular switches.',
-                Terrace: 'Advanced weathering treatment with better thermal insulation and slope management.',
-                Plumbing: 'Premium branded CP fittings and sanitaryware with superior chrome finish.',
-                'Plaster & Putty': 'Superior leveling with high-grade putty for a perfectly flat wall surface.',
-                Painting: 'Multi-coat premium emulsion for a richer look and better washability.',
-                Waterproofing: 'Double-layer waterproofing system with reinforced mesh for long-term reliability.'
-            },
-            Premium: {
-                Structure: 'Industrial-grade structural execution with enhanced seismic resistance and QA logs.',
-                Foundation: 'Heavy-duty foundation standards with chemical soil treatment and premium concrete mix.',
-                Masonry: 'Elite block work with precision bonding and specialized crack-resistant detailing.',
-                Flooring: 'Luxury Imported Marble flooring with high-precision laying and mirror-finish polish.',
-                Staircase: 'Imported Marble staircase with designer nosing and integrated LED profile slots.',
-                Doors: 'Exotic Teak wood main door and premium veneer-finish internal doors.',
-                Windows: 'High-end uPVC/Architectural Aluminum sections with toughened glass performance.',
-                Electrical: 'Comprehensive smart-ready electrical package with designer glass switches.',
-                Terrace: 'Architectural terrace finish with cool-roof tiling and superior drainage planning.',
-                Plumbing: 'Luxury range CP/Sanitaryware (Jaguar/Kohler) with concealed divertors.',
-                'Plaster & Putty': 'Artisanal plaster finish with ultra-smooth gypsum/premium putty base.',
-                Painting: 'Luxury velvet-finish paints with accent wall textures for a designer interior.',
-                Waterproofing: 'Advanced crystalline waterproofing treatment for 100% leak-proof assurance.'
-            },
-            Luxury: { // Elite
-                Structure: 'Elite-grade structural engineering with maximum durability and highest safety factors.',
-                Foundation: 'World-class foundation design with specialized waterproofing and elite supervision.',
-                Masonry: 'Zero-tolerance masonry work with specialized alignment and premium bonding material.',
-                Flooring: 'Exquisite Italian Marble flooring with bespoke book-matching and seamless finish.',
-                Staircase: 'Designer Italian Marble staircase with glass railings and premium stone detailing.',
-                Doors: 'Custom-crafted Solid Wood doors with biometric access and premium PVD hardware.',
-                Windows: 'Slimline system windows with acoustic laminations and high-performance glazing.',
-                Electrical: 'Full home automation ready package with elite-series touch panels and scene control.',
-                Terrace: 'Elite rooftop finish with landscaped deck suitability and advanced insulation.',
-                Plumbing: 'Ultra-luxury sanitaryware (Toto/Grohe/Kohler) with wall-hung premium fixtures.',
-                'Plaster & Putty': 'High-precision wall engineering with specialized surface treatments for elite finish.',
-                Painting: 'Designer-series paints and royal textures with maximum durability and depth.',
-                Waterproofing: 'Premium membrane-based waterproofing with multi-year performance warranty.'
-            }
-        };
-
-        const buildGradeFacilities = (upgrades = null) =>
-            baseFacilities.map(item => ({
-                title: item.title,
-                detail: upgrades?.[item.title] || item.detail
-            }));
-
+        // Grade-specific facilities
         const gradeFacilities = {
-            Base: buildGradeFacilities(),
-            Classic: buildGradeFacilities(gradeUpgrades.Classic),
-            Premium: buildGradeFacilities(gradeUpgrades.Premium),
-            Luxury: buildGradeFacilities(gradeUpgrades.Luxury)
+            Base: [
+                { title: 'RCC Structure', detail: 'Standard RCC framed structure with IS-compliant design and workmanship.' },
+                { title: 'Foundation', detail: 'Standard RCC footing with soil excavation and PCC bed preparation.' },
+                { title: 'Masonry', detail: 'Solid/AAC block walls for external and internal partitions.' },
+                { title: 'Flooring', detail: 'Ceramic/Vitrified tiles (600x600mm) with anti-skid in wet areas.' },
+                { title: 'Staircase', detail: 'RCC staircase with polished granite treads and matching skirting.' },
+                { title: 'Main Door', detail: 'Decorative main door with high-quality flush doors.' },
+                { title: 'Windows', detail: 'Powder-coated aluminum/uPVC sliding windows with safety grills.' },
+                { title: 'Electrical', detail: 'Concealed copper wiring with Havells/Legrand modular switches and MCB.' },
+                { title: 'Plumbing', detail: 'CPVC/PVC plumbing network with standard sanitary fixtures.' },
+                { title: 'Plaster & Paint', detail: 'Smooth internal plaster with double-coat putty and emulsion paint.' }
+            ],
+            Classic: [
+                { title: 'Enhanced RCC Structure', detail: 'Upgraded RCC frame with tighter rebar detailing and superior concrete quality control.' },
+                { title: 'Premium Foundation', detail: 'Enhanced foundation system with reinforced design and strict curing protocols.' },
+                { title: 'Superior Masonry', detail: 'Precision masonry work with improved joint finishing and corner detailing.' },
+                { title: 'Granite Flooring', detail: 'Premium 18mm granite flooring in living areas with elegant finish.' },
+                { title: 'Granite Staircase', detail: 'Premium 18mm granite staircase with full bull-nosing and high-gloss polish.' },
+                { title: 'Teak Wood Doors', detail: 'Teak wood main door frame with premium skin doors and designer hardware.' },
+                { title: 'Premium Windows', detail: 'Upgraded uPVC windows with thicker sections and sound/dust insulation.' },
+                { title: 'Enhanced Electrical', detail: 'Premium Legrand/Havells electrical with more load points and designer switches.' },
+                { title: 'Premium Plumbing', detail: 'Premium branded CP fittings (Jaguar/Kohler) with superior chrome finish.' },
+                { title: 'Premium Finishing', detail: 'Superior wall putty leveling with multi-coat premium emulsion paint.' },
+                { title: 'Advanced Waterproofing', detail: 'Double-layer waterproofing with reinforced mesh for long-term reliability.' },
+                { title: 'Terracing', detail: 'Advanced weathering treatment with thermal insulation and slope management.' }
+            ],
+            Premium: [
+                { title: 'Industrial RCC Structure', detail: 'Industrial-grade structural execution with enhanced seismic resistance and QA logs.' },
+                { title: 'Heavy-Duty Foundation', detail: 'Heavy-duty foundation with chemical soil treatment and premium concrete mix.' },
+                { title: 'Elite Masonry', detail: 'Elite block work with precision bonding and crack-resistant detailing.' },
+                { title: 'Italian Marble Flooring', detail: 'Luxury imported Italian marble with high-precision laying and mirror polish.' },
+                { title: 'Marble Staircase', detail: 'Imported marble staircase with designer nosing and integrated LED profile slots.' },
+                { title: 'Exotic Teak Doors', detail: 'Exotic teak wood main door and premium veneer-finish internal doors.' },
+                { title: 'Architectural Windows', detail: 'High-end architectural aluminum with toughened glass performance.' },
+                { title: 'Smart Electrical', detail: 'Comprehensive smart-ready electrical package with designer glass switches.' },
+                { title: 'Luxury Sanitaryware', detail: 'Luxury CP/Sanitaryware (Jaguar/Kohler) with concealed divertors.' },
+                { title: 'Designer Finishes', detail: 'Artisanal plaster with luxury velvet-finish paints and accent wall textures.' },
+                { title: 'Architectural Waterproofing', detail: 'Advanced crystalline waterproofing for 100% leak-proof assurance.' },
+                { title: 'Cool Roof Terrace', detail: 'Architectural terrace with cool-roof tiling and superior drainage.' }
+            ],
+            Elite: [
+                { title: 'Elite RCC Engineering', detail: 'World-class structural engineering with maximum durability and highest safety factors.' },
+                { title: 'World-Class Foundation', detail: 'World-class foundation design with specialized waterproofing and elite supervision.' },
+                { title: 'Zero-Tolerance Masonry', detail: 'Zero-tolerance masonry work with specialized alignment and premium bonding.' },
+                { title: 'Italian Marble Supreme', detail: 'Exquisite Italian marble flooring with bespoke book-matching and seamless finish.' },
+                { title: 'Designer Marble Staircase', detail: 'Designer Italian marble staircase with glass railings and premium stone detailing.' },
+                { title: 'Biometric Doors', detail: 'Custom-crafted solid wood doors with biometric access and premium PVD hardware.' },
+                { title: 'Slimline System Windows', detail: 'Slimline system windows with acoustic laminations and high-performance glazing.' },
+                { title: 'Full Home Automation', detail: 'Full home automation ready package with elite-series touch panels and scene control.' },
+                { title: 'Ultra-Luxury Fixtures', detail: 'Ultra-luxury sanitaryware (Toto/Grohe/Kohler) with wall-hung premium fixtures.' },
+                { title: 'Elite Finishing', detail: 'High-precision wall engineering with designer-series paints and royal textures.' },
+                { title: 'Premium Membrane Waterproofing', detail: 'Premium membrane-based waterproofing with multi-year performance warranty.' },
+                { title: 'Elite Terrace Design', detail: 'Elite rooftop finish with landscaped deck suitability and advanced insulation.' },
+                { title: 'Smart Climate Control', detail: 'Integrated climate control system with smart thermostat management.' }
+            ]
         };
 
         const selectedGrade = inputs.structural_style || 'Base';
         const facilitiesForGrade = gradeFacilities[selectedGrade] || gradeFacilities.Base;
-        const selectedGradeLabel = selectedGrade === 'Luxury' ? 'Elite' : selectedGrade;
+        const selectedGradeLabel = selectedGrade;
 
         const facilityPriorityOrder = {
             Structure: 100,
@@ -801,8 +1197,149 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
         return (
             <WizardShell config={config} step={step} inputs={inputs} onBack={onBack} onNext={handleNext} nextLabel="LOOKS GOOD - CONTINUE NEXT" total={total} showTopNext={false}>
                 <GlassCard style={{ padding: '3.5rem 4rem 2.5rem', minHeight: '82vh', maxWidth: '1480px' }}>
-                    <h2 style={{ fontSize: '3.4rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, marginBottom: '0.6rem', letterSpacing: '-0.6px' }}>Structure Plan</h2>
-                    <p style={{ opacity: 0.55, fontSize: '1rem', letterSpacing: '1.1px', marginBottom: '1.8rem' }}>CONFIRM THE INCLUDED FACILITIES BEFORE PROCEEDING</p>
+                    <h2 style={{ fontSize: '3.74rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, marginBottom: '0.6rem', letterSpacing: '-0.6px' }}>Structure Plan & Materials</h2>
+                    <p style={{ opacity: 0.55, fontSize: '1.1rem', letterSpacing: '1.1px', marginBottom: '1.8rem' }}>CONFIRM THE INCLUDED FACILITIES & MATERIALS BEFORE PROCEEDING</p>
+
+                    {/* Grade Overview Section */}
+                    <div style={{
+                        marginBottom: '2rem',
+                        background: 'linear-gradient(135deg, rgba(0,242,255,0.08), rgba(112,0,255,0.06))',
+                        border: '1px solid rgba(0,242,255,0.15)',
+                        borderRadius: '1.6rem',
+                        padding: '2rem'
+                    }}>
+                        <h3 style={{ fontSize: '1.54rem', fontWeight: 800, marginBottom: '1.2rem', color: '#00f2ff', letterSpacing: '1px' }}>
+                            {selectedGradeLabel.toUpperCase()} GRADE - MATERIALS & SPECIFICATIONS
+                        </h3>
+                        
+                        {selectedGrade === 'Base' && (
+                            <div style={{ fontSize: '1.155rem', lineHeight: 1.8, color: '#fff', opacity: 0.9 }}>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Cement & Concrete:</span> Ambuja Cement or ACC Portland cement (Type I) with M20 grade concrete, 6" RCC slab thickness & 9" wall thickness. IS-compliant mix design with standard workability and durability.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Reinforcement Steel:</span> Tata Steel or JSW Steel TMT bars (500D Grade) conforming to IS 1786 specifications with minimum 40mm concrete cover for effective corrosion protection and structural stability.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Flooring - Tiles:</span> Kajaria or Somany ceramic vitrified tiles (600x600mm or 400x400mm) in living and bedrooms. Anti-skid tiles in wet areas for safety. Standard polish and moderate durability.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Staircase:</span> RCC staircase with polished granite treads (25mm thickness) and risers. Simple finish with matching granite skirting and standard edge protection.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Doors & Windows:</span> High-quality flush doors with hardwood frames. Powder-coated aluminum or standard uPVC sliding windows with integrated safety grills and basic hardware fittings.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Electrical - Wiring:</span> Concealed copper wiring (1.5mm² - 6mm²) with Havells or Legrand modular switches. MCB distribution board with D-curve breakers, 4-6 circuits per phase, standard load management.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Plumbing - Pipes & Fixtures:</span> CPVC or PVC pipes (ASTM D2846 compliant) for hot/cold water supply. Standard-grade CP fittings with basic sanitary fixtures. Septic tank system for waste management.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Waterproofing:</span> Single-layer chemical waterproofing on terrace, toilets, and balconies using premium sealants. Standard curing and basic protective coverage.
+                                </p>
+                                <p>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Finishing & Paint:</span> Smooth internal plaster with standard putty (2 coats), interior emulsion paint (2 coats), and weather-shield exterior paint for lasting protection and aesthetic appeal.
+                                </p>
+                            </div>
+                        )}
+
+                        {selectedGrade === 'Classic' && (
+                            <div style={{ fontSize: '1.155rem', lineHeight: 1.8, color: '#fff', opacity: 0.9 }}>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Cement & Concrete - Enhanced:</span> Ambuja Cement Super or ACC Gold with M25 grade concrete, 7" RCC slab thickness & 10" wall thickness. Enhanced quality control with higher cement content for improved durability and reduced permeability.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Reinforcement Steel - Premium:</span> Tata Steel Tiscon or JSW Jindal premium TMT bars with superior yield strength and ductility. 500D Grade bars with 45mm concrete cover and comprehensive corrosion protection measures.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Flooring - Premium Tiles:</span> Porcelain Vitrified Tiles (PVT) by Kajaria Premium or Somany Ceramics with superior finish (600x600mm or 800x800mm). Higher durability rating with refined surface texture and enhanced aesthetics.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Staircase - Premium Granite:</span> Premium 18mm polished granite staircase with full bull-nosing on all edges and high-gloss mirror finish. Precision tread cuts with matching skirting and landing details for elegant appearance.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Doors & Windows - Upgraded:</span> Teak wood main door frame with premium skin doors and designer hardware fittings. Upgraded uPVC windows with thicker frames (70mm) and sound/dust insulation features with better UPVC quality grades.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Electrical - Premium Package:</span> Premium Legrand or Havells electrical infrastructure with modular switches in contemporary designs. MCB board with selective load distribution, 8-10 circuits per phase with improved load management capability.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Plumbing & Sanitaryware:</span> Premium CPVC pipes with enhanced thickness and superior CP fittings (Jaguar or Kohler standard range). Premium sanitary fixtures with superior chrome finish and better performance specifications.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Waterproofing - Double Layer:</span> Double-layer chemical waterproofing system with reinforced mesh embedded in the top layer. Extended curing protocols for superior adhesion and comprehensive protection against water seepage with 5-year performance warranty.
+                                </p>
+                                <p>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Finishing & Paints - Premium:</span> Premium-grade putty with multi-coat application for superior leveling and smoothness. Premium emulsion paints (3-4 coats) with advanced washability, superior weather-shield exterior paint for long-lasting protection and aesthetics.
+                                </p>
+                            </div>
+                        )}
+
+                        {selectedGrade === 'Premium' && (
+                            <div style={{ fontSize: '1.155rem', lineHeight: 1.8, color: '#fff', opacity: 0.9 }}>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Cement & Concrete - Premium:</span> Ambuja Cement Ultra Tech or ACC Ultra Tech with M30 grade concrete, 8" RCC slab thickness & 11" wall thickness. Superior concrete mix with higher strength, lower permeability, and enhanced durability for 50+ years.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Reinforcement Steel - High-Grade:</span> Tata Steel Tiscon Premium Grade or JSW Jindal Superior Rebars with enhanced tensile properties. 500D and 550D grade bars with 50mm concrete cover and advanced corrosion inhibitor systems for maximum structural integrity.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Flooring - Italian Porcelain:</span> Premium Porcelain Italian Tiles or CeramEuro imports (800x800mm or custom sizes). Superior durability with Class A ratings, advanced surface treatments, exquisite design options with perfect color and texture consistency.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Staircase - Italian Marble:</span> Premium imported Italian marble staircase with integrated LED profile lighting in edges. Precision cuts with decorative bull-nose edges, full polished finish, glass railings with chrome fixtures, and bespoke design detailing.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Doors & Windows - Architectural:</span> Exotic hardwood doors (teak/merbau) with premium veneer finishes and custom architectural designs. High-end aluminum windows (Schüco/Reynaers systems) with triple-glazing, thermal breaks, and superior acoustic insulation (10mm laminated glass).
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Electrical - Smart-Ready System:</span> Premium Siemens or Philips electrical infrastructure with designer glass switches and smart-home pre-wiring. Advanced distribution board with selective RCCBs, 12-15 circuits per phase, home automation backbone ready for future upgrades.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Plumbing & Sanitaryware - Luxury:</span> Luxury-range CP fittings (Kohler premium collections or Grohe equivalent) with concealed divertors and designer fixtures. Premium sanitary ware with soft-close mechanisms, premium chrome finishes, and comprehensive water management systems.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Waterproofing - Advanced Crystalline:</span> Advanced crystalline waterproofing treatment with self-healing capability. Multi-layer application with specialized sealants ensuring 100% leak-proof performance with 10-year comprehensive warranty and maintenance protocols included.
+                                </p>
+                                <p>
+                                    <span style={{ color: '#00ffcc', fontWeight: 700 }}>Finishing & Paints - Designer:</span> Gypsum-based artisanal plaster with precision finishes and multiple texture options. Designer-series premium paints (Asian Paints Royale or Berger Select) with 4-5 coat application, velvet finishes, accent wall customization, and premium exterior protective coatings.
+                                </p>
+                            </div>
+                        )}
+
+                        {selectedGrade === 'Elite' && (
+                            <div style={{ fontSize: '1.155rem', lineHeight: 1.8, color: '#fff', opacity: 0.9 }}>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#ffd700', fontWeight: 700 }}>Cement & Concrete - Supreme:</span> Ambuja Cement Ultra Tech Premium or ACC Elite Grade with M40+ concrete, 9" RCC slab thickness & 12" wall thickness. World-class concrete specification with ultra-low permeability, self-compacting properties, and 75+ year durability guarantee.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#ffd700', fontWeight: 700 }}>Reinforcement Steel - Premium Grade:</span> Tata Steel Premium Grade Rebars or JSW Premium Highest Tensile variants with 600 MPa+ yield strength. Advanced 550D and 600D grade bars with 55mm concrete cover, corrosion-resistant epoxy coating, and independent structural certifications throughout.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#ffd700', fontWeight: 700 }}>Flooring - Hand-Selected Italian Marble:</span> Hand-selected exquisite Italian marble (Carrara, Calacatta, or equivalent premium grades) with custom book-matching layouts. Seamless polished finishes with mirror-surface quality, premium inlay patterns, and personalized stone selection consultancy.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#ffd700', fontWeight: 700 }}>Staircase - Bespoke Marble Supreme:</span> Bespoke hand-selected Italian marble staircase with integrated LED ambient lighting systems in edge profiles. Precision stone craftsmanship, premium tempered glass railings with designer chrome/brass fixtures, and handcrafted stone detailing throughout with architectural significance.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#ffd700', fontWeight: 700 }}>Doors & Windows - Biometric Luxury:</span> Custom-crafted solid wood doors with integrated biometric access systems and advanced smart locks. Premium slimline system windows (Schüco/Reynaers/Sorensen systems) with acoustic triple-glazing, thermal breaks, motorized blinds integration, and contemporary architectural design masterpieces.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#ffd700', fontWeight: 700 }}>Electrical - Full Home Automation:</span> Premium Philips Hue smart lighting ecosystem or Siemens Smart Home advanced controls with designer glass touch panels. Advanced BMS-compatible distribution boards with selective RCCBs/ELCBs, 20+ circuits per phase, comprehensive home automation backbone, IoT integration ready.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#ffd700', fontWeight: 700 }}>Plumbing & Sanitaryware - World-Renown:</span> Ultra-luxury sanitaryware from Toto (Japan), Grohe (Germany), or Kohler (premium collections) with wall-hung fixtures and concealed cisterns. Designer basin designs with premium PVD finishes, Swiss-engineered concealed divertors with precision valve systems, and comprehensive water management ecosystems.
+                                </p>
+                                <p style={{ marginBottom: '1rem' }}>
+                                    <span style={{ color: '#ffd700', fontWeight: 700 }}>Waterproofing - Premium Membrane with Warranty:</span> Premium membrane-based waterproofing systems with advanced polymer technology and self-healing coatings. Multi-year comprehensive performance warranty (15 years), specialized maintenance protocols included, seamless protection of all wet areas with architectural redundancy built-in.
+                                </p>
+                                <p>
+                                    <span style={{ color: '#ffd700', fontWeight: 700 }}>Finishing, Paints & Climate Control:</span> High-precision wall engineering with designer-series premium paint consultancy from international color experts. Royal textures with custom paint formulations, bespoke interior elements throughout. Full integrated smart climate control with AI-powered zone-based temperature management, energy optimization, and seamless home automation ecosystem integration for ultimate comfort and luxury living.
+                                </p>
+                            </div>
+                        )}
+                    </div>
 
                     <div style={{
                         marginTop: '0.5rem',
@@ -811,18 +1348,13 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                         borderRadius: '1.6rem',
                         padding: '1.8rem 1.9rem'
                     }}>
-                        <h4 style={{ fontSize: '1.08rem', fontWeight: 800, marginBottom: '1rem', opacity: 0.95, letterSpacing: '1.7px' }}>
+                        <h4 style={{ fontSize: '1.37rem', fontWeight: 800, marginBottom: '1rem', opacity: 0.95, letterSpacing: '1.7px' }}>
                             FACILITIES INCLUDED IN {selectedGradeLabel.toUpperCase()} GRADE
                         </h4>
                         <div style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(3, 1fr)',
-                            gap: '1.1rem',
-                            maxHeight: '52vh',
-                            overflowY: 'auto',
-                            paddingRight: '0.5rem',
-                            scrollbarWidth: 'thin',
-                            scrollbarColor: 'rgba(0,242,255,0.3) transparent'
+                            gap: '1.1rem'
                         }}>
                             {facilitiesForGradeSorted.map(f => (
                                 <div key={f.title} style={{
@@ -836,8 +1368,8 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                     justifyContent: 'flex-start',
                                     transition: 'transform 0.2s ease, border-color 0.2s ease'
                                 }}>
-                                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#00f2ff', letterSpacing: '1.2px', marginBottom: '0.55rem' }}>{f.title.toUpperCase()}</div>
-                                    <div style={{ fontSize: '1.04rem', opacity: 0.85, lineHeight: 1.55 }}>{f.detail}</div>
+                                    <div style={{ fontSize: '1.33rem', fontWeight: 800, color: '#00f2ff', letterSpacing: '1.2px', marginBottom: '0.55rem' }}>{f.title.toUpperCase()}</div>
+                                    <div style={{ fontSize: '1.32rem', opacity: 0.85, lineHeight: 1.55 }}>{f.detail}</div>
                                 </div>
                             ))}
                         </div>
@@ -877,18 +1409,20 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
 
         return (
             <WizardShell config={config} step={step} inputs={inputs} onBack={onBack} onNext={handleNext} total={total} showTopNext={false}>
-                <div style={{ padding: '1.5rem 2.5rem', maxWidth: '1820px', margin: '0 auto', height: '90vh', display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ marginBottom: '2.5rem' }}>
-                        <h2 style={{ fontSize: '3rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, color: '#fff', marginBottom: '0.4rem', letterSpacing: '-1.2px' }}>Interior Selection</h2>
+                <div style={{ padding: '2rem 3rem', maxWidth: '2000px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    {/* Header */}
+                    <div>
+                        <h2 style={{ fontSize: '3.2rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, color: '#fff', marginBottom: '0.8rem', letterSpacing: '-1.2px' }}>Interior Selection</h2>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
-                            <div style={{ width: '50px', height: '3px', background: '#00f2ff', borderRadius: '10px' }}></div>
-                            <p style={{ color: '#00f2ff', opacity: 0.8, fontSize: '0.9rem', letterSpacing: '3px', fontWeight: 950, textTransform: 'uppercase' }}>
-                                AI SYNCING WITH {selectedGrade.toUpperCase()} GRADE
+                            <div style={{ width: '60px', height: '4px', background: 'linear-gradient(90deg, #00f2ff, #20e3b2)', borderRadius: '10px' }}></div>
+                            <p style={{ color: '#00f2ff', fontSize: '1.05rem', letterSpacing: '2px', fontWeight: 900, textTransform: 'uppercase' }}>
+                                Synced with {selectedGrade.toUpperCase()} Grade
                             </p>
                         </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.2rem', alignItems: 'stretch', flex: 1, minHeight: 0 }}>
+                    {/* Cards Grid - 2 columns for better readability */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.8rem', minHeight: 'calc(100vh - 350px)' }}>
                         {section.options.map(opt => {
                             const isActive = inputs[section.field] === opt.value;
                             const aiRec = getAIRecommendation(opt.value);
@@ -900,72 +1434,136 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                     onClick={() => setField(section.field, opt.value)}
                                     style={{
                                         cursor: 'pointer',
-                                        borderRadius: '2.2rem',
-                                        border: isActive ? '2.5px solid #00f2ff' : aiRec ? '1px solid rgba(0,242,255,0.3)' : '1px solid rgba(255,255,255,0.12)',
-                                        background: isActive ? 'rgba(0,242,255,0.06)' : 'rgba(10, 14, 20, 0.96)',
-                                        backdropFilter: 'blur(40px)',
-                                        padding: '2rem',
+                                        borderRadius: '2.5rem',
+                                        border: isActive ? '3px solid #00f2ff' : aiRec ? '2px solid rgba(0,242,255,0.4)' : '2px solid rgba(255,255,255,0.15)',
+                                        background: isActive 
+                                            ? 'linear-gradient(135deg, rgba(0,242,255,0.08), rgba(32,227,178,0.04))' 
+                                            : 'linear-gradient(135deg, rgba(20,30,45,0.6), rgba(15,25,40,0.8))',
+                                        backdropFilter: 'blur(50px) saturate(180%)',
+                                        padding: '2.5rem',
                                         transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        gap: '1rem',
+                                        gap: '1.5rem',
                                         position: 'relative',
-                                        boxShadow: isActive ? '0 15px 30px rgba(0,242,255,0.1)' : '0 20px 40px rgba(0,0,0,0.4)',
+                                        boxShadow: isActive 
+                                            ? '0 25px 50px rgba(0,242,255,0.15)' 
+                                            : '0 15px 35px rgba(0,0,0,0.3)',
                                         overflow: 'hidden',
-                                        height: '100%'
+                                        transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                                        minHeight: '600px'
                                     }}>
 
+                                    {/* AI Badge */}
                                     {aiRec && (
                                         <div style={{
                                             position: 'absolute', top: '0', right: '0',
-                                            background: 'linear-gradient(135deg, #00f2ff, #20e3b2)', color: '#000',
-                                            fontSize: '0.7rem', fontWeight: 1000, padding: '0.4rem 1.2rem', borderRadius: '0 0 0 1.5rem',
-                                            whiteSpace: 'nowrap', letterSpacing: '1px', zIndex: 5
+                                            background: 'linear-gradient(135deg, #00f2ff, #20e3b2)', 
+                                            color: '#000',
+                                            fontSize: '0.75rem', fontWeight: 1000, padding: '0.6rem 1.5rem', 
+                                            borderRadius: '0 0 0 2rem',
+                                            letterSpacing: '1.5px', zIndex: 5,
+                                            textTransform: 'uppercase'
                                         }}>
-                                            ✨ AI CHOICE
+                                            ✨ AI RECOMMENDED
                                         </div>
                                     )}
 
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <div style={{ fontSize: '1.6rem', fontWeight: 1000, letterSpacing: '0.5px', color: isActive ? '#00f2ff' : '#fff' }}>{displayLabel.toUpperCase()}</div>
+                                    {/* Title Section */}
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+                                        <div style={{ fontSize: '2.3rem', fontWeight: 1000, letterSpacing: '0.5px', color: isActive ? '#00f2ff' : '#fff' }}>
+                                            {displayLabel.toUpperCase()}
+                                        </div>
                                         {isActive && (
                                             <div style={{
-                                                fontSize: '0.7rem', fontWeight: 1000, letterSpacing: '1px',
-                                                color: '#000', background: '#00f2ff',
-                                                borderRadius: '999px', padding: '0.3rem 0.8rem'
-                                            }}>SELECTED</div>
+                                                fontSize: '0.75rem', fontWeight: 1000, letterSpacing: '1.5px',
+                                                color: '#000', background: 'linear-gradient(135deg, #00f2ff, #20e3b2)',
+                                                borderRadius: '999px', padding: '0.5rem 1rem',
+                                                textTransform: 'uppercase'
+                                            }}>✓ SELECTED</div>
                                         )}
                                     </div>
 
-                                    <div style={{ fontSize: '0.95rem', opacity: 0.7, lineHeight: 1.4, fontWeight: 400, color: '#fff' }}>{opt.desc}</div>
-
-                                    <div style={{ fontSize: '0.85rem', color: '#00f2ff', fontWeight: 1000, letterSpacing: '2px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginTop: '0.5rem' }}>
-                                        INCLUSIONS
-                                    </div>
-                                    <div style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: '1fr',
-                                        gap: '0.6rem',
-                                        overflowY: 'auto',
-                                        flex: 1,
-                                        paddingRight: '0.5rem',
-                                        scrollbarWidth: 'thin',
-                                        scrollbarColor: 'rgba(0,242,255,0.2) transparent'
+                                    {/* Description */}
+                                    <div style={{ 
+                                        fontSize: '1.32rem', 
+                                        opacity: 0.95, 
+                                        lineHeight: 1.6, 
+                                        fontWeight: 500, 
+                                        color: '#e0e0e0',
+                                        padding: '1rem 1.5rem',
+                                        background: 'rgba(0,242,255,0.05)',
+                                        borderRadius: '1.5rem',
+                                        borderLeft: '4px solid #00f2ff'
                                     }}>
-                                        {(opt.inclusions || []).map(point => (
-                                            <div key={point} style={{ fontSize: '0.85rem', opacity: 0.9, lineHeight: 1.3, display: 'flex', gap: '0.6rem', alignItems: 'flex-start' }}>
-                                                <div style={{ minWidth: '6px', height: '6px', background: '#00f2ff', borderRadius: '50%', marginTop: '0.3rem' }} />
-                                                <span style={{ fontWeight: 300, color: '#fff' }}>{point}</span>
-                                            </div>
-                                        ))}
+                                        {opt.desc}
                                     </div>
 
-                                    <div style={{ paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 'auto' }}>
-                                        <div style={{ fontSize: '0.8rem', color: '#00f2ff', fontWeight: 1000, letterSpacing: '2px', marginBottom: '0.5rem' }}>
-                                            EXPLAINABLE AI
+                                    {/* Inclusions Section */}
+                                    <div>
+                                        <div style={{ 
+                                            fontSize: '1.32rem', 
+                                            color: '#00f2ff', 
+                                            fontWeight: 1000, 
+                                            letterSpacing: '2.5px', 
+                                            marginBottom: '1.2rem',
+                                            textTransform: 'uppercase'
+                                        }}>
+                                            ✓ What's Included
                                         </div>
-                                        <div style={{ fontSize: '0.9rem', opacity: 0.9, lineHeight: 1.4, fontStyle: 'italic', color: '#fff', borderLeft: '3px solid #00f2ff', paddingLeft: '1rem', fontWeight: 300 }}>
-                                            "{opt.aiExplain}"
+                                        <div style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: '1fr',
+                                            gap: '0.85rem',
+                                        }}>
+                                            {(opt.inclusions || []).map((point, idx) => (
+                                                <div key={idx} style={{ 
+                                                    fontSize: '1.35rem', 
+                                                    opacity: 0.95, 
+                                                    lineHeight: 1.5, 
+                                                    display: 'flex', 
+                                                    gap: '0.8rem', 
+                                                    alignItems: 'flex-start',
+                                                    color: '#ffffff'
+                                                }}>
+                                                    <div style={{ 
+                                                        minWidth: '8px', 
+                                                        width: '8px',
+                                                        height: '8px', 
+                                                        background: '#00f2ff', 
+                                                        borderRadius: '50%', 
+                                                        marginTop: '0.45rem',
+                                                        flexShrink: 0
+                                                    }} />
+                                                    <span style={{ fontWeight: 400 }}>{point}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* AI Explanation */}
+                                    <div style={{ paddingTop: '1.5rem', borderTop: '1px solid rgba(0,242,255,0.2)', marginTop: 'auto' }}>
+                                        <div style={{ 
+                                            fontSize: '1.13rem', 
+                                            color: '#20e3b2', 
+                                            fontWeight: 1000, 
+                                            letterSpacing: '2px', 
+                                            marginBottom: '0.8rem',
+                                            textTransform: 'uppercase'
+                                        }}>
+                                            💡 Why Choose This?
+                                        </div>
+                                        <div style={{ 
+                                            fontSize: '1.39rem', 
+                                            opacity: 0.95, 
+                                            lineHeight: 1.6, 
+                                            fontStyle: 'italic', 
+                                            color: '#e0e0e0', 
+                                            borderLeft: '3px solid #20e3b2', 
+                                            paddingLeft: '1.2rem', 
+                                            fontWeight: 400
+                                        }}>
+                                            {opt.aiExplain}
                                         </div>
                                     </div>
                                 </div>
@@ -973,25 +1571,38 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                         })}
                     </div>
 
-                    <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center' }}>
+                    {/* Continue Button */}
+                    <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '1rem' }}>
                         <div
                             onClick={() => { if (canProceed) handleNext(); }}
                             style={{
                                 width: '100%',
                                 maxWidth: '600px',
-                                height: '70px',
-                                background: canProceed ? 'linear-gradient(90deg, #131722, #1d2230)' : 'rgba(255,255,255,0.05)',
-                                border: canProceed ? '2px solid #00f2ff' : '1px solid rgba(255,255,255,0.1)',
+                                padding: '1.2rem',
+                                background: canProceed 
+                                    ? 'linear-gradient(90deg, #00f2ff, #20e3b2)' 
+                                    : 'rgba(255,255,255,0.08)',
+                                border: canProceed ? 'none' : '2px solid rgba(255,255,255,0.15)',
                                 borderRadius: '2rem',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 cursor: canProceed ? 'pointer' : 'not-allowed',
                                 transition: 'all 0.4s ease',
-                                boxShadow: canProceed ? '0 20px 40px rgba(0,242,255,0.15)' : 'none'
+                                boxShadow: canProceed 
+                                    ? '0 20px 50px rgba(0,242,255,0.3)' 
+                                    : 'none',
+                                transform: canProceed ? 'translateY(0)' : 'translateY(0)',
+                                opacity: canProceed ? 1 : 0.5
                             }}>
-                            <span style={{ fontSize: '1.2rem', fontWeight: 950, color: canProceed ? '#fff' : 'rgba(255,255,255,0.2)', letterSpacing: '4px' }}>
-                                {canProceed ? 'LOOKS GOOD - CONTINUE →' : 'SELECT TO CONTINUE'}
+                            <span style={{ 
+                                fontSize: '1.35rem', 
+                                fontWeight: 950, 
+                                color: canProceed ? '#000' : 'rgba(255,255,255,0.3)', 
+                                letterSpacing: '3px',
+                                textTransform: 'uppercase'
+                            }}>
+                                {canProceed ? '✓ Continue →' : '← Select Package'}
                             </span>
                         </div>
                     </div>
@@ -1009,6 +1620,86 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
 
         const isDouble = inputs.plot_size === 'double';
         const areaFt = isDouble ? '2,400' : '1,200';
+        const areaSqM = isDouble ? '222.97' : '111.48';
+
+        // Helper Components
+        const Section = ({ title, subtitle, children }) => (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                <div style={{ paddingBottom: '0.8rem', borderBottom: '2px solid rgba(0,242,255,0.3)' }}>
+                    <div style={{ fontSize: '0.8rem', color: '#00f2ff', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{subtitle}</div>
+                    <h3 style={{ fontSize: '2rem', fontWeight: 900, margin: 0, color: '#fff', letterSpacing: '-1px' }}>{title}</h3>
+                </div>
+                {children}
+            </div>
+        );
+
+        const QuickCard = ({ label, value, emoji }) => (
+            <div style={{
+                background: 'linear-gradient(135deg, rgba(0,242,255,0.12), rgba(32,227,178,0.08))',
+                border: '1px solid rgba(0,242,255,0.3)',
+                borderRadius: '1.2rem',
+                padding: '1.2rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.6rem',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+            }}
+            onMouseEnter={e => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0,242,255,0.2), rgba(32,227,178,0.15))';
+                e.currentTarget.style.borderColor = 'rgba(0,242,255,0.6)';
+                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,242,255,0.3)';
+            }}
+            onMouseLeave={e => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0,242,255,0.12), rgba(32,227,178,0.08))';
+                e.currentTarget.style.borderColor = 'rgba(0,242,255,0.3)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+            }}>
+                <div style={{ fontSize: '2rem' }}>{emoji}</div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>{label}</div>
+                <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#00f2ff' }}>{value}</div>
+            </div>
+        );
+
+        const InfoCard = ({ label, value }) => (
+            <div style={{
+                background: 'rgba(15,20,28,0.6)',
+                border: '1px solid rgba(0,242,255,0.25)',
+                borderRadius: '0.8rem',
+                padding: '1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.4rem',
+                transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={e => {
+                e.currentTarget.style.borderColor = 'rgba(0,242,255,0.6)';
+                e.currentTarget.style.background = 'rgba(0,242,255,0.08)';
+            }}
+            onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'rgba(0,242,255,0.25)';
+                e.currentTarget.style.background = 'rgba(15,20,28,0.6)';
+            }}>
+                <div style={{ fontSize: '0.7rem', color: '#20e3b2', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>{label}</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#fff' }}>{value}</div>
+            </div>
+        );
+
+        const AmenityCard = ({ label, value }) => (
+            <div style={{
+                background: value ? 'linear-gradient(135deg, rgba(32,227,178,0.15), rgba(0,242,255,0.1))' : 'rgba(15,20,28,0.6)',
+                border: value ? '1px solid rgba(32,227,178,0.4)' : '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '0.8rem',
+                padding: '1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.4rem',
+                transition: 'all 0.3s ease'
+            }}>
+                <div style={{ fontSize: '0.7rem', color: value ? '#20e3b2' : 'rgba(255,255,255,0.5)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>{label}</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: value ? '#20e3b2' : 'rgba(255,255,255,0.3)' }}>{value ? '✓' : '✗'}</div>
+            </div>
+        );
 
         const GlassPanel = ({ children, title, subtitle }) => (
             <div style={{
@@ -1030,6 +1721,33 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                     </div>
                 )}
                 {children}
+            </div>
+        );
+
+        const SpecCard = ({ label, value, color = '#00f2ff' }) => (
+            <div style={{
+                background: 'linear-gradient(135deg, rgba(0,242,255,0.08), rgba(124,58,237,0.06))',
+                border: `2px solid ${color}33`,
+                borderRadius: '1.2rem',
+                padding: '1.4rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.6rem',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+            }}
+            onMouseEnter={e => {
+                e.currentTarget.style.borderColor = color;
+                e.currentTarget.style.background = `linear-gradient(135deg, ${color}15, ${color}08)`;
+                e.currentTarget.style.boxShadow = `0 0 20px ${color}40`;
+            }}
+            onMouseLeave={e => {
+                e.currentTarget.style.borderColor = `${color}33`;
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0,242,255,0.08), rgba(124,58,237,0.06))';
+                e.currentTarget.style.boxShadow = 'none';
+            }}>
+                <div style={{ fontSize: '0.8rem', color: color, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase' }}>{label}</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#fff', letterSpacing: '0.5px' }}>{value}</div>
             </div>
         );
 
@@ -1126,92 +1844,223 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                     <h1 style={{ fontSize: '4.8rem', fontWeight: 900, letterSpacing: '-3.5px', margin: 0 }}>Project Specification</h1>
                 </div>
 
-                <div style={{ width: '100%', maxWidth: '1728px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(600px, 1.3fr) 1fr', gap: '5vw', alignItems: 'start' }}>
+                <div style={{ width: '100%', maxWidth: '1520px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
 
-                    {/* LEFT Panel (Architectural Specs) */}
-                    <GlassPanel>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <ListDetail label="Project Type" value="Dream House" />
-                            <ListDetail label="Building Elevation" value="G+1 DUPLEX" />
-                            <ListDetail label="Building Grade" value="BASE" />
-                            <ListDetail
-                                label="Interior Selection"
-                                action={
-                                    <span
-                                        onClick={() => {
-                                            const options = ['None', 'Base', 'Semi', 'Full'];
-                                            const idx = options.indexOf(inputs.interior_package || 'None');
-                                            setField('interior_package', options[(idx + 1) % options.length]);
-                                        }}
-                                        style={{
-                                            fontSize: '1.25rem',
-                                            fontWeight: 1000,
-                                            color: inputs.interior_package !== 'None' ? '#00f2ff' : 'rgba(255,255,255,0.4)',
-                                            cursor: 'pointer',
-                                            transition: '0.3s'
-                                        }}
-                                    >
-                                        {(inputs.interior_package || 'NONE').toUpperCase()}
-                                    </span>
-                                }
-                            />
-                            <ListDetail label="Primary Plot Area" value={`${areaFt} SQ FT`} />
-                            <ListDetail label="Site Dimensions" value={inputs.dimensions || (isDouble ? '40 x 60' : '30 x 40')} />
-                            <ListDetail label="Structural Volume" value={`${inputs.bedrooms || 3} BHK`} />
-                            <ListDetail label="Household Members" value={`${inputs.family_count || 4} PERSONS`} />
-                            <ListDetail label="Seniors in Residency" value={inputs.grandparents_living ? 'YES' : 'NONE'} />
-                            <ListDetail label="Lift" value={inputs.lift_required ? 'YES' : 'NO'} />
-                            <ListDetail label="Pooja Room" value={inputs.pooja_room ? 'YES' : 'NO'} />
+                    {/* LEFT: ALL PROJECT DETAILS + AMENITIES - VERTICAL LIST */}
+                    <div style={{
+                        background: 'rgba(15, 20, 25, 0.45)',
+                        backdropFilter: 'blur(45px) saturate(180%)',
+                        borderRadius: '2.5rem',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        padding: '3.5rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '2.2rem',
+                        boxShadow: '0 50px 100px rgba(0,0,0,0.6)'
+                    }}>
+                        <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '2px solid rgba(0,242,255,0.3)' }}>
+                            <div style={{ color: '#00f2ff', fontSize: '0.95rem', fontWeight: 1000, letterSpacing: '6px', textTransform: 'uppercase', marginBottom: '0.8rem' }}>Complete Information</div>
+                            <h3 style={{ fontSize: '3.2rem', fontWeight: 900, margin: 0, letterSpacing: '-1.5px' }}>All Project Details</h3>
                         </div>
-                    </GlassPanel>
 
-                    {/* RIGHT: ADDITIONAL ADD-ONS */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5vw' }}>
-                        <GlassPanel title="Additional Add-ons" subtitle="System Enhancement">
-                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {/* PROJECT OVERVIEW SECTION */}
+                        <div>
+                            <div style={{ fontSize: '1.15rem', color: '#00f2ff', fontWeight: 1000, letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '1.2rem' }}>📋 PROJECT OVERVIEW</div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginLeft: '2rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Project Type</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#00f2ff' }}>Dream House</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Building Height</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#20e3b2' }}>{inputs.floor || 'G+1'}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Building Grade</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#a78bfa' }}>{inputs.structural_style || 'Base'}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Interior Package</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#fbbf24' }}>{(inputs.interior_package || 'None').toUpperCase()}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* PLOT & LOCATION SECTION */}
+                        <div>
+                            <div style={{ fontSize: '1.15rem', color: '#00f2ff', fontWeight: 1000, letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '1.2rem' }}>📍 PLOT & LOCATION</div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginLeft: '2rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Plot Size</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#00f2ff' }}>{inputs.plot_size === 'full' ? 'Full Site' : 'Double Site'}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Dimensions</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#20e3b2' }}>{inputs.dimensions || '30 x 40'}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Area (sq ft)</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#a78bfa' }}>{areaFt}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Area (sq m)</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#fbbf24' }}>{areaSqM}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Zone</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#00f2ff' }}>{inputs.zone_details || 'Not Selected'}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Vastu Direction</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#20e3b2' }}>{inputs.vastu_direction ? inputs.vastu_direction.toUpperCase() : 'Not Selected'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* STRUCTURE & LAYOUT SECTION */}
+                        <div>
+                            <div style={{ fontSize: '1.15rem', color: '#00f2ff', fontWeight: 1000, letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '1.2rem' }}>🏗️ STRUCTURE & LAYOUT</div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginLeft: '2rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Bedrooms</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#a78bfa' }}>{inputs.bedrooms || 3} BHK</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Family Members</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#fbbf24' }}>{inputs.family_count || 1} Persons</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Children</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#ec4899' }}>{inputs.children_count || 0}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Grandparents Living</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#00f2ff' }}>{inputs.grandparents_living ? 'YES' : 'NO'}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Lift Required</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#20e3b2' }}>{inputs.lift_required ? 'YES' : 'NO'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* AMENITIES SECTION */}
+                        <div>
+                            <div style={{ fontSize: '1.15rem', color: '#00f2ff', fontWeight: 1000, letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '1.2rem' }}>✨ AMENITIES</div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginLeft: '2rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Pooja Room</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: inputs.pooja_room ? '#20e3b2' : 'rgba(255,255,255,0.4)' }}>{inputs.pooja_room ? '✓ YES' : '✗ NO'}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.7rem' }}>
+                                    <span style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Guest Bedroom</span>
+                                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: inputs.terrace_guest_bedroom ? '#20e3b2' : 'rgba(255,255,255,0.4)' }}>{inputs.terrace_guest_bedroom ? '✓ YES' : '✗ NO'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* RIGHT: ADDITIONAL FEATURES - NOW BELOW LEFT PANEL */}
+                    <div style={{
+                        background: 'rgba(15, 20, 25, 0.45)',
+                        backdropFilter: 'blur(45px) saturate(180%)',
+                        borderRadius: '2.5rem',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        padding: '3.5rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '2rem',
+                        boxShadow: '0 50px 100px rgba(0,0,0,0.6)'
+                    }}>
+                        <div style={{ marginBottom: '1rem', paddingBottom: '1.2rem', borderBottom: '2px solid rgba(0,242,255,0.3)' }}>
+                            <div style={{ color: '#00f2ff', fontSize: '0.95rem', fontWeight: 1000, letterSpacing: '6px', textTransform: 'uppercase', marginBottom: '0.8rem' }}>Features & Settings</div>
+                            <h3 style={{ fontSize: '2.8rem', fontWeight: 900, margin: 0, letterSpacing: '-1px' }}>Additional Add-ons</h3>
+                        </div>
+
+                        {/* ADDITIONAL FEATURES SECTION */}
+                        <div>
+                            <div style={{ fontSize: '1.3rem', color: '#00f2ff', fontWeight: 1000, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1.5rem' }}>⚙️ ADDITIONAL FEATURES</div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.3rem' }}>
                                 {['include_compound_wall', 'include_rainwater_harvesting', 'include_car_parking'].map(field => {
                                     const addon = currentStep.addons.find(a => a.field === field);
                                     return (
-                                        <ListDetail
-                                            key={field}
-                                            label={addon?.label || 'ADD-ON'}
-                                            action={
-                                                <YesNoToggle active={inputs[field]} onClick={() => setField(field, !inputs[field])} />
-                                            }
-                                        />
+                                        <div key={field} style={{
+                                            background: inputs[field] ? 'linear-gradient(135deg, rgba(32,227,178,0.1), rgba(0,242,255,0.08))' : 'rgba(15,20,28,0.6)',
+                                            border: inputs[field] ? '1px solid rgba(32,227,178,0.3)' : '1px solid rgba(255,255,255,0.1)',
+                                            borderRadius: '1.2rem',
+                                            padding: '1.4rem',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            transition: 'all 0.3s ease'
+                                        }}>
+                                            <div>
+                                                <div style={{ fontSize: '0.95rem', color: inputs[field] ? '#20e3b2' : 'rgba(255,255,255,0.5)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.4rem' }}>{addon?.label}</div>
+                                                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: inputs[field] ? '#20e3b2' : 'rgba(255,255,255,0.4)' }}>{inputs[field] ? '✓ INCLUDED' : '✗ EXCLUDED'}</div>
+                                            </div>
+                                            <YesNoToggle active={inputs[field]} onClick={() => setField(field, !inputs[field])} />
+                                        </div>
                                     );
                                 })}
                             </div>
-
-                            <div
-                                onClick={handleNext}
-                                style={{
-                                    marginTop: '3.5rem',
-                                    background: 'transparent',
-                                    border: '1px solid #fff',
-                                    padding: '1.2rem 2.4rem',
-                                    textAlign: 'center',
-                                    cursor: 'pointer',
-                                    borderRadius: '1.2rem',
-                                    fontWeight: 1000,
-                                    letterSpacing: '8px',
-                                    color: '#fff',
-                                    transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
-                                    textTransform: 'uppercase',
-                                    fontSize: '0.9rem',
-                                    maxWidth: '320px',
-                                    margin: '3.5rem auto 0'
-                                }}
-                                onMouseEnter={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#000'; e.currentTarget.style.transform = 'scale(1)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'scale(1)'; }}
-                            >
-                                Generate Estimate ↗
-                            </div>
-                        </GlassPanel>
-
-                        <div style={{ textAlign: 'right', fontSize: '0.75rem', color: 'rgba(255,255,255,0.12)', letterSpacing: '6px', padding: '0 2.5rem' }}>
-                            ARCHITECTURAL_OS_v4.5 // LIQUID_GLASS_CORE
                         </div>
+                    </div>
+
+                    {/* CONTINUE BUTTON */}
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginTop: '2rem' }}>
+                        <button
+                            onClick={onBack}
+                            style={{
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '2px solid rgba(255,255,255,0.2)',
+                                color: '#fff',
+                                padding: '1.2rem 2.8rem',
+                                borderRadius: '1rem',
+                                fontSize: '1rem',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                letterSpacing: '2px',
+                                transition: 'all 0.3s ease',
+                                textTransform: 'uppercase'
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                            }}
+                        >
+                            ← Go Back
+                        </button>
+                        <button
+                            onClick={handleNext}
+                            style={{
+                                background: 'linear-gradient(135deg, rgba(0,242,255,0.3), rgba(32,227,178,0.2))',
+                                border: '2px solid rgba(0,242,255,0.6)',
+                                color: '#00f2ff',
+                                padding: '1.2rem 2.8rem',
+                                borderRadius: '1rem',
+                                fontSize: '1rem',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                letterSpacing: '2px',
+                                transition: 'all 0.3s ease',
+                                textTransform: 'uppercase',
+                                boxShadow: '0 0 20px rgba(0,242,255,0.3)'
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0,242,255,0.5), rgba(32,227,178,0.3))';
+                                e.currentTarget.style.boxShadow = '0 0 30px rgba(0,242,255,0.5)';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0,242,255,0.3), rgba(32,227,178,0.2))';
+                                e.currentTarget.style.boxShadow = '0 0 20px rgba(0,242,255,0.3)';
+                            }}
+                        >
+                            Generate Estimate ↗
+                        </button>
                     </div>
 
                 </div>
@@ -1314,11 +2163,66 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                         <div style={{ fontSize: '14px', letterSpacing: '0.25em', color: '#A78BFA', fontWeight: 600 }}>COMPUTING YOUR ESTIMATE...</div>
                                     </>
                                 ) : (
-                                    <div style={{ textAlign: 'center' }}>
-                                        <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
-                                        <div style={{ fontSize: '18px', color: '#ef4444', fontWeight: 800 }}>ESTIMATION UNAVAILABLE</div>
-                                        <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', marginTop: '8px' }}>{estData?.message || "Please check your connectivity or plot specifications."}</div>
-                                        <button onClick={onBack} style={{ marginTop: '24px', padding: '10px 30px', borderRadius: '12px', border: '1px solid #8B5CF6', background: 'transparent', color: '#fff', cursor: 'pointer' }}>Back to Wizard</button>
+                                    <div style={{ textAlign: 'center', maxWidth: '500px' }}>
+                                        <div style={{ fontSize: '56px', marginBottom: '16px' }}>⚠️</div>
+                                        <div style={{ fontSize: '22px', color: '#ef4444', fontWeight: 800, marginBottom: '12px' }}>ESTIMATION UNAVAILABLE</div>
+                                        <div style={{ fontSize: '15px', color: 'rgba(255,255,255,0.6)', marginTop: '12px', lineHeight: '1.6', marginBottom: '28px' }}>
+                                            {estData?.message || "Unable to calculate estimation. Please verify:"}
+                                        </div>
+                                        <div style={{ 
+                                            background: 'rgba(239,68,68,0.08)', 
+                                            border: '1px solid rgba(239,68,68,0.3)', 
+                                            borderRadius: '12px', 
+                                            padding: '16px', 
+                                            marginBottom: '24px',
+                                            fontSize: '13px',
+                                            color: 'rgba(255,255,255,0.7)',
+                                            lineHeight: '1.7',
+                                            textAlign: 'left'
+                                        }}>
+                                            ✓ Backend server is running on port 8000<br/>
+                                            ✓ All required fields are filled (Plot Size, Dimensions)<br/>
+                                            ✓ Network connection is stable<br/>
+                                            ✓ No firewall is blocking port 8000
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                            <button 
+                                                onClick={() => fetchEstimation(false)}
+                                                style={{ 
+                                                    padding: '12px 32px', 
+                                                    borderRadius: '12px', 
+                                                    background: 'linear-gradient(135deg, #00F2FF, #006AFF)',
+                                                    border: 'none',
+                                                    color: '#fff', 
+                                                    cursor: 'pointer',
+                                                    fontWeight: 700,
+                                                    fontSize: '14px',
+                                                    transition: '0.3s'
+                                                }}
+                                                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                                            >
+                                                🔄 Retry Estimation
+                                            </button>
+                                            <button 
+                                                onClick={onBack}
+                                                style={{ 
+                                                    padding: '12px 32px', 
+                                                    borderRadius: '12px', 
+                                                    border: '1px solid #8B5CF6', 
+                                                    background: 'transparent', 
+                                                    color: '#fff', 
+                                                    cursor: 'pointer',
+                                                    fontWeight: 700,
+                                                    fontSize: '14px',
+                                                    transition: '0.3s'
+                                                }}
+                                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(139,92,246,0.1)'}
+                                                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                            >
+                                                ← Back to Wizard
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -1345,26 +2249,41 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                     <div style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.12em', fontFamily: "'Outfit', sans-serif" }}>SYNCED WITH AI CORE</div>
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
-                                    {Object.entries(estData.project_summary || {}).map(([label, value], i) => (
-                                        <div key={i} style={{
-                                            padding: '14px 20px',
-                                            borderRadius: '14px',
-                                            border: '1px solid rgba(255,255,255,0.04)',
-                                            background: 'rgba(255,255,255,0)',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            gap: '6px',
-                                            transition: 'all 0.3s ease',
-                                            fontFamily: "'Outfit', sans-serif"
-                                        }}>
-                                            <div style={{ fontSize: '9px', color: 'rgba(103,232,249,0.85)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.18em', fontFamily: "'Outfit', sans-serif" }}>
-                                                {label.replace(/_/g, ' ')}
+                                    {(() => {
+                                        const configSummary = {
+                                            'Plot Size': inputs.plot_size ? (inputs.plot_size === 'full' ? 'Full Site' : 'Double Site') : '—',
+                                            'Dimensions': inputs.dimensions || '—',
+                                            'Building Height': inputs.floor || '—',
+                                            'Grade/Style': inputs.structural_style || 'Base',
+                                            'Bedrooms': inputs.bedrooms ? `${inputs.bedrooms} BHK` : '—',
+                                            'Family Size': inputs.family_count || '—',
+                                            'Children': inputs.children_count !== undefined ? inputs.children_count : '—',
+                                            'Grandparents': inputs.grandparents_living === true ? 'Yes' : inputs.grandparents_living === false ? 'No' : '—',
+                                            'Lift Required': inputs.lift_required === true ? 'Yes' : inputs.lift_required === false ? 'No' : '—',
+                                            'Pooja Room': inputs.pooja_room === true ? 'Yes' : inputs.pooja_room === false ? 'No' : '—',
+                                            'Interior Package': inputs.interior_package ? inputs.interior_package.replace(/_/g, ' ').toUpperCase() : '—',
+                                        };
+                                        return Object.entries(configSummary).map(([label, value], i) => (
+                                            <div key={i} style={{
+                                                padding: '14px 20px',
+                                                borderRadius: '14px',
+                                                border: '1px solid rgba(255,255,255,0.04)',
+                                                background: 'rgba(255,255,255,0)',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                gap: '6px',
+                                                transition: 'all 0.3s ease',
+                                                fontFamily: "'Outfit', sans-serif"
+                                            }}>
+                                                <div style={{ fontSize: '9px', color: 'rgba(103,232,249,0.85)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.18em', fontFamily: "'Outfit', sans-serif" }}>
+                                                    {label.replace(/_/g, ' ')}
+                                                </div>
+                                                <div style={{ fontSize: '17px', fontWeight: 800, color: '#fff', fontFamily: "'Outfit', sans-serif", letterSpacing: '0.02em' }}>
+                                                    {value}
+                                                </div>
                                             </div>
-                                            <div style={{ fontSize: '17px', fontWeight: 800, color: '#fff', fontFamily: "'Outfit', sans-serif", letterSpacing: '0.02em' }}>
-                                                {value}
-                                            </div>
-                                        </div>
-                                    ))}
+                                        ));
+                                    })()}
                                 </div>
                             </div>
 
@@ -1526,8 +2445,18 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                                     onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
                                                 >YES</button>
                                                 <button
-                                                    onClick={() => setShowFinalize(true)}
-                                                    style={{ flex: 1, padding: '16px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 800, cursor: 'pointer', transition: '0.3s' }}
+                                                    onClick={(e) => {
+                                                        e.currentTarget.style.transform = 'scale(0.98)';
+                                                        e.currentTarget.style.boxShadow = '0 0 40px rgba(0,242,255,0.6), inset 0 0 20px rgba(0,242,255,0.2)';
+                                                        e.currentTarget.style.background = 'rgba(0,242,255,0.15)';
+                                                        setTimeout(() => {
+                                                            e.currentTarget.style.transform = 'scale(1)';
+                                                            e.currentTarget.style.boxShadow = 'none';
+                                                            e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                                                        }, 300);
+                                                        setShowFinalize(true);
+                                                    }}
+                                                    style={{ flex: 1, padding: '16px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 800, cursor: 'pointer', transition: 'all 0.3s ease' }}
                                                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
                                                     onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
                                                 >NO (Finalize Estimate)</button>
@@ -1621,10 +2550,24 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                         {/* Right: Terms & Conditions */}
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             <h3 style={{ fontSize: '18px', fontWeight: 900, marginBottom: '32px', letterSpacing: '0.05em', color: '#fff', fontFamily: "'Outfit', sans-serif" }}>TERMS & CONDITIONS</h3>
-                                            <div style={{ padding: '28px', borderRadius: '20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', fontSize: '14px', color: 'rgba(255,255,255,0.45)', lineHeight: '1.8', fontFamily: "'Outfit', sans-serif", flex: 1 }}>
-                                                1. Valuation indexed to 2026 market benchmarks for plot size {inputs.plot_size}.<br /><br />
-                                                2. Final execution costs subject to ±5% variance based on site-specific geotechnical reports.<br /><br />
-                                                3. This AI-driven appraisal is valid for persistent architectural planning for 30 calendar days.
+                                            <div style={{ padding: '28px', borderRadius: '20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', fontSize: '16px', color: 'rgba(255,255,255,0.65)', lineHeight: '1.9', fontFamily: "'Outfit', sans-serif", flex: 1 }}>
+                                                <div style={{ marginBottom: '20px' }}>1. Valuation indexed to 2026 market benchmarks for plot size {inputs.plot_size}.</div>
+                                                <div style={{ marginBottom: '20px' }}>2. Final execution costs subject to ±5% variance based on site-specific geotechnical reports.</div>
+                                                <div style={{ marginBottom: '20px' }}>3. This AI-driven appraisal is valid for persistent architectural planning for 30 calendar days from authorization.</div>
+                                                <div style={{ marginBottom: '20px' }}>4. Construction delays, material sourcing, and labor supply chain disruptions are not covered under this estimation. Client is responsible for project timeline contingencies.</div>
+                                                <div style={{ marginBottom: '0px' }}>5. Final cost is subject to verification upon site inspection. Additional soil preparation, drainage, or regulatory compliance costs may apply based on municipal and environmental audit reports.</div>
+                                            </div>
+                                            <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    id="termsAccept"
+                                                    checked={termsAccepted}
+                                                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                                                    style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#00F2FF' }}
+                                                />
+                                                <label htmlFor="termsAccept" style={{ fontSize: '15px', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', fontWeight: 600, fontFamily: "'Outfit', sans-serif", margin: 0 }}>
+                                                    I have read and accept all terms & conditions
+                                                </label>
                                             </div>
 
                                             {saveSuccess ? (
@@ -1641,18 +2584,18 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                             ) : (
                                                 <button
                                                     onClick={handleSaveProject}
-                                                    disabled={isSaving}
+                                                    disabled={isSaving || !termsAccepted}
                                                     style={{
                                                         width: '100%', marginTop: '32px', padding: '24px', borderRadius: '16px',
-                                                        background: isSaving ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #00F2FF, #006AFF)',
+                                                        background: (isSaving || !termsAccepted) ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #00F2FF, #006AFF)',
                                                         border: 'none', color: '#fff', fontWeight: 900, fontSize: '18px',
-                                                        cursor: isSaving ? 'not-allowed' : 'pointer', transition: '0.3s',
+                                                        cursor: (isSaving || !termsAccepted) ? 'not-allowed' : 'pointer', transition: '0.3s',
                                                         letterSpacing: '0.1em', fontFamily: "'Outfit', sans-serif",
-                                                        boxShadow: isSaving ? 'none' : '0 10px 30px rgba(0,106,255,0.3)',
-                                                        opacity: (!clientName || !signature) ? 0.4 : 1
+                                                        boxShadow: (isSaving || !termsAccepted) ? 'none' : '0 10px 30px rgba(0,106,255,0.3)',
+                                                        opacity: (!clientName || !signature || !termsAccepted) ? 0.4 : 1
                                                     }}
-                                                    onMouseEnter={e => !isSaving && (e.currentTarget.style.transform = 'translateY(-2px)')}
-                                                    onMouseLeave={e => !isSaving && (e.currentTarget.style.transform = 'translateY(0)')}
+                                                    onMouseEnter={e => !(isSaving || !termsAccepted) && (e.currentTarget.style.transform = 'translateY(-2px)')}
+                                                    onMouseLeave={e => !(isSaving || !termsAccepted) && (e.currentTarget.style.transform = 'translateY(0)')}
                                                 >
                                                     {isSaving ? 'VALIDATING & PERSISTING...' : 'AUTHORIZE & SAVE PROJECT'}
                                                 </button>

@@ -4,8 +4,9 @@ import Dashboard from './pages/Dashboard';
 import ProjectSelection from './pages/ProjectSelection';
 import ProjectWizard from './pages/ProjectWizard';
 import EstimationResult from './pages/EstimationResult';
+import Archives from './pages/Archives';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
 function App() {
   const [view, setView] = useState('dashboard');
@@ -33,22 +34,8 @@ function App() {
     setResult(null);
     setSavedId(null);
 
-    // Initialize common defaults
-    const defaults = {
-      floor: 'G+1',
-      bedrooms: 3,
-      structural_style: 'Classic',
-      zone: 'B',
-      upgrade_level: 'Basic',
-      total_sqft: 1000,
-      style: 'Modern',
-      include_compound_wall: true,
-      include_waterproofing: true,
-      include_gate: true,
-      include_elevation: true
-    };
-
-    setInputs(defaults);
+    // Initialize with empty inputs - let user select values
+    setInputs({});
     setView('wizard');
   };
 
@@ -122,12 +109,6 @@ function App() {
       </div>
 
       <div id="app">
-        <nav className="navbar animate">
-          <div className="logo">
-            <img src="/assets/logo.svg" alt="Logo" style={{ height: 60, marginRight: 16 }} />
-          </div>
-        </nav>
-
         {view === 'dashboard' && <Dashboard setView={setView} />}
 
         {view === 'selection' && <ProjectSelection setView={setView} startProject={startProject} />}
@@ -152,6 +133,10 @@ function App() {
             saveProject={saveProject}
             API_BASE_URL={API_BASE_URL}
           />
+        )}
+
+        {view === 'archives' && (
+          <Archives setView={setView} API_BASE_URL={API_BASE_URL} />
         )}
       </div>
     </div>

@@ -7,7 +7,8 @@ from app.core.constants import (
     OWN_HOUSE_ADDONS,
     OWN_HOUSE_PLAN_MULTIPLIERS,
     INTERIOR_PACKAGE_BASE,
-    BREAKDOWN_PERCENTAGES
+    BREAKDOWN_PERCENTAGES,
+    OWN_HOUSE_INTERIOR_COSTS
 )
 
 class BreakdownEngine:
@@ -81,14 +82,24 @@ class BreakdownEngine:
             
         if inputs.get("include_parking"):
             breakdown_items.append({"component": "Car Parking Covering", "category": "EXTERIOR", "amount": OWN_HOUSE_ADDONS["car_parking"]})
+        
+        # Interior Package Cost - Based on interior_package, floor, and bedrooms
+        interior_pkg = inputs.get("interior_package", "none")
+        if interior_pkg and interior_pkg != "none":
+            interior_costs_by_floor = OWN_HOUSE_INTERIOR_COSTS.get(floors, {})
+            interior_cost_by_bedrooms = interior_costs_by_floor.get(interior_pkg, {})
+            # Get cost for the selected bedroom count, with fallback to closest available
+            interior_base_cost = interior_cost_by_bedrooms.get(current_beds, 0)
+            if interior_base_cost > 0:
+                breakdown_items.append({"component": f"Interior Package - {interior_pkg.replace('_', ' ').title()}", "category": "OPTIONAL", "amount": interior_base_cost})
             
-        plan_type = inputs.get("structural_style", "Base")
-        if inputs.get("include_interior"):
-            interior_cost = INTERIOR_PACKAGE_BASE.get(plan_type, 0)
-            if interior_cost > 0:
-                breakdown_items.append({"component": f"Interior Finishing Package ({plan_type})", "category": "OPTIONAL", "amount": interior_cost})
+        # Add terrace guest bedroom cost if selected (₹2.25 lakhs)
+        if inputs.get("terrace_guest_bedroom"):
+            terrace_bedroom_cost = 225000  # ₹2.25 lakhs
+            breakdown_items.append({"component": "Terrace Guest Bedroom", "category": "OPTIONAL", "amount": terrace_bedroom_cost})
 
         # 6. Apply plan multiplier (Base / Classic / Premium / Elite)
+        plan_type = inputs.get("structural_style", "Base")
         multiplier = OWN_HOUSE_PLAN_MULTIPLIERS.get(plan_type, 1.0)
         total_pre_inflation = 0
         for item in breakdown_items:
@@ -119,6 +130,8 @@ class BreakdownEngine:
         if family: summary["members"] = f"{family} persons"
         summary["lift"] = "Included" if inputs.get("lift_required") else "Not Added"
         summary["pooja_room"] = "Included" if inputs.get("pooja_room") else "Not Added"
+        summary["vastu_direction"] = inputs.get("vastu_direction", "Not Selected").title() if inputs.get("vastu_direction") else "Not Selected"
+        summary["terrace_bedroom"] = "Included" if inputs.get("terrace_guest_bedroom") else "Not Added"
         interior_pkg = inputs.get("interior_package", "none")
         summary["interior"] = f"{interior_pkg.replace('_', ' ').title()} Package" if interior_pkg and interior_pkg != "none" else "Not Added"
         summary["compound_wall"] = "Included" if inputs.get("include_compound") else "Not Added"
