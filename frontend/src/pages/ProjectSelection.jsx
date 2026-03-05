@@ -14,7 +14,7 @@ const AnimatedConstructionLogo = () => {
     );
 };
 
-const ProjectSelection = ({ setView, startProject }) => {
+const ProjectSelection = ({ navigateTo, startProject }) => {
     return (
         <main className="animate selection-view" style={{ width: '100vw', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '4rem 0' }}>
             {/* Header with Logo */}
@@ -63,7 +63,7 @@ const ProjectSelection = ({ setView, startProject }) => {
 
             {/* Header Outside the Glass Panel */}
             <div className="selection-header-top" style={{ width: '80vw', maxWidth: '1300px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', marginBottom: '4rem' }}>
-                <button className="btn-ghost-mini" onClick={() => setView('dashboard')} style={{ position: 'absolute', left: '0', fontSize: '1rem', padding: '0.8rem 1.5rem' }}>
+                <button className="btn-ghost-mini" onClick={() => navigateTo('dashboard', 'backward')} style={{ position: 'absolute', left: '0', fontSize: '1rem', padding: '0.8rem 1.5rem' }}>
                     &larr; Back
                 </button>
                 <h2 className="selection-title-floating" style={{ fontSize: '4.5rem', fontFamily: "'Playfair Display', serif", fontWeight: '600', color: '#fff', margin: 0 }}>

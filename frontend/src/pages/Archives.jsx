@@ -14,7 +14,7 @@ const AnimatedConstructionLogo = () => {
     );
 };
 
-const Archives = ({ setView, API_BASE_URL }) => {
+const Archives = ({ navigateTo, API_BASE_URL }) => {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedProject, setSelectedProject] = useState(null);
@@ -526,7 +526,7 @@ const Archives = ({ setView, API_BASE_URL }) => {
                             {/* Header */}
                             <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '2rem' }}>
                                 <button
-                                    onClick={() => setView('dashboard')}
+                                    onClick={() => navigateTo('dashboard', 'backward')}
                                     style={{
                                         background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)',
                                         padding: '10px 20px', borderRadius: '10px', cursor: 'pointer',

@@ -19,8 +19,17 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [savedId, setSavedId] = useState(null);
   const [upgradeGrade, setUpgradeGrade] = useState(null);
+  const [animationDirection, setAnimationDirection] = useState('forward');
+  const [animationKey, setAnimationKey] = useState(0);
 
   useEffect(() => { loadProjects(); }, []);
+
+  // Helper function to navigate with animation direction
+  const navigateTo = (newView, direction = 'forward') => {
+    setAnimationDirection(direction);
+    setAnimationKey(prev => prev + 1);
+    setView(newView);
+  };
 
   const loadProjects = async () => {
     try {
@@ -38,7 +47,7 @@ function App() {
 
     // Initialize with empty inputs - let user select values
     setInputs({});
-    setView('wizard');
+    navigateTo('wizard', 'forward');
   };
 
   const handleNext = async (direction = 1) => {
@@ -64,7 +73,10 @@ function App() {
         body: JSON.stringify(inputs)
       });
       const data = await res.json();
-      if (res.ok) { setResult(data); setView('result'); }
+      if (res.ok) { 
+        setResult(data); 
+        navigateTo('result', 'forward');
+      }
       else { alert(data.detail); }
     } catch (e) { alert(e.message); }
     finally { setLoading(false); }
@@ -86,7 +98,7 @@ function App() {
 
   const handleSmartUpgrade = (grade) => {
     setUpgradeGrade(grade);
-    setView('upgrade');
+    navigateTo('upgrade', 'forward');
   };
 
   const handleFinalizeUpgrades = (selectedFacilities, totalUpgradeAmount) => {
@@ -103,7 +115,7 @@ function App() {
         selectedFacilities
       }
     });
-    setView('result');
+    navigateTo('result', 'backward');
   };
 
   const wizardStepBgs = [
@@ -134,43 +146,59 @@ function App() {
       </div>
 
       <div id="app">
-        {view === 'dashboard' && <Dashboard setView={setView} />}
+        {view === 'dashboard' && (
+          <div key={`dashboard-${animationKey}`} className={`page-transition-${animationDirection}`}>
+            <Dashboard navigateTo={navigateTo} />
+          </div>
+        )}
 
-        {view === 'selection' && <ProjectSelection setView={setView} startProject={startProject} />}
+        {view === 'selection' && (
+          <div key={`selection-${animationKey}`} className={`page-transition-${animationDirection}`}>
+            <ProjectSelection navigateTo={navigateTo} startProject={startProject} />
+          </div>
+        )}
 
         {view === 'wizard' && (
-          <ProjectWizard
-            projectType={projectType}
-            step={step}
-            inputs={inputs}
-            setInputs={setInputs}
-            setView={setView}
-            handleNext={handleNext}
-            API_BASE_URL={API_BASE_URL}
-            onSmartUpgrade={handleSmartUpgrade}
-          />
+          <div key={`wizard-${animationKey}`} className={`page-transition-${animationDirection}`}>
+            <ProjectWizard
+              projectType={projectType}
+              step={step}
+              inputs={inputs}
+              setInputs={setInputs}
+              navigateTo={navigateTo}
+              handleNext={handleNext}
+              API_BASE_URL={API_BASE_URL}
+              onSmartUpgrade={handleSmartUpgrade}
+            />
+          </div>
         )}
 
         {view === 'result' && (
-          <EstimationResult
-            result={result}
-            savedId={savedId}
-            setView={setView}
-            saveProject={saveProject}
-            onSmartUpgrade={handleSmartUpgrade}
-          />
+          <div key={`result-${animationKey}`} className={`page-transition-${animationDirection}`}>
+            <EstimationResult
+              result={result}
+              savedId={savedId}
+              navigateTo={navigateTo}
+              saveProject={saveProject}
+              onSmartUpgrade={handleSmartUpgrade}
+            />
+          </div>
         )}
 
         {view === 'upgrade' && (
-          <UpgradesPage
-            grade={upgradeGrade}
-            onFinalize={handleFinalizeUpgrades}
-            onBack={() => setView('result')}
-          />
+          <div key={`upgrade-${animationKey}`} className={`page-transition-${animationDirection}`}>
+            <UpgradesPage
+              grade={upgradeGrade}
+              onFinalize={handleFinalizeUpgrades}
+              onBack={() => navigateTo('result', 'backward')}
+            />
+          </div>
         )}
 
         {view === 'archives' && (
-          <Archives setView={setView} API_BASE_URL={API_BASE_URL} />
+          <div key={`archives-${animationKey}`} className={`page-transition-${animationDirection}`}>
+            <Archives navigateTo={navigateTo} API_BASE_URL={API_BASE_URL} />
+          </div>
         )}
       </div>
     </div>

@@ -13,7 +13,7 @@ const AnimatedConstructionLogo = () => {
     );
 };
 
-const Dashboard = ({ setView }) => {
+const Dashboard = ({ navigateTo }) => {
     const [dateTime, setDateTime] = useState(new Date());
 
     useEffect(() => {
@@ -107,7 +107,7 @@ const Dashboard = ({ setView }) => {
                 </div>
 
                 <div className="dashboard-actions" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', alignItems: 'flex-end', flex: 1 }}>
-                    <div className="action-card" onClick={() => setView('selection')} style={{ width: '500px' }}>
+                    <div className="action-card" onClick={() => navigateTo('selection', 'forward')} style={{ width: '500px' }}>
                         <div className="card-label">
                             <span>01. INITIALIZE</span>
                             <span style={{ color: '#ffea00', fontSize: '2rem' }}>⚡</span>
@@ -116,7 +116,7 @@ const Dashboard = ({ setView }) => {
                         <p>Launch Estimator →</p>
                     </div>
 
-                    <div className="action-card" onClick={() => setView('archives')}>
+                    <div className="action-card" onClick={() => navigateTo('archives', 'forward')}>
                         <div className="card-label">
                             <span>02. DATABASE</span>
                             <span style={{ fontSize: '2rem' }}>📁</span>

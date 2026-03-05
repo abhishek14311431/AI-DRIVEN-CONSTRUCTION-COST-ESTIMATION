@@ -12,7 +12,7 @@ const AnimatedConstructionLogo = () => (
     </div>
 );
 
-const EstimationResult = ({ result, savedId, setView, saveProject, onSmartUpgrade }) => {
+const EstimationResult = ({ result, savedId, navigateTo, saveProject, onSmartUpgrade }) => {
     const [showUpgradePrompt, setShowUpgradePrompt] = useState(true);
     const [showUpgradeOptions, setShowUpgradeOptions] = useState(false);
     const breakdown = Array.isArray(result.breakdown) ? result.breakdown : [];
@@ -73,7 +73,7 @@ const EstimationResult = ({ result, savedId, setView, saveProject, onSmartUpgrad
 
                 <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                     <div>
-                        <button className="btn-ghost" onClick={() => setView('wizard')}>← RE-EVALUATE</button>
+                        <button className="btn-ghost" onClick={() => navigateTo('wizard', 'backward')}>← RE-EVALUATE</button>
                         <h2 style={{ fontSize: '4.5rem', fontWeight: 900, marginTop: '1.5rem', letterSpacing: '-3px' }}>VALUATION</h2>
                     </div>
                     <div style={{ textAlign: 'right' }}>
@@ -107,7 +107,7 @@ const EstimationResult = ({ result, savedId, setView, saveProject, onSmartUpgrad
                             SECURE THIS VALUATION
                         </button>
                         <button
-                            onClick={() => setView('selection')}
+                            onClick={() => navigateTo('selection', 'backward')}
                             style={{
                                 padding: '1.2rem 3rem',
                                 fontSize: '1.1rem',

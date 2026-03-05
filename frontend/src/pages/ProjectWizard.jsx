@@ -310,7 +310,7 @@ const SignaturePad = ({ onSave, onClear }) => {
     );
 };
 
-const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNext }) => {
+const ProjectWizard = ({ projectType, step, inputs, setInputs, navigateTo, handleNext }) => {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
     const [estData, setEstData] = useState(null);
     const [loadingEst, setLoadingEst] = useState(false);
@@ -566,7 +566,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
             if (res.ok) {
                 setSaveSuccess(true);
                 setTimeout(() => {
-                    setView('archives');
+                    navigateTo('archives', 'forward');
                 }, 6000);
             } else {
                 const errData = await res.json();
@@ -580,7 +580,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
         }
     };
 
-    const onBack = () => step === 0 ? setView('selection') : handleNext(-1);
+    const onBack = () => step === 0 ? navigateTo('selection', 'backward') : handleNext(-1);
     const setField = (field, value) => setInputs(prev => ({ ...prev, [field]: value }));
 
     if (currentStep.type === 'split-selection') {
