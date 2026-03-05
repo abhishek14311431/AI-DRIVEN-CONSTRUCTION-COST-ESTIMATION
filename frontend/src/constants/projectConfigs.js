@@ -88,6 +88,30 @@ export const projectConfigs = {
                     },
                     { label: 'Lift / Elevator Required?', field: 'lift_required', type: 'toggle' },
                     { label: 'Pooja Room?', field: 'pooja_room', type: 'toggle' },
+                    {
+                        label: 'Vastu Factor - Main Entrance Direction',
+                        field: 'vastu_direction',
+                        type: 'number-custom',
+                        hasCustom: false,
+                        options: [
+                            { value: 'north', label: 'North', desc: 'Prosperity & Wisdom' },
+                            { value: 'south', label: 'South', desc: 'Wealth & Fame' },
+                            { value: 'east', label: 'East', desc: 'Health & Energy' },
+                            { value: 'west', label: 'West', desc: 'Stability & Support' }
+                        ]
+                    },
+                    {
+                        label: 'Zone Details',
+                        field: 'zone_details',
+                        type: 'number-custom',
+                        hasCustom: false,
+                        options: [
+                            { value: 'A', label: 'Zone A', desc: 'Premium Location' },
+                            { value: 'B', label: 'Zone B', desc: 'Standard Location' },
+                            { value: 'C', label: 'Zone C', desc: 'Economy Location' }
+                        ]
+                    },
+                    { label: 'Extra Guest Bedroom on Terrace?', field: 'terrace_guest_bedroom', type: 'toggle', budgetImpact: 2.25 },
                 ]
             },
             {
@@ -130,7 +154,7 @@ export const projectConfigs = {
                                 desc: 'Enhanced comfort and finish',
                                 aiExplain: 'AI suggests Semi when you want strong everyday comfort, better aesthetics and higher storage quality without moving to full luxury spend.',
                                 inclusions: [
-                                    'Upgraded modular kitchen with better hardware and tandem channels',
+                                    // Removed upgraded modular kitchen for smart upgrades cleanup
                                     'Wardrobes in all bedrooms with loft storage',
                                     'Selective false ceiling with cove and decor lighting',
                                     'TV unit for living room and compact foyer storage',
@@ -153,7 +177,7 @@ export const projectConfigs = {
                                     'Layered premium lighting: ambient, task and accent circuits',
                                     'Vanity units, mirror cabinets and premium bathroom accessories',
                                     'Crockery/bar unit and dining-side storage where applicable',
-                                    'Premium veneer/laminate finishes with edge-banding quality upgrade',
+                                    // Removed premium veneer/laminate upgrade for smart upgrades cleanup
                                     'Soft-close hardware package with high-duty runners and hinges',
                                     'Decor wall paneling/highlight surfaces in living and master bedroom',
                                     'Curtain pelmet/blind readiness with concealed channels',
@@ -181,15 +205,135 @@ export const projectConfigs = {
             }
         ]
     },
+
     rental: {
         title: 'Rental Homes',
-        subtitle: 'Multi-unit investment properties',
+        subtitle: 'ROI-focused multi-unit properties',
         image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80',
         theme: 'card-theme-blue',
         steps: [
-            { id: 'floor_selection', field: 'floor', title: 'Units Count', options: [{ value: 'G+1', label: 'G+1 (2 Units)', desc: 'Entry Investment' }, { value: 'G+2', label: 'G+2 (4 Units)', desc: 'Mid Portfolio' }] },
-            { id: 'upgrade_selection', field: 'upgrade_level', title: 'Finish Level', options: [{ value: 'Basic', label: 'Standard', desc: 'Reliable Quality' }, { value: 'Premium', label: 'Luxury Finish', desc: 'Premium Yield' }] }
-        ]
+            {
+                id: 'site_type',
+                title: 'Site Type',
+                field: 'site_type',
+                type: 'single-select',
+                options: [
+                    { value: 'half', label: 'Half Site', desc: 'Single Bedroom Units' },
+                    { value: 'full', label: 'Full Site', desc: 'Double Bedroom Units' },
+                    { value: 'double', label: 'Double Site', desc: 'Multiple Bedroom Units' }
+                ]
+            },
+            {
+                id: 'plot_dimensions',
+                title: 'Plot Dimensions',
+                field: 'dimensions',
+                type: 'single-select',
+                dependsOn: 'site_type',
+                optionsByParent: {
+                    half: [
+                        { value: '20x30', label: '20 × 30', desc: '600 sq ft' },
+                        { value: '20x40', label: '20 × 40', desc: '800 sq ft' },
+                        { value: '25x40', label: '25 × 40', desc: '1000 sq ft' },
+                        { value: '30x30', label: '30 × 30', desc: '900 sq ft' }
+                    ],
+                    full: [
+                        { value: '30x40', label: '30 × 40', desc: '1200 sq ft' },
+                        { value: '30x50', label: '30 × 50', desc: '1500 sq ft' },
+                        { value: '40x40', label: '40 × 40', desc: '1600 sq ft' },
+                        { value: '40x50', label: '40 × 50', desc: '2000 sq ft' }
+                    ],
+                    double: [
+                        { value: '40x60', label: '40 × 60', desc: '2400 sq ft' },
+                        { value: '50x80', label: '50 × 80', desc: '4000 sq ft' },
+                        { value: '60x80', label: '60 × 80', desc: '4800 sq ft' },
+                        { value: '60x100', label: '60 × 100', desc: '6000 sq ft' }
+                    ]
+                }
+            },
+            {
+                id: 'floor_selection',
+                title: 'Floors',
+                field: 'floors',
+                type: 'single-select',
+                options: [
+                    { value: 'G+1', label: 'G+1', desc: '2 Units (Half), 2–4 Units (Full/Double)' },
+                    { value: 'G+2', label: 'G+2', desc: '3–6 Units' },
+                    { value: 'G+3', label: 'G+3', desc: '4–8 Units' },
+                    { value: 'custom', label: 'Custom', desc: 'Custom Floor Count' }
+                ]
+            },
+            {
+                id: 'plan',
+                title: 'Rental Plan',
+                field: 'plan',
+                type: 'single-select',
+                options: [
+                    { value: 'Base', label: 'Base', desc: 'Basic finish (1.00x)' },
+                    { value: 'Classic', label: 'Classic', desc: 'Slightly improved (1.10x)' },
+                    { value: 'Premium', label: 'Premium', desc: 'Best rental finish (1.20x)' }
+                ]
+            },
+            {
+                id: 'review',
+                title: 'Review Plan',
+                type: 'review',
+                // The UI will auto-assign unit_type and show only relevant fields
+            },
+            {
+                id: 'final-estimate',
+                title: 'Cost Estimation',
+                type: 'final-estimate'
+            }
+        ],
+        // Rental-specific logic for auto-assigning unit type and enforcing rules
+        rentalLogic: {
+            unitTypeBySite: {
+                half: 'Single Bedroom',
+                full: 'Double Bedroom',
+                double: 'Multiple Bedroom'
+            },
+            unitDetails: {
+                half: { bedrooms: 1, bathrooms: 1, kitchen: true, hall: 'Small Hall' },
+                full: { bedrooms: 2, bathrooms: '1–2', kitchen: true, hall: 'Hall' },
+                double: { bedrooms: '2–3', bathrooms: 2, kitchen: true, hall: 'Large Hall' }
+            },
+            planMultipliers: {
+                Base: 1.0,
+                Classic: 1.1,
+                Premium: 1.2
+            },
+            floorBaseCosts: {
+                half: { 'G+1': 2200000, 'G+2': 3000000, 'G+3': 3900000, extra: 750000 },
+                full: { 'G+1': 2600000, 'G+2': 3500000, 'G+3': 4500000, extra: 850000 },
+                double: { 'G+1': 3500000, 'G+2': 4800000, 'G+3': 6000000, extra: 1000000 }
+            },
+            breakdownOrder: [
+                'RCC Structure',
+                'Brickwork',
+                'Plastering',
+                'Flooring',
+                'Plumbing',
+                'Electrical',
+                'Bathrooms',
+                'Staircase',
+                'Exterior Finish',
+                'Terrace Waterproofing',
+                'Excavation & Foundation'
+            ],
+            breakdownComponents: [
+                'Excavation & Foundation',
+                'RCC Structure',
+                'Brickwork',
+                'Plastering',
+                'Flooring',
+                'Plumbing',
+                'Electrical',
+                'Bathrooms',
+                'Staircase',
+                'Exterior Finish',
+                'Terrace Waterproofing'
+            ]
+        }
     },
     commercial: {
         title: 'Commercial',

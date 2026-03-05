@@ -4,8 +4,10 @@ import Dashboard from './pages/Dashboard';
 import ProjectSelection from './pages/ProjectSelection';
 import ProjectWizard from './pages/ProjectWizard';
 import EstimationResult from './pages/EstimationResult';
+import Archives from './pages/Archives';
+import UpgradesPage from './pages/UpgradesPage';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
 function App() {
   const [view, setView] = useState('dashboard');
@@ -16,6 +18,7 @@ function App() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [savedId, setSavedId] = useState(null);
+  const [upgradeGrade, setUpgradeGrade] = useState(null);
 
   useEffect(() => { loadProjects(); }, []);
 
@@ -33,22 +36,8 @@ function App() {
     setResult(null);
     setSavedId(null);
 
-    // Initialize common defaults
-    const defaults = {
-      floor: 'G+1',
-      bedrooms: 3,
-      structural_style: 'Classic',
-      zone: 'B',
-      upgrade_level: 'Basic',
-      total_sqft: 1000,
-      style: 'Modern',
-      include_compound_wall: true,
-      include_waterproofing: true,
-      include_gate: true,
-      include_elevation: true
-    };
-
-    setInputs(defaults);
+    // Initialize with empty inputs - let user select values
+    setInputs({});
     setView('wizard');
   };
 
@@ -95,6 +84,28 @@ function App() {
     finally { setLoading(false); }
   };
 
+  const handleSmartUpgrade = (grade) => {
+    setUpgradeGrade(grade);
+    setView('upgrade');
+  };
+
+  const handleFinalizeUpgrades = (selectedFacilities, totalUpgradeAmount) => {
+    const baseAmount = result.base_cost_original || result.total_cost;
+    setResult({
+      ...result,
+      base_cost_original: baseAmount,
+      total_cost: baseAmount + totalUpgradeAmount,
+      upgrade_applied: true,
+      upgrade_details: {
+        baseAmount,
+        totalUpgradeAmount,
+        upgradeGrade,
+        selectedFacilities
+      }
+    });
+    setView('result');
+  };
+
   const wizardStepBgs = [
     'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=2200&q=95',  // Step 0: Plot & Dimensions
     'https://images.unsplash.com/photo-1444723121867-7a241cacace9?auto=format&fit=crop&w=2200&q=95',  // Step 1: Floor & Grade Plan
@@ -110,7 +121,8 @@ function App() {
     const staticBgs = {
       dashboard: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=2000&q=80',
       selection: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=2000&q=80',
-      result: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=2000&q=80'
+      result: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=2000&q=80',
+      upgrade: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=2000&q=80'
     };
     return staticBgs[view] || staticBgs.dashboard;
   };
@@ -122,12 +134,6 @@ function App() {
       </div>
 
       <div id="app">
-        <nav className="navbar animate">
-          <div className="logo">
-            <img src="/assets/logo.svg" alt="Logo" style={{ height: 60, marginRight: 16 }} />
-          </div>
-        </nav>
-
         {view === 'dashboard' && <Dashboard setView={setView} />}
 
         {view === 'selection' && <ProjectSelection setView={setView} startProject={startProject} />}
@@ -141,6 +147,7 @@ function App() {
             setView={setView}
             handleNext={handleNext}
             API_BASE_URL={API_BASE_URL}
+            onSmartUpgrade={handleSmartUpgrade}
           />
         )}
 
@@ -150,8 +157,20 @@ function App() {
             savedId={savedId}
             setView={setView}
             saveProject={saveProject}
-            API_BASE_URL={API_BASE_URL}
+            onSmartUpgrade={handleSmartUpgrade}
           />
+        )}
+
+        {view === 'upgrade' && (
+          <UpgradesPage
+            grade={upgradeGrade}
+            onFinalize={handleFinalizeUpgrades}
+            onBack={() => setView('result')}
+          />
+        )}
+
+        {view === 'archives' && (
+          <Archives setView={setView} API_BASE_URL={API_BASE_URL} />
         )}
       </div>
     </div>

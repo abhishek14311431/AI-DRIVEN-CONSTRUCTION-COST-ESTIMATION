@@ -1,32 +1,67 @@
-﻿<svg viewBox="0 0 960 960" xmlns="http://www.w3.org/2000/svg">
+﻿<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00f2ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00c9ff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#20e3b2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#29ffc6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow1">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glow2">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glow3">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
       <feMerge>
         <feMergeNode in="coloredBlur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
   </defs>
-  <!-- Crown -->
-  <g filter="url(#glow)">
-    <path d="M 300 500 L 250 300 L 350 200 L 400 250 L 480 150 L 560 250 L 610 200 L 710 300 L 660 500" fill="none" stroke="#D4AF37" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="480" cy="180" r="25" fill="#D4AF37"/>
-    <path d="M 400 250 Q 380 280 390 320" fill="none" stroke="#D4AF37" stroke-width="6" stroke-linecap="round"/>
-    <path d="M 560 250 Q 580 280 570 320" fill="none" stroke="#D4AF37" stroke-width="6" stroke-linecap="round"/>
-  </g>
-  <!-- Elegant Script L -->
-  <g filter="url(#glow)">
-    <path d="M 520 350 Q 540 420 560 550 Q 565 620 540 680" fill="none" stroke="#D4AF37" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M 540 680 L 620 680" stroke="#D4AF37" stroke-width="12" stroke-linecap="round"/>
-    <!-- Decorative flourish -->
-    <path d="M 560 550 Q 600 560 630 530" fill="none" stroke="#D4AF37" stroke-width="8" stroke-linecap="round"/>
-  </g>
-  <!-- Sparkles -->
-  <circle cx="250" cy="350" r="3" fill="#D4AF37" opacity="0.6"/>
-  <circle cx="280" cy="280" r="2" fill="#D4AF37" opacity="0.5"/>
-  <circle cx="650" cy="350" r="3" fill="#D4AF37" opacity="0.6"/>
-  <circle cx="680" cy="280" r="2" fill="#D4AF37" opacity="0.5"/>
-  <circle cx="300" cy="450" r="2" fill="#D4AF37" opacity="0.4"/>
-  <circle cx="660" cy="450" r="2" fill="#D4AF37" opacity="0.4"/>
+  
+  <!-- Dark background -->
+  <rect width="64" height="64" fill="#0a0a0b" rx="12"/>
+  
+  <!-- Blueprint grid pattern -->
+  <defs>
+    <pattern id="grid" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M 8 0 L 0 0 0 8" fill="none" stroke="rgba(0,242,255,0.15)" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="64" height="64" fill="url(#grid)" rx="12"/>
+  
+  <!-- Building Block 1 - Cyan (Top Left) -->
+  <rect x="6" y="6" width="14" height="14" fill="url(#grad1)" rx="2" filter="url(#glow1)"/>
+  
+  <!-- Building Block 2 - Green (Top Right) -->
+  <rect x="44" y="12" width="16" height="16" fill="url(#grad2)" rx="2" filter="url(#glow2)"/>
+  
+  <!-- Building Block 3 - Purple (Bottom Left) -->
+  <rect x="10" y="44" width="12" height="12" fill="url(#grad3)" rx="2" filter="url(#glow3)"/>
+  
+  <!-- Connecting Lines -->
+  <line x1="20" y1="17" x2="44" y2="17" stroke="rgba(0,242,255,0.4)" stroke-width="1.5"/>
+  <line x1="52" y1="28" x2="52" y2="44" stroke="rgba(124,58,237,0.4)" stroke-width="1.5"/>
+  
+  <!-- Center accent circle -->
+  <circle cx="32" cy="32" r="3" fill="#00f2ff" opacity="0.7" filter="url(#glow1)"/>
+  
+  <!-- Border -->
+  <rect x="0" y="0" width="64" height="64" fill="none" stroke="rgba(0,242,255,0.2)" stroke-width="1.5" rx="12"/>
 </svg>

@@ -18,6 +18,7 @@ class OwnHouseEngine:
         data['include_parking'] = data.get('include_car_parking', False)
         data['include_lift'] = data.get('lift_required', False)
         data['include_interior'] = data.get('interior_package', 'none') != 'none'
+        data['terrace_guest_bedroom'] = data.get('terrace_guest_bedroom', False)
         
         try:
             result = BreakdownEngine.calculate_smart_breakdown(data)

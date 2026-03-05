@@ -14,11 +14,16 @@ def get_grade_facilities():
 
 @router.post("/estimate", response_model=OwnHouseResponse)
 def estimate_own_house(data: OwnHouseCreate):
+    print(f"[Estimation Request] Received data: {data.dict()}")
     try:
         result = OwnHouseEngine.estimate_cost(data.dict())
+        print(f"[Estimation Success] Result: {result}")
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        tb = traceback.format_exc()
+        print(f"[Estimation Error] {e}\nTraceback:\n{tb}")
+        raise HTTPException(status_code=500, detail=f"Estimation error: {e}\nTraceback: {tb}")
 
 @router.post("/save")
 def save_own_house(data: OwnHouseCreate, db: Session = Depends(get_db)):
