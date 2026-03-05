@@ -1,6 +1,3 @@
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8080, reload=True)
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import (
@@ -46,3 +43,7 @@ app.include_router(projects.router, prefix=f"{settings.API_V1_STR}/projects", ta
 @app.get("/")
 def root():
     return {"message": "Construction AI Cost Estimation API is running"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8080, reload=True)
