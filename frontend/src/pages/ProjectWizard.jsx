@@ -69,8 +69,25 @@ const WizardShell = ({ children, config, step, inputs, onBack, onNext, nextLabel
             )}
         </div>
 
-        {/* Content */}
-        {children}
+        {/* Step Progress Indicator */}
+        <div style={{ width: '92vw', maxWidth: '1584px', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1.5rem' }}>
+            {Array.from({ length: total }, (_, i) => (
+                <div key={i} style={{
+                    height: '3px',
+                    flex: 1,
+                    borderRadius: '4px',
+                    background: i < step ? 'rgba(0,242,255,0.7)' : i === step ? '#00f2ff' : 'rgba(255,255,255,0.1)',
+                    transition: 'background 0.4s ease, box-shadow 0.4s ease',
+                    boxShadow: i === step ? '0 0 10px rgba(0,242,255,0.7)' : 'none',
+                    animation: i === step ? 'glowPulse 2s ease-in-out infinite' : 'none'
+                }} />
+            ))}
+        </div>
+
+        {/* Animated Step Content — key forces remount + re-animation on every step change */}
+        <div key={step} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', animation: 'fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both' }}>
+            {children}
+        </div>
     </main>
 );
 
@@ -79,7 +96,7 @@ const GlassCard = ({ children, style = {} }) => (
         width: '92vw', maxWidth: '1584px', padding: '3rem 4rem', borderRadius: '2rem',
         background: 'linear-gradient(145deg, rgba(10,12,18,0.84), rgba(14,16,24,0.7))', backdropFilter: 'blur(58px) saturate(175%)',
         border: '1px solid rgba(255,255,255,0.16)',
-        boxShadow: '0 28px 85px rgba(2, 6, 16, 0.5), inset 0 1px 0 rgba(255,255,255,0.14)', marginBottom: '2rem', minHeight: '72vh', animation: 'none',
+        boxShadow: '0 28px 85px rgba(2, 6, 16, 0.5), inset 0 1px 0 rgba(255,255,255,0.14)', marginBottom: '2rem', minHeight: '72vh', animation: 'fadeInScale 0.55s cubic-bezier(0.16, 1, 0.3, 1) both',
         ...style
     }}>
         {children}
@@ -436,7 +453,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                         <div>
                             <h4 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.25rem', opacity: 0.62, letterSpacing: '2px' }}>{left.label.toUpperCase()}</h4>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.2rem' }}>
-                                {left.options.map(opt => {
+                                {left.options.map((opt, idx) => {
                                     const isActive = inputs[left.field] === opt.value;
                                     const image = plotImages[opt.value];
                                     return (
@@ -449,7 +466,9 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                                 overflow: 'hidden',
                                                 position: 'relative',
                                                 border: isActive ? '2px solid rgba(0,242,255,0.7)' : '2px solid rgba(255,255,255,0.08)',
-                                                boxShadow: isActive ? '0 0 18px rgba(0,242,255,0.2)' : 'none'
+                                                boxShadow: isActive ? '0 0 18px rgba(0,242,255,0.2)' : 'none',
+                                                animation: `fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.1}s both`,
+                                                transition: 'border-color 0.3s ease, box-shadow 0.3s ease'
                                             }}>
                                             <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${image})`, backgroundSize: 'cover', backgroundPosition: 'center', transform: 'scale(1.16)', filter: 'saturate(1.12) contrast(1.08)', opacity: 0.75 }} />
                                             <div style={{ position: 'relative', height: '100%', padding: '1.45rem', background: 'linear-gradient(to top, rgba(10,18,35,0.56), rgba(10,18,35,0.12))', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
@@ -468,7 +487,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                 <div style={{ fontSize: '1.02rem', opacity: 0.65, padding: '1.1rem 0.55rem' }}>Select plot size first to view dimensions.</div>
                             ) : (
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.2rem' }}>
-                                    {rightOptions.map(opt => {
+                                    {rightOptions.map((opt, idx) => {
                                         const isActive = inputs[right.field] === opt.value;
                                         const image = dimensionImages[opt.value];
                                         return (
@@ -481,7 +500,9 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                                     overflow: 'hidden',
                                                     position: 'relative',
                                                     border: isActive ? '2px solid rgba(0,242,255,0.7)' : '2px solid rgba(255,255,255,0.08)',
-                                                    boxShadow: isActive ? '0 0 18px rgba(0,242,255,0.2)' : 'none'
+                                                    boxShadow: isActive ? '0 0 18px rgba(0,242,255,0.2)' : 'none',
+                                                    animation: `fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.1}s both`,
+                                                    transition: 'border-color 0.3s ease, box-shadow 0.3s ease'
                                                 }}>
                                                 <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${image})`, backgroundSize: 'cover', backgroundPosition: 'center', transform: 'scale(1.16)', filter: 'saturate(1.12) contrast(1.08)', opacity: 0.75 }} />
                                                 <div style={{ position: 'relative', height: '100%', padding: '1.45rem', background: 'linear-gradient(to top, rgba(10,18,35,0.56), rgba(10,18,35,0.12))', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
@@ -515,7 +536,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
 
                     <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.1rem', opacity: 0.72, letterSpacing: '2px' }}>BUILDING HEIGHT</h4>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
-                        {currentStep.floorOptions.map(opt => {
+                        {currentStep.floorOptions.map((opt, idx) => {
                             const isActive = inputs[currentStep.floorField] === opt.value;
                             return (
                                 <div key={opt.value}
@@ -527,7 +548,9 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                         minHeight: '210px',
                                         position: 'relative',
                                         border: isActive ? '2px solid rgba(145,229,255,0.85)' : '1px solid rgba(255,255,255,0.2)',
-                                        boxShadow: isActive ? '0 0 24px rgba(116,224,255,0.35), inset 0 0 20px rgba(255,255,255,0.2)' : '0 8px 24px rgba(0,0,0,0.18)'
+                                        boxShadow: isActive ? '0 0 24px rgba(116,224,255,0.35), inset 0 0 20px rgba(255,255,255,0.2)' : '0 8px 24px rgba(0,0,0,0.18)',
+                                        animation: `fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.1}s both`,
+                                        transition: 'border-color 0.3s ease, box-shadow 0.3s ease'
                                     }}>
                                     <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${opt.img})`, backgroundSize: 'cover', backgroundPosition: 'center', transform: 'scale(1.16)', filter: 'saturate(1.15) contrast(1.08)', opacity: 0.82 }} />
                                     <div style={{ position: 'relative', height: '100%', padding: '1.15rem', background: 'linear-gradient(to top, rgba(10,18,35,0.62), rgba(10,18,35,0.12))', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
@@ -541,7 +564,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
 
                     <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1.1rem', opacity: 0.72, letterSpacing: '2px' }}>CONSTRUCTION GRADE</h4>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
-                        {currentStep.gradeOptions.map(opt => {
+                        {currentStep.gradeOptions.map((opt, idx) => {
                             const isActive = inputs[currentStep.gradeField] === opt.value;
                             return (
                                 <div key={opt.value}
@@ -553,7 +576,9 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                         minHeight: '210px',
                                         position: 'relative',
                                         border: isActive ? '2px solid rgba(145,229,255,0.85)' : '1px solid rgba(255,255,255,0.2)',
-                                        boxShadow: isActive ? '0 0 24px rgba(116,224,255,0.35), inset 0 0 20px rgba(255,255,255,0.2)' : '0 8px 24px rgba(0,0,0,0.18)'
+                                        boxShadow: isActive ? '0 0 24px rgba(116,224,255,0.35), inset 0 0 20px rgba(255,255,255,0.2)' : '0 8px 24px rgba(0,0,0,0.18)',
+                                        animation: `fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.1}s both`,
+                                        transition: 'border-color 0.3s ease, box-shadow 0.3s ease'
                                     }}>
                                     <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${opt.img})`, backgroundSize: 'cover', backgroundPosition: 'center', transform: 'scale(1.16)', filter: 'saturate(1.15) contrast(1.08)', opacity: 0.82 }} />
                                     <div style={{ position: 'relative', height: '100%', padding: '1.15rem', background: 'linear-gradient(to top, rgba(10,18,35,0.62), rgba(10,18,35,0.12))', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
@@ -590,7 +615,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                     <h2 style={{ fontSize: '2.8rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, marginBottom: '2rem' }}>{currentStep.title}</h2>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.9rem' }}>
-                        {(currentStep.sections || []).map(section => {
+                        {(currentStep.sections || []).map((section, idx) => {
                             const value = inputs[section.field];
                             const options = section.optionsByPlotSize?.[inputs.plot_size] || section.options || [];
                             const customField = `${section.field}_custom`;
@@ -601,7 +626,8 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                     borderRadius: '1rem',
                                     background: 'linear-gradient(145deg, rgba(16,20,28,0.72), rgba(12,16,24,0.56))',
                                     boxShadow: '0 10px 24px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.28)',
-                                    padding: '1.45rem 1.45rem 1.55rem'
+                                    padding: '1.45rem 1.45rem 1.55rem',
+                                    animation: `fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.08}s both`
                                 }}>
                                     <div style={{ fontSize: '1.28rem', fontWeight: 700, marginBottom: '0.9rem', opacity: 0.96 }}>{section.label}</div>
 
@@ -889,7 +915,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.2rem', alignItems: 'stretch', flex: 1, minHeight: 0 }}>
-                        {section.options.map(opt => {
+                        {section.options.map((opt, idx) => {
                             const isActive = inputs[section.field] === opt.value;
                             const aiRec = getAIRecommendation(opt.value);
                             const displayLabel = packageLabels[opt.value] || opt.label;
@@ -912,7 +938,8 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                         position: 'relative',
                                         boxShadow: isActive ? '0 15px 30px rgba(0,242,255,0.1)' : '0 20px 40px rgba(0,0,0,0.4)',
                                         overflow: 'hidden',
-                                        height: '100%'
+                                        height: '100%',
+                                        animation: `fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.1}s both`
                                     }}>
 
                                     {aiRec && (
@@ -1097,11 +1124,12 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                 color: '#fff',
                 fontFamily: "'Inter', sans-serif",
                 gap: '5rem',
-                overflowY: 'auto'
+                overflowY: 'auto',
+                animation: 'fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both'
             }}>
 
                 {/* HEADER SECTION: BACK BUTTON ON LEFT */}
-                <div style={{ width: '100%', maxWidth: '1728px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '4rem' }}>
+                <div style={{ width: '100%', maxWidth: '1728px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '4rem', animation: 'fadeInDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both' }}>
                     <div
                         onClick={onBack}
                         style={{
@@ -1126,7 +1154,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                     <h1 style={{ fontSize: '4.8rem', fontWeight: 900, letterSpacing: '-3.5px', margin: 0 }}>Project Specification</h1>
                 </div>
 
-                <div style={{ width: '100%', maxWidth: '1728px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(600px, 1.3fr) 1fr', gap: '5vw', alignItems: 'start' }}>
+                <div style={{ width: '100%', maxWidth: '1728px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(600px, 1.3fr) 1fr', gap: '5vw', alignItems: 'start', animation: 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both' }}>
 
                     {/* LEFT Panel (Architectural Specs) */}
                     <GlassPanel>
