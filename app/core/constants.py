@@ -130,6 +130,92 @@ OWN_HOUSE_INTERIOR_COSTS = {
 }
 
 # --- Rental Parameters ---
+# Rental home site types with dimensions and base costs
+RENTAL_SITE_TYPES = {
+    "Half Site": {
+        "unit_type": "Single Bedroom",
+        "bedrooms": 1,
+        "bathrooms": 1,
+        "dimensions": {
+            "20x30": {"sqft": 600, "base_cost_g1": 2200000},
+            "20x40": {"sqft": 800, "base_cost_g1": 2400000},
+            "25x40": {"sqft": 1000, "base_cost_g1": 2600000},
+            "30x30": {"sqft": 900, "base_cost_g1": 2500000}
+        }
+    },
+    "Full Site": {
+        "unit_type": "Double Bedroom",
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "dimensions": {
+            "30x40": {"sqft": 1200, "base_cost_g1": 3000000},
+            "30x50": {"sqft": 1500, "base_cost_g1": 3400000},
+            "40x40": {"sqft": 1600, "base_cost_g1": 3600000},
+            "40x50": {"sqft": 2000, "base_cost_g1": 4000000}
+        }
+    },
+    "Double Site": {
+        "unit_type": "Multiple Bedroom",
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "dimensions": {
+            "40x60": {"sqft": 2400, "base_cost_g1": 4800000},
+            "50x80": {"sqft": 4000, "base_cost_g1": 6500000},
+            "60x80": {"sqft": 4800, "base_cost_g1": 7200000},
+            "60x100": {"sqft": 6000, "base_cost_g1": 8500000}
+        }
+    }
+}
+
+# Rental floor multipliers and costs
+RENTAL_FLOOR_COSTS = {
+    "Half Site": {
+        "G+1": 2200000,
+        "G+2": 3000000,
+        "G+3": 3850000
+    },
+    "Full Site": {
+        "G+1": 3000000,
+        "G+2": 4200000,
+        "G+3": 5400000
+    },
+    "Double Site": {
+        "G+1": 4800000,
+        "G+2": 6600000,
+        "G+3": 8400000
+    }
+}
+
+# Cost per extra floor above G+3
+RENTAL_EXTRA_FLOOR_COST = {
+    "Half Site": 750000,
+    "Full Site": 1200000,
+    "Double Site": 1800000
+}
+
+# Rental plan multipliers
+RENTAL_PLAN_MULTIPLIERS = {
+    "Base": 1.00,
+    "Classic": 1.10,
+    "Premium": 1.20
+}
+
+# Rental breakdown percentages (simplified for rental homes)
+RENTAL_BREAKDOWN_RATIOS = {
+    "Excavation & Foundation": 0.12,
+    "RCC Structure": 0.25,
+    "Brickwork": 0.10,
+    "Plastering": 0.08,
+    "Flooring": 0.10,
+    "Plumbing": 0.08,
+    "Electrical": 0.07,
+    "Bathrooms": 0.08,
+    "Staircase": 0.05,
+    "Exterior Finish": 0.04,
+    "Terrace Waterproofing": 0.03
+}
+
+# Legacy rental parameters (keeping for backward compatibility)
 RENTAL_BASE_COST = 1800000
 RENTAL_FLOOR_MULTIPLIER = { "G+1": 1.0, "G+2": 1.15, "G+3": 1.30 }
 RENTAL_UPGRADE_MULTIPLIER = { "Basic": 1.0, "Premium": 1.20 }

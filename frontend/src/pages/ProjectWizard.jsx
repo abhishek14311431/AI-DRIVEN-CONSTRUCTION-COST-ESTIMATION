@@ -7,12 +7,15 @@ const STEP_LABELS = [
 ];
 
 const InfoPill = ({ inputs, config }) => {
+    const plotValue = inputs.plot_size ? (inputs.plot_size === 'full' ? 'Full Site' : 'Double Site') : (inputs.site_type || null);
+    const floorValue = inputs.floor || inputs.floors || null;
+    const gradeValue = inputs.structural_style || inputs.plan || null;
     const items = [
         { label: 'PROJECT', value: config.title },
-        { label: 'PLOT', value: inputs.plot_size ? (inputs.plot_size === 'full' ? 'Full Site' : 'Double Site') : null },
+        { label: 'PLOT', value: plotValue },
         { label: 'SIZE', value: inputs.dimensions || null },
-        { label: 'FLOOR', value: inputs.floor || null },
-        { label: 'GRADE', value: inputs.structural_style || null },
+        { label: 'FLOOR', value: floorValue },
+        { label: 'GRADE', value: gradeValue },
         { label: 'BEDROOMS', value: inputs.bedrooms ? `${inputs.bedrooms} BHK` : null },
         { label: 'LIFT', value: inputs.lift_required === true ? 'Yes' : inputs.lift_required === false ? 'No' : null },
     ].filter(item => item.value);
@@ -800,7 +803,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
             Luxury: buildGradeFacilities(gradeUpgrades.Luxury)
         };
 
-        const selectedGrade = inputs.structural_style || 'Base';
+        const selectedGrade = inputs.structural_style || inputs.plan || 'Base';
         const facilitiesForGrade = gradeFacilities[selectedGrade] || gradeFacilities.Base;
         const selectedGradeLabel = selectedGrade === 'Luxury' ? 'Elite' : selectedGrade;
 
@@ -884,7 +887,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     if (currentStep.type === 'interior-select') {
         const section = currentStep.sections[0];
         const canProceed = Boolean(inputs[section.field]);
-        const selectedGrade = inputs.structural_style || 'Base';
+        const selectedGrade = inputs.structural_style || inputs.plan || 'Base';
 
         const packageLabels = {
             none: 'None',
@@ -1031,8 +1034,8 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     if (currentStep.type === 'addons') {
         const configForType = projectConfigs[inputs.project_type] || projectConfigs.own_house;
         const floorGradeStep = configForType.steps.find(s => s.type === 'floor-grade');
-        const selectedFloor = floorGradeStep?.floorOptions.find(o => o.value === inputs.floor);
-        const selectedGrade = floorGradeStep?.gradeOptions.find(o => o.value === (inputs.structural_style || 'Base'));
+        const selectedFloor = floorGradeStep?.floorOptions.find(o => o.value === (inputs.floor || inputs.floors));
+        const selectedGrade = floorGradeStep?.gradeOptions.find(o => o.value === (inputs.structural_style || inputs.plan || 'Base'));
 
         const isDouble = inputs.plot_size === 'double';
         const areaFt = isDouble ? '2,400' : '1,200';
@@ -1699,6 +1702,170 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     }
 
 
+    /* ─── Rental: Dimension Selection ─── */
+    if (currentStep.type === 'dimension-selection') {
+        const siteType = inputs[currentStep.dependsOn];
+        const options = currentStep.optionsBySiteType?.[siteType] || [];
+        const canProceed = Boolean(siteType && inputs[currentStep.field]);
+
+        return (
+            <WizardShell config={config} step={step} inputs={inputs} onBack={onBack} onNext={handleNext} total={total} showTopNext={false}>
+                <GlassCard>
+                    <h2 style={{ fontSize: '2.8rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, marginBottom: '2.2rem' }}>{currentStep.title}</h2>
+                    
+                    {!siteType ? (
+                        <div style={{ fontSize: '1.2rem', opacity: 0.65, padding: '2rem', textAlign: 'center' }}>Please select site type first</div>
+                    ) : (
+                        <>
+                            <h4 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', opacity: 0.7, letterSpacing: '2px' }}>
+                                AVAILABLE DIMENSIONS FOR {siteType.toUpperCase()}
+                            </h4>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.2rem' }}>
+                                {options.map((opt, idx) => {
+                                    const isActive = inputs[currentStep.field] === opt.value;
+                                    return (
+                                        <div key={opt.value}
+                                            onClick={() => setField(currentStep.field, opt.value)}
+                                            style={{
+                                                cursor: 'pointer',
+                                                padding: '2rem 1.5rem',
+                                                borderRadius: '1.2rem',
+                                                border: isActive ? '2px solid rgba(0,242,255,0.7)' : '1px solid rgba(255,255,255,0.2)',
+                                                background: isActive ? 'rgba(0,242,255,0.1)' : 'rgba(255,255,255,0.05)',
+                                                boxShadow: isActive ? '0 0 18px rgba(0,242,255,0.2)' : 'none',
+                                                animation: `fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.1}s both`,
+                                                transition: 'all 0.3s ease',
+                                                textAlign: 'center'
+                                            }}>
+                                            <div style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>{opt.label}</div>
+                                            <div style={{ fontSize: '1rem', opacity: 0.7 }}>{opt.desc}</div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </>
+                    )}
+                </GlassCard>
+                <BottomStepButton
+                    label={canProceed ? 'NEXT ->' : 'SELECT PLOT DIMENSIONS TO CONTINUE'}
+                    disabled={!canProceed}
+                    onClick={() => { if (canProceed) handleNext(); }}
+                />
+            </WizardShell>
+        );
+    }
+
+    /* ─── Rental: Plan Selection ─── */
+    if (currentStep.type === 'plan-selection') {
+        const canProceed = Boolean(inputs[currentStep.field]);
+
+        return (
+            <WizardShell config={config} step={step} inputs={inputs} onBack={onBack} onNext={handleNext} total={total} showTopNext={false}>
+                <GlassCard>
+                    <h2 style={{ fontSize: '2.8rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, marginBottom: '2.2rem' }}>{currentStep.title}</h2>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
+                        {(currentStep.options || []).map((opt, idx) => {
+                            const isActive = inputs[currentStep.field] === opt.value;
+                            return (
+                                <div key={opt.value}
+                                    onClick={() => setField(currentStep.field, opt.value)}
+                                    style={{
+                                        cursor: 'pointer',
+                                        padding: '2.5rem 2rem',
+                                        borderRadius: '1.5rem',
+                                        border: isActive ? '2px solid rgba(0,242,255,0.7)' : '1px solid rgba(255,255,255,0.2)',
+                                        background: isActive ? 'linear-gradient(145deg, rgba(0,242,255,0.15), rgba(0,150,255,0.1))' : 'rgba(255,255,255,0.05)',
+                                        boxShadow: isActive ? '0 0 24px rgba(0,242,255,0.25)' : 'none',
+                                        animation: `fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.15}s both`,
+                                        transition: 'all 0.3s ease'
+                                    }}>
+                                    <div style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem' }}>{opt.label}</div>
+                                    <div style={{ fontSize: '1rem', opacity: 0.7, marginBottom: '0.5rem' }}>{opt.desc}</div>
+                                    <div style={{ fontSize: '0.9rem', opacity: 0.5, marginBottom: '1.5rem' }}>Multiplier: {opt.multiplier}</div>
+                                    
+                                    {opt.features && (
+                                        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                                            <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>
+                                                {opt.features.map((feature, i) => (
+                                                    <div key={i} style={{ marginBottom: '0.5rem' }}>• {feature}</div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </GlassCard>
+                <BottomStepButton
+                    label={canProceed ? 'NEXT ->' : 'SELECT A PLAN TO CONTINUE'}
+                    disabled={!canProceed}
+                    onClick={() => { if (canProceed) handleNext(); }}
+                />
+            </WizardShell>
+        );
+    }
+
+    /* ─── Rental: Review Plan ─── */
+    if (currentStep.type === 'review-rental') {
+        const canProceed = true;
+
+        return (
+            <WizardShell config={config} step={step} inputs={inputs} onBack={onBack} onNext={handleNext} total={total} showTopNext={false}>
+                <GlassCard>
+                    <h2 style={{ fontSize: '2.8rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, marginBottom: '2.2rem' }}>Review Your Rental Plan</h2>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+                        <div style={{ padding: '1.5rem', borderRadius: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <div style={{ fontSize: '0.9rem', opacity: 0.6, marginBottom: '0.5rem', letterSpacing: '1px' }}>PROJECT TYPE</div>
+                            <div style={{ fontSize: '1.3rem', fontWeight: 700 }}>Rental Homes</div>
+                        </div>
+                        <div style={{ padding: '1.5rem', borderRadius: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <div style={{ fontSize: '0.9rem', opacity: 0.6, marginBottom: '0.5rem', letterSpacing: '1px' }}>SITE TYPE</div>
+                            <div style={{ fontSize: '1.3rem', fontWeight: 700 }}>{inputs.site_type}</div>
+                        </div>
+                        <div style={{ padding: '1.5rem', borderRadius: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <div style={{ fontSize: '0.9rem', opacity: 0.6, marginBottom: '0.5rem', letterSpacing: '1px' }}>PLOT DIMENSIONS</div>
+                            <div style={{ fontSize: '1.3rem', fontWeight: 700 }}>{inputs.dimensions}</div>
+                        </div>
+                        <div style={{ padding: '1.5rem', borderRadius: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <div style={{ fontSize: '0.9rem', opacity: 0.6, marginBottom: '0.5rem', letterSpacing: '1px' }}>FLOORS</div>
+                            <div style={{ fontSize: '1.3rem', fontWeight: 700 }}>{inputs.floor === 'Custom' ? `G+${inputs.custom_floors}` : inputs.floor}</div>
+                        </div>
+                        <div style={{ padding: '1.5rem', borderRadius: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <div style={{ fontSize: '0.9rem', opacity: 0.6, marginBottom: '0.5rem', letterSpacing: '1px' }}>PLAN LEVEL</div>
+                            <div style={{ fontSize: '1.3rem', fontWeight: 700 }}>{inputs.plan}</div>
+                        </div>
+                        <div style={{ padding: '1.5rem', borderRadius: '1rem', background: 'rgba(0,242,255,0.1)', border: '1px solid rgba(0,242,255,0.3)' }}>
+                            <div style={{ fontSize: '0.9rem', opacity: 0.6, marginBottom: '0.5rem', letterSpacing: '1px' }}>STAIRCASE TYPE</div>
+                            <div style={{ fontSize: '1.3rem', fontWeight: 700 }}>External Staircase</div>
+                        </div>
+                    </div>
+
+                    <div style={{ padding: '2rem', borderRadius: '1.2rem', background: 'rgba(0,242,255,0.05)', border: '1px solid rgba(0,242,255,0.2)' }}>
+                        <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '1rem' }}>Semi-Interior Finishing Included</h3>
+                        <div style={{ fontSize: '1rem', opacity: 0.8, lineHeight: '1.6' }}>
+                            Your rental home includes semi-interior finishing with:
+                            <ul style={{ marginTop: '0.5rem', paddingLeft: '1.5rem' }}>
+                                <li>Basic vitrified or ceramic flooring</li>
+                                <li>Standard bathroom tiles</li>
+                                <li>Basic paint finish</li>
+                                <li>Standard electrical fittings</li>
+                                <li>External staircase for independent tenant access</li>
+                            </ul>
+                        </div>
+                    </div>
+                </GlassCard>
+                <BottomStepButton
+                    label="PROCEED TO COST ESTIMATION"
+                    disabled={!canProceed}
+                    onClick={() => { if (canProceed) handleNext(); }}
+                />
+            </WizardShell>
+        );
+    }
+
     /* ─── Default Steps (Building Height, Construction Grade, etc.) ─── */
     const field = currentStep.field;
     return (
@@ -1706,19 +1873,53 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
             <GlassCard>
                 <h2 style={{ fontSize: '2.8rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, marginBottom: '3rem' }}>{currentStep.title}</h2>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
-                    {(currentStep.options || []).map(opt => (
-                        <div key={opt.value} className={`chip ${inputs[field] === opt.value ? 'active' : ''}`}
-                            onClick={() => setField(field, opt.value)}
-                            style={{ padding: '0', overflow: 'hidden', cursor: 'pointer', position: 'relative', minHeight: '160px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                            {opt.img && <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${opt.img})`, backgroundSize: 'cover', backgroundPosition: 'center', transform: 'scale(1.08)', filter: 'saturate(1.12) contrast(1.08)', opacity: 0.75 }} />}
-                            <div style={{ position: 'relative', padding: '2rem', background: opt.img ? 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)' : 'none' }}>
-                                {opt.icon && <div style={{ fontSize: '2.5rem', marginBottom: '0.8rem' }}>{opt.icon}</div>}
-                                <div style={{ fontSize: '1.2rem', fontWeight: 700 }}>{opt.label}</div>
-                                {opt.desc && <div style={{ fontSize: '0.8rem', opacity: 0.5, marginTop: '0.3rem' }}>{opt.desc}</div>}
+                    {(currentStep.options || []).map(opt => {
+                        const isActive = inputs[field] === opt.value;
+                        return (
+                            <div key={opt.value} className={`chip ${isActive ? 'active' : ''}`}
+                                onClick={() => setField(field, opt.value)}
+                                style={{ padding: '0', overflow: 'hidden', cursor: 'pointer', position: 'relative', minHeight: '160px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                                {opt.img && <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${opt.img})`, backgroundSize: 'cover', backgroundPosition: 'center', transform: 'scale(1.08)', filter: 'saturate(1.12) contrast(1.08)', opacity: 0.75 }} />}
+                                <div style={{ position: 'relative', padding: '2rem', background: opt.img ? 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)' : 'none' }}>
+                                    {opt.icon && <div style={{ fontSize: '2.5rem', marginBottom: '0.8rem' }}>{opt.icon}</div>}
+                                    <div style={{ fontSize: '1.2rem', fontWeight: 700 }}>{opt.label}</div>
+                                    {opt.desc && <div style={{ fontSize: '0.8rem', opacity: 0.5, marginTop: '0.3rem' }}>{opt.desc}</div>}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
+                
+                {/* Custom input for options that require it */}
+                {currentStep.options?.find(opt => opt.value === inputs[field] && opt.requiresInput) && (
+                    <div style={{ marginTop: '2rem', padding: '2rem', borderRadius: '1rem', background: 'rgba(0,242,255,0.1)', border: '1px solid rgba(0,242,255,0.3)' }}>
+                        <label style={{ display: 'block', marginBottom: '1rem', fontSize: '1.1rem', fontWeight: 600 }}>
+                            {currentStep.options.find(opt => opt.value === inputs[field])?.inputLabel || 'Enter value'}
+                        </label>
+                        <input
+                            type="number"
+                            min="4"
+                            placeholder="e.g., 4, 5, 6..."
+                            value={inputs[currentStep.options.find(opt => opt.value === inputs[field])?.inputField] || ''}
+                            onChange={(e) => {
+                                const inputField = currentStep.options.find(opt => opt.value === inputs[field])?.inputField;
+                                if (inputField) {
+                                    setField(inputField, parseInt(e.target.value) || '');
+                                }
+                            }}
+                            style={{
+                                width: '100%',
+                                padding: '1rem 1.5rem',
+                                fontSize: '1.1rem',
+                                borderRadius: '0.8rem',
+                                border: '1px solid rgba(255,255,255,0.3)',
+                                background: 'rgba(0,0,0,0.3)',
+                                color: '#fff',
+                                outline: 'none'
+                            }}
+                        />
+                    </div>
+                )}
             </GlassCard>
         </WizardShell>
     );
