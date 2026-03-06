@@ -36,24 +36,24 @@ const Dashboard = ({ setView }) => {
         <main className="animate dashboard-main">
             <div className="liquid-glass-panel">
                 <div className="hero-text" style={{ padding: 0, flex: 1 }}>
-                    <div style={{ marginBottom: '3rem', animation: 'fadeInDown 1s ease' }}>
+                    <div style={{ marginBottom: '3rem', animation: 'fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both' }}>
                         <img src="/logo.svg" alt="App Logo" style={{ width: '120px', height: '120px', filter: 'drop-shadow(0 0 20px rgba(253, 185, 49, 0.4))' }} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1rem', animation: 'fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both' }}>
                         <div className="greeting-label" style={{ margin: 0 }}>{getGreeting()},</div>
                         <div className="live-clock" style={{ fontSize: '0.8rem', opacity: 0.5, letterSpacing: '2px', fontWeight: 600 }}>
                             {formatDate(dateTime)} | {formatTime(dateTime)}
                         </div>
                     </div>
-                    <h1 className="user-name-hero" style={{ marginBottom: '1rem' }}>ABHISHEK</h1>
-                    <div className="hero-subtitle">
+                    <h1 className="user-name-hero" style={{ marginBottom: '1rem', animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both' }}>ABHISHEK</h1>
+                    <div className="hero-subtitle" style={{ animation: 'fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both' }}>
                         Your design intelligence system is ready.<br />
                         Let's architect the future of living.
                     </div>
                 </div>
 
                 <div className="dashboard-actions" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', alignItems: 'flex-end', flex: 1 }}>
-                    <div className="action-card" onClick={() => setView('selection')} style={{ width: '500px' }}>
+                    <div className="action-card" onClick={() => setView('selection')} style={{ width: '500px', animation: 'fadeInScale 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both' }}>
                         <div className="card-label">
                             <span>01. INITIALIZE</span>
                             <span style={{ color: '#ffea00' }}>⚡</span>
@@ -62,7 +62,7 @@ const Dashboard = ({ setView }) => {
                         <p>Launch Estimator →</p>
                     </div>
 
-                    <div className="action-card" onClick={() => { }}>
+                    <div className="action-card" onClick={() => { }} style={{ animation: 'fadeInScale 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both' }}>
                         <div className="card-label">
                             <span>02. DATABASE</span>
                             <span>📁</span>

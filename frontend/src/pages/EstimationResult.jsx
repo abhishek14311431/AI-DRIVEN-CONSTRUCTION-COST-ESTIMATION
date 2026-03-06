@@ -6,7 +6,7 @@ const EstimationResult = ({ result, savedId, setView, saveProject }) => {
 
     return (
         <section className="animate" style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', animation: 'fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both' }}>
                 <div>
                     <button className="btn-ghost" onClick={() => setView('wizard')}>← RE-EVALUATE</button>
                     <h2 style={{ fontSize: '4.5rem', fontWeight: 900, marginTop: '1.5rem', letterSpacing: '-3px' }}>VALUATION</h2>
@@ -17,7 +17,7 @@ const EstimationResult = ({ result, savedId, setView, saveProject }) => {
                 </div>
             </div>
 
-            <div className="liquid-glass-panel" style={{ padding: '4rem', marginBottom: '3rem', textAlign: 'center', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '32px' }}>
+            <div className="liquid-glass-panel" style={{ padding: '4rem', marginBottom: '3rem', textAlign: 'center', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '32px', animation: 'fadeInScale 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both' }}>
                 <p style={{ fontSize: '0.9rem', letterSpacing: '6px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Total Estimated Investment</p>
                 <div style={{ fontSize: '8rem', fontWeight: 1000, letterSpacing: '-6px', margin: '1.5rem 0', color: '#fff', textShadow: '0 0 60px rgba(103,232,249,0.3)' }}>
                     ₹{typeof result.total_cost === 'number' ? result.total_cost.toLocaleString('en-IN') : result.total_cost}
@@ -33,7 +33,8 @@ const EstimationResult = ({ result, savedId, setView, saveProject }) => {
                         padding: '2rem',
                         background: 'rgba(255,255,255,0.02)',
                         border: '1px solid rgba(255,255,255,0.05)',
-                        borderRadius: '20px'
+                        borderRadius: '20px',
+                        animation: `fadeInScale 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${0.35 + idx * 0.05}s both`
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 900, color: 'rgba(255,255,255,0.4)', marginBottom: '1rem', letterSpacing: '1px' }}>
                             <span>{item.category}</span>

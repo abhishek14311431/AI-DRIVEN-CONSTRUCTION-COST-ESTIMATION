@@ -5,7 +5,7 @@ const ProjectSelection = ({ setView, startProject }) => {
     return (
         <main className="animate selection-view" style={{ width: '100vw', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '4rem 0' }}>
             {/* Header Outside the Glass Panel */}
-            <div className="selection-header-top" style={{ width: '80vw', maxWidth: '1300px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', marginBottom: '4rem' }}>
+            <div className="selection-header-top" style={{ width: '80vw', maxWidth: '1300px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', marginBottom: '4rem', animation: 'fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both' }}>
                 <button className="btn-ghost-mini" onClick={() => setView('dashboard')} style={{ position: 'absolute', left: '0', fontSize: '1rem', padding: '0.8rem 1.5rem' }}>
                     &larr; Back
                 </button>
@@ -15,10 +15,11 @@ const ProjectSelection = ({ setView, startProject }) => {
             </div>
 
             {/* Glass Panel strictly for Projects - Increased Vertical Length */}
-            <div className="liquid-glass-panel" style={{ width: '80vw', maxWidth: '1300px', minHeight: '850px', padding: '6rem 4rem', display: 'block' }}>
+            <div className="liquid-glass-panel" style={{ width: '80vw', maxWidth: '1300px', minHeight: '850px', padding: '6rem 4rem', display: 'block', animation: 'fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both' }}>
                 <div className="project-grid-panoramic" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem', width: '100%' }}>
-                    {Object.keys(projectConfigs).map(key => (
-                        <div key={key} className={`project-card-v2 ${projectConfigs[key].theme}`} onClick={() => startProject(key)}>
+                    {Object.keys(projectConfigs).map((key, idx) => (
+                        <div key={key} className={`project-card-v2 ${projectConfigs[key].theme}`} onClick={() => startProject(key)}
+                            style={{ animation: `fadeInScale 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${0.3 + idx * 0.1}s both` }}>
                             <div className="card-media" style={{ backgroundImage: `url(${projectConfigs[key].image})` }}>
                                 <div className="media-overlay">
                                     <div className="icon-badge">
