@@ -36,17 +36,29 @@ const InfoPill = ({ inputs, config }) => {
         'full_furnished': 'Full Furnished'
     };
 
-    const items = [
-        { label: 'PROJECT', value: config.title },
-        { label: 'PLOT', value: inputs.plot_size ? (inputs.plot_size === 'full' ? 'Full Site' : 'Double Site') : null },
-        { label: 'SIZE', value: inputs.dimensions || null },
-        { label: 'FLOOR', value: inputs.floor || null },
-        { label: 'GRADE', value: inputs.structural_style || null },
-        { label: 'BEDROOMS', value: inputs.bedrooms ? `${inputs.bedrooms} BHK` : null },
-        { label: 'LIFT', value: inputs.lift_required === true ? 'Yes' : inputs.lift_required === false ? 'No' : null },
-        { label: 'VASTU', value: inputs.vastu_direction ? vastuMap[inputs.vastu_direction.toLowerCase()] : null },
-        { label: 'INTERIOR', value: inputs.interior_package && inputs.interior_package !== 'none' ? interiorMap[inputs.interior_package] : null },
-    ].filter(item => item.value);
+    const isRental = config.title === 'Rental Homes';
+
+    const items = isRental
+        ? [
+            { label: 'PROJECT', value: config.title },
+            { label: 'SITE', value: inputs.site_type ? (inputs.site_type === 'half' ? 'Half Site' : inputs.site_type === 'full' ? 'Full Site' : 'Double Site') : null },
+            { label: 'SIZE', value: inputs.dimensions || null },
+            { label: 'FLOORS', value: inputs.floors === 'custom' && inputs.custom_floors ? `G+${inputs.custom_floors}` : (inputs.floors || null) },
+            { label: 'PLAN', value: inputs.plan || null },
+        ]
+        : [
+            { label: 'PROJECT', value: config.title },
+            { label: 'PLOT', value: inputs.plot_size ? (inputs.plot_size === 'full' ? 'Full Site' : 'Double Site') : null },
+            { label: 'SIZE', value: inputs.dimensions || null },
+            { label: 'FLOOR', value: inputs.floor || null },
+            { label: 'GRADE', value: inputs.structural_style || null },
+            { label: 'BEDROOMS', value: inputs.bedrooms ? `${inputs.bedrooms} BHK` : null },
+            { label: 'LIFT', value: inputs.lift_required === true ? 'Yes' : inputs.lift_required === false ? 'No' : null },
+            { label: 'VASTU', value: inputs.vastu_direction ? vastuMap[inputs.vastu_direction.toLowerCase()] : null },
+            { label: 'INTERIOR', value: inputs.interior_package && inputs.interior_package !== 'none' ? interiorMap[inputs.interior_package] : null },
+        ];
+
+    const visibleItems = items.filter(item => item.value);
 
     return (
         <div style={{
@@ -55,7 +67,7 @@ const InfoPill = ({ inputs, config }) => {
             border: '1px solid rgba(255,255,255,0.16)', borderRadius: '100px',
             padding: '0.8rem 2.2rem', flexWrap: 'wrap', justifyContent: 'flex-start'
         }}>
-            {items.map((item, i) => (
+            {visibleItems.map((item, i) => (
                 <React.Fragment key={item.label}>
                     {i > 0 && <div style={{ width: '1px', height: '2.8rem', background: 'rgba(255,255,255,0.12)' }} />}
                     <div style={{ textAlign: 'left' }}>
@@ -338,8 +350,11 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
         } else if (currentStep.type === 'addons') {
             // Pre-fetch in background
             fetchEstimation(true);
+        } else if (currentStep.type === 'review' && projectType === 'rental') {
+            // Fetch total cost early so Review page can show estimated total.
+            fetchEstimation(true);
         }
-    }, [currentStep.type, step]);
+    }, [currentStep.type, step, projectType]);
 
     // Trigger HUD load animations only on the final step
     useEffect(() => {
@@ -383,8 +398,22 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     // Prepare request payload with defaults for missing required fields
     const prepareEstimationPayload = () => {
         const payload = { ...inputs };
-        
-        // Define required fields with defaults based on project type
+
+        if (projectType === 'rental') {
+            const normalizedFloors = payload.floors === 'custom'
+                ? `G+${Math.max(4, Number(payload.custom_floors || 4))}`
+                : (payload.floors || 'G+1');
+
+            return {
+                site_type: payload.site_type || 'half',
+                dimensions: payload.dimensions || '20x40',
+                floors: normalizedFloors,
+                plan: payload.plan || 'Base',
+                custom_floors: payload.floors === 'custom' ? Math.max(4, Number(payload.custom_floors || 4)) : null
+            };
+        }
+
+        // Define required fields with defaults for own-house flow
         const requiredDefaults = {
             plot_size: 'full',
             dimensions: '30x40',
@@ -402,14 +431,13 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
             grandparents_living: false,
             pooja_room: false
         };
-        
-        // Merge with defaults if missing
+
         Object.keys(requiredDefaults).forEach(key => {
             if (payload[key] === undefined || payload[key] === null || payload[key] === '') {
                 payload[key] = requiredDefaults[key];
             }
         });
-        
+
         return payload;
     };
 
@@ -420,11 +448,17 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
         
         try {
             // Validate minimum required fields
-            if (!inputs.plot_size || !inputs.dimensions) {
+            const hasRequiredFields = projectType === 'rental'
+                ? Boolean(inputs.site_type && inputs.dimensions && inputs.floors && inputs.plan)
+                : Boolean(inputs.plot_size && inputs.dimensions);
+
+            if (!hasRequiredFields) {
                 if (!isBackground) {
                     setEstData({ 
                         error: true, 
-                        message: "Please complete required fields: Plot Size and Dimensions" 
+                        message: projectType === 'rental'
+                            ? 'Please complete required fields: Site Type, Dimensions, Floors and Plan'
+                            : 'Please complete required fields: Plot Size and Dimensions'
                     });
                 }
                 if (!isBackground) setLoadingEst(false);
@@ -515,7 +549,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                 if (!isBackground) {
                     setEstData({ 
                         error: true, 
-                        message: "Cannot reach API server. Check if backend is running on port 8000." 
+                        message: "Cannot reach API server. Check if backend is running on port 8080." 
                     });
                 }
             } else {
@@ -581,7 +615,20 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     };
 
     const onBack = () => step === 0 ? setView('selection') : handleNext(-1);
-    const setField = (field, value) => setInputs(prev => ({ ...prev, [field]: value }));
+    const setField = (field, value) => {
+        if (projectType === 'rental' && field === 'site_type') {
+            const unitTypeBySite = projectConfigs.rental.rentalLogic.unitTypeBySite;
+            setInputs(prev => ({
+                ...prev,
+                site_type: value,
+                unit_type: unitTypeBySite[value],
+                dimensions: undefined
+            }));
+            return;
+        }
+
+        setInputs(prev => ({ ...prev, [field]: value }));
+    };
 
     if (currentStep.type === 'split-selection') {
         const left = currentStep.leftSide;
@@ -1109,6 +1156,99 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
             </WizardShell>
         );
     }
+
+    if (projectType === 'rental' && ['site_type', 'plot_dimensions', 'floor_selection', 'plan'].includes(currentStep.id)) {
+        const siteType = inputs.site_type;
+        const unitTypeBySite = projectConfigs.rental.rentalLogic.unitTypeBySite;
+        const unitType = unitTypeBySite[siteType] || null;
+
+        const options = currentStep.dependsOn
+            ? (currentStep.optionsByParent?.[inputs[currentStep.dependsOn]] || [])
+            : (currentStep.options || []);
+
+        const selectedValue = inputs[currentStep.field];
+        const customFloorCount = Number(inputs.custom_floors || 4);
+        const needsParentValue = Boolean(currentStep.dependsOn && !inputs[currentStep.dependsOn]);
+        const canProceed = currentStep.id === 'floor_selection'
+            ? Boolean(selectedValue && (selectedValue !== 'custom' || customFloorCount >= 4))
+            : Boolean(selectedValue);
+
+        return (
+            <WizardShell config={config} step={step} inputs={inputs} onBack={onBack} onNext={handleNext} total={total} showTopNext={false}>
+                <GlassCard style={{ minHeight: '64vh' }}>
+                    <h2 style={{ fontSize: '2.6rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, marginBottom: '0.8rem' }}>{currentStep.title}</h2>
+                    <p style={{ margin: 0, color: 'rgba(255,255,255,0.72)', marginBottom: '1.5rem', fontSize: '1.02rem' }}>
+                        Rental homes are configured for repeated units, semi-interior finishing, and external staircase-only access.
+                    </p>
+
+                    {needsParentValue && (
+                        <div style={{ padding: '1.2rem', borderRadius: '0.9rem', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.04)', marginBottom: '1.4rem' }}>
+                            Select Site Type first to unlock plot dimensions.
+                        </div>
+                    )}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.2rem', marginBottom: '1.2rem' }}>
+                        {options.map(opt => {
+                            const active = selectedValue === opt.value;
+                            return (
+                                <div
+                                    key={opt.value}
+                                    onClick={() => setField(currentStep.field, opt.value)}
+                                    style={{
+                                        cursor: 'pointer',
+                                        borderRadius: '1rem',
+                                        border: active ? '2px solid rgba(0,242,255,0.75)' : '1px solid rgba(255,255,255,0.16)',
+                                        background: active ? 'linear-gradient(135deg, rgba(0,242,255,0.16), rgba(32,227,178,0.12))' : 'rgba(255,255,255,0.03)',
+                                        overflow: 'hidden'
+                                    }}
+                                >
+                                    {opt.img && (
+                                        <div style={{ height: '120px', backgroundImage: `linear-gradient(to top, rgba(8,12,18,0.7), rgba(8,12,18,0.1)), url(${opt.img})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                                    )}
+                                    <div style={{ padding: '1rem' }}>
+                                        <div style={{ fontSize: '1.05rem', fontWeight: 800 }}>{opt.label}</div>
+                                        <div style={{ marginTop: '0.35rem', fontSize: '0.86rem', color: 'rgba(255,255,255,0.7)' }}>{opt.desc}</div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {currentStep.id === 'floor_selection' && selectedValue === 'custom' && (
+                        <div style={{ maxWidth: '340px', marginBottom: '1.4rem' }}>
+                            <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.4rem' }}>Enter Floors Above Ground (min 4)</label>
+                            <input
+                                type="number"
+                                min="4"
+                                value={inputs.custom_floors || 4}
+                                onChange={(e) => setField('custom_floors', Math.max(4, Number(e.target.value || 4)))}
+                                style={{ width: '100%', padding: '0.9rem 1rem', borderRadius: '0.8rem', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.06)', color: '#fff' }}
+                            />
+                            <div style={{ marginTop: '0.5rem', color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>
+                                Pricing above G+3 adds approximately 7-8 lakhs per additional floor.
+                            </div>
+                        </div>
+                    )}
+
+                    {(currentStep.id === 'site_type' || currentStep.id === 'plan') && (
+                        <div style={{ marginTop: '0.6rem', borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: '1rem', color: 'rgba(255,255,255,0.86)' }}>
+                            <div style={{ fontWeight: 700, marginBottom: '0.4rem' }}>Auto Rules</div>
+                            <div style={{ fontSize: '0.95rem' }}>Unit Type: {unitType || 'Select Site Type'}</div>
+                            <div style={{ fontSize: '0.95rem' }}>Staircase: External only</div>
+                            <div style={{ fontSize: '0.95rem' }}>Interior: Semi interior only (no luxury package)</div>
+                        </div>
+                    )}
+                </GlassCard>
+
+                <BottomStepButton
+                    label={canProceed ? 'NEXT ->' : 'SELECT AN OPTION TO CONTINUE'}
+                    disabled={!canProceed}
+                    onClick={() => { if (canProceed) handleNext(); }}
+                />
+            </WizardShell>
+        );
+    }
+
     /* STEP 6: Review Your Plan */
     if (currentStep.type === 'review') {
         // Rental Homes: show only relevant fields and auto-assign unit type
@@ -1119,7 +1259,8 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
             const unitDetails = rentalLogic.unitDetails[siteType] || {};
             const plan = inputs.plan || 'Base';
             const dimensions = inputs.dimensions;
-            const floors = inputs.floors;
+            const floors = inputs.floors === 'custom' ? `G+${Math.max(4, Number(inputs.custom_floors || 4))}` : inputs.floors;
+            const totalEstimatedCost = estData?.total_cost;
             return (
                 <WizardShell config={config} step={step} inputs={inputs} onBack={onBack} onNext={handleNext} nextLabel="LOOKS GOOD - CONTINUE NEXT" total={total} showTopNext={false}>
                     <GlassCard style={{ padding: '3.5rem 4rem 2.5rem', minHeight: '60vh', maxWidth: '900px' }}>
@@ -1161,6 +1302,10 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                             <div>
                                 <div style={{ fontWeight: 700, color: '#67E8F9', marginBottom: 4 }}>External Staircase</div>
                                 <div style={{ fontWeight: 900, fontSize: '1.2rem' }}>Yes</div>
+                            </div>
+                            <div>
+                                <div style={{ fontWeight: 700, color: '#67E8F9', marginBottom: 4 }}>Total Estimated Cost</div>
+                                <div style={{ fontWeight: 900, fontSize: '1.2rem' }}>{totalEstimatedCost ? fmt(totalEstimatedCost) : 'Computing...'}</div>
                             </div>
                         </div>
                         <div style={{ fontSize: '1.1rem', color: '#fff', marginBottom: '1.5rem' }}>
@@ -2246,10 +2391,10 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                             lineHeight: '1.7',
                                             textAlign: 'left'
                                         }}>
-                                            ✓ Backend server is running on port 8000<br/>
-                                            ✓ All required fields are filled (Plot Size, Dimensions)<br/>
+                                            ✓ Backend server is running on port 8080<br/>
+                                            ✓ All required fields are filled ({projectType === 'rental' ? 'Site Type, Dimensions, Floors, Plan' : 'Plot Size, Dimensions'})<br/>
                                             ✓ Network connection is stable<br/>
-                                            ✓ No firewall is blocking port 8000
+                                            ✓ No firewall is blocking port 8080
                                         </div>
                                         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
                                             <button 

@@ -218,9 +218,9 @@ export const projectConfigs = {
                 field: 'site_type',
                 type: 'single-select',
                 options: [
-                    { value: 'half', label: 'Half Site', desc: 'Single Bedroom Units' },
-                    { value: 'full', label: 'Full Site', desc: 'Double Bedroom Units' },
-                    { value: 'double', label: 'Double Site', desc: 'Multiple Bedroom Units' }
+                    { value: 'half', label: 'Half Site', desc: 'Single bedroom repeated rental units', img: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1600&q=95' },
+                    { value: 'full', label: 'Full Site', desc: 'Double bedroom rental units', img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=95' },
+                    { value: 'double', label: 'Double Site', desc: 'Multiple bedroom larger rental layouts', img: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?auto=format&fit=crop&w=1600&q=95' }
                 ]
             },
             {
@@ -231,22 +231,22 @@ export const projectConfigs = {
                 dependsOn: 'site_type',
                 optionsByParent: {
                     half: [
-                        { value: '20x30', label: '20 × 30', desc: '600 sq ft' },
-                        { value: '20x40', label: '20 × 40', desc: '800 sq ft' },
-                        { value: '25x40', label: '25 × 40', desc: '1000 sq ft' },
-                        { value: '30x30', label: '30 × 30', desc: '900 sq ft' }
+                        { value: '20x30', label: '20 × 30', desc: '600 sq ft', img: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1400&q=90' },
+                        { value: '20x40', label: '20 × 40', desc: '800 sq ft', img: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1400&q=90' },
+                        { value: '25x40', label: '25 × 40', desc: '1000 sq ft', img: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1400&q=90' },
+                        { value: '30x30', label: '30 × 30', desc: '900 sq ft', img: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1400&q=90' }
                     ],
                     full: [
-                        { value: '30x40', label: '30 × 40', desc: '1200 sq ft' },
-                        { value: '30x50', label: '30 × 50', desc: '1500 sq ft' },
-                        { value: '40x40', label: '40 × 40', desc: '1600 sq ft' },
-                        { value: '40x50', label: '40 × 50', desc: '2000 sq ft' }
+                        { value: '30x40', label: '30 × 40', desc: '1200 sq ft', img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=90' },
+                        { value: '30x50', label: '30 × 50', desc: '1500 sq ft', img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=90' },
+                        { value: '40x40', label: '40 × 40', desc: '1600 sq ft', img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=90' },
+                        { value: '40x50', label: '40 × 50', desc: '2000 sq ft', img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=90' }
                     ],
                     double: [
-                        { value: '40x60', label: '40 × 60', desc: '2400 sq ft' },
-                        { value: '50x80', label: '50 × 80', desc: '4000 sq ft' },
-                        { value: '60x80', label: '60 × 80', desc: '4800 sq ft' },
-                        { value: '60x100', label: '60 × 100', desc: '6000 sq ft' }
+                        { value: '40x60', label: '40 × 60', desc: '2400 sq ft', img: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?auto=format&fit=crop&w=1400&q=90' },
+                        { value: '50x80', label: '50 × 80', desc: '4000 sq ft', img: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?auto=format&fit=crop&w=1400&q=90' },
+                        { value: '60x80', label: '60 × 80', desc: '4800 sq ft', img: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?auto=format&fit=crop&w=1400&q=90' },
+                        { value: '60x100', label: '60 × 100', desc: '6000 sq ft', img: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?auto=format&fit=crop&w=1400&q=90' }
                     ]
                 }
             },
@@ -256,10 +256,10 @@ export const projectConfigs = {
                 field: 'floors',
                 type: 'single-select',
                 options: [
-                    { value: 'G+1', label: 'G+1', desc: '2 Units (Half), 2–4 Units (Full/Double)' },
-                    { value: 'G+2', label: 'G+2', desc: '3–6 Units' },
-                    { value: 'G+3', label: 'G+3', desc: '4–8 Units' },
-                    { value: 'custom', label: 'Custom', desc: 'Custom Floor Count' }
+                    { value: 'G+1', label: 'G+1', desc: 'Base anchor around 22L for Half Site', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=90' },
+                    { value: 'G+2', label: 'G+2', desc: 'Base anchor around 30L for Half Site', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=90' },
+                    { value: 'G+3', label: 'G+3', desc: 'Base anchor around 38-39L for Half Site', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=90' },
+                    { value: 'custom', label: 'Custom', desc: 'Above G+3 add 7-8L per extra floor', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=90' }
                 ]
             },
             {
@@ -268,16 +268,15 @@ export const projectConfigs = {
                 field: 'plan',
                 type: 'single-select',
                 options: [
-                    { value: 'Base', label: 'Base', desc: 'Basic finish (1.00x)' },
-                    { value: 'Classic', label: 'Classic', desc: 'Slightly improved (1.10x)' },
-                    { value: 'Premium', label: 'Premium', desc: 'Best rental finish (1.20x)' }
+                    { value: 'Base', label: 'Base', desc: 'Semi interior standard (1.00x)', img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=90' },
+                    { value: 'Classic', label: 'Classic', desc: 'Improved rental finish (1.14x)', img: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1400&q=90' },
+                    { value: 'Premium', label: 'Premium', desc: 'Best practical finish (1.28x)', img: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1400&q=90' }
                 ]
             },
             {
                 id: 'review',
                 title: 'Review Plan',
                 type: 'review',
-                // The UI will auto-assign unit_type and show only relevant fields
             },
             {
                 id: 'final-estimate',
@@ -285,7 +284,6 @@ export const projectConfigs = {
                 type: 'final-estimate'
             }
         ],
-        // Rental-specific logic for auto-assigning unit type and enforcing rules
         rentalLogic: {
             unitTypeBySite: {
                 half: 'Single Bedroom',
@@ -294,32 +292,19 @@ export const projectConfigs = {
             },
             unitDetails: {
                 half: { bedrooms: 1, bathrooms: 1, kitchen: true, hall: 'Small Hall' },
-                full: { bedrooms: 2, bathrooms: '1–2', kitchen: true, hall: 'Hall' },
-                double: { bedrooms: '2–3', bathrooms: 2, kitchen: true, hall: 'Large Hall' }
+                full: { bedrooms: 2, bathrooms: '1-2', kitchen: true, hall: 'Hall' },
+                double: { bedrooms: '2-3', bathrooms: 2, kitchen: true, hall: 'Large Hall' }
             },
             planMultipliers: {
                 Base: 1.0,
-                Classic: 1.1,
-                Premium: 1.2
+                Classic: 1.14,
+                Premium: 1.28
             },
             floorBaseCosts: {
                 half: { 'G+1': 2200000, 'G+2': 3000000, 'G+3': 3900000, extra: 750000 },
-                full: { 'G+1': 2600000, 'G+2': 3500000, 'G+3': 4500000, extra: 850000 },
-                double: { 'G+1': 3500000, 'G+2': 4800000, 'G+3': 6000000, extra: 1000000 }
+                full: { 'G+1': 2600000, 'G+2': 3500000, 'G+3': 4500000, extra: 800000 },
+                double: { 'G+1': 3600000, 'G+2': 5000000, 'G+3': 6500000, extra: 800000 }
             },
-            breakdownOrder: [
-                'RCC Structure',
-                'Brickwork',
-                'Plastering',
-                'Flooring',
-                'Plumbing',
-                'Electrical',
-                'Bathrooms',
-                'Staircase',
-                'Exterior Finish',
-                'Terrace Waterproofing',
-                'Excavation & Foundation'
-            ],
             breakdownComponents: [
                 'Excavation & Foundation',
                 'RCC Structure',
