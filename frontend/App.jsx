@@ -7,7 +7,7 @@ function App() {
   const [result, setResult] = useState(null);
 
   const handleEstimate = async () => {
-    const res = await fetch("http://localhost:8000/api/v1/own-house/estimate", {
+    const res = await fetch((import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1") + "/own-house/estimate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ dimensions, bedrooms, upgrades })
