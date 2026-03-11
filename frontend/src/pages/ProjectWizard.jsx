@@ -322,7 +322,7 @@ const SignaturePad = ({ onSave, onClear }) => {
     );
 };
 
-const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNext }) => {
+const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNext, onSmartUpgrade }) => {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
     const [estData, setEstData] = useState(null);
     const [loadingEst, setLoadingEst] = useState(false);
@@ -337,7 +337,9 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     const [signature, setSignature] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
-    // Removed smart upgrade options state
+    const [showUpgradePrompt, setShowUpgradePrompt] = useState(true);
+    const [showUpgradeOptions, setShowUpgradeOptions] = useState(false);
+    const [availableUpgrades, setAvailableUpgrades] = useState(['Classic', 'Premium', 'Elite']);
     const [termsAccepted, setTermsAccepted] = useState(false);
 
     const config = projectConfigs[projectType] || projectConfigs.own_house;
@@ -373,6 +375,26 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
 
         return () => clearTimeout(loadTimer);
     }, [currentStep.type]);
+
+    useEffect(() => {
+        if (currentStep.type !== 'final-estimate') return;
+
+        const gradePlan = estData?.grade_plan || inputs?.grade_plan || inputs?.structural_style || 'Base';
+        const normalizedGrade = String(gradePlan).toLowerCase();
+
+        const upgrades = normalizedGrade === 'base'
+            ? ['Classic', 'Premium', 'Elite']
+            : normalizedGrade === 'classic'
+                ? ['Premium', 'Elite']
+                : normalizedGrade === 'premium'
+                    ? ['Elite']
+                    : [];
+
+        setAvailableUpgrades(upgrades);
+        setShowUpgradePrompt(true);
+        setShowUpgradeOptions(false);
+        setShowFinalize(false);
+    }, [currentStep.type, estData?.grade_plan, inputs?.grade_plan, inputs?.structural_style]);
 
     // Animate the total valuation once data is present and animation is allowed
     useEffect(() => {
@@ -413,6 +435,29 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
             };
         }
 
+        if (projectType === 'interior') {
+            return {
+                total_sqft: Number(payload.total_sqft || 1200),
+                style: payload.style || 'modern',
+                finish_level: payload.finish_level || 'standard',
+                include_false_ceiling: payload.include_false_ceiling ?? true,
+                include_modular_kitchen: payload.include_modular_kitchen ?? true,
+                include_wardrobes: payload.include_wardrobes ?? true,
+            };
+        }
+
+        if (projectType === 'exterior') {
+            return {
+                total_sqft: Number(payload.total_sqft || 1500),
+                style: payload.style || 'modern',
+                include_compound_wall: payload.include_compound_wall ?? true,
+                include_waterproofing: payload.include_waterproofing ?? true,
+                include_gate: payload.include_gate ?? true,
+                include_elevation: payload.include_elevation ?? true,
+                include_landscaping: payload.include_landscaping ?? false,
+            };
+        }
+
         // Define required fields with defaults for own-house flow
         const requiredDefaults = {
             plot_size: 'full',
@@ -450,7 +495,11 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
             // Validate minimum required fields
             const hasRequiredFields = projectType === 'rental'
                 ? Boolean(inputs.site_type && inputs.dimensions && inputs.floors && inputs.plan)
-                : Boolean(inputs.plot_size && inputs.dimensions);
+                : projectType === 'interior'
+                    ? Boolean(inputs.style && inputs.total_sqft && inputs.finish_level)
+                    : projectType === 'exterior'
+                        ? Boolean(inputs.style && inputs.total_sqft)
+                        : Boolean(inputs.plot_size && inputs.dimensions);
 
             if (!hasRequiredFields) {
                 if (!isBackground) {
@@ -458,7 +507,11 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                         error: true, 
                         message: projectType === 'rental'
                             ? 'Please complete required fields: Site Type, Dimensions, Floors and Plan'
-                            : 'Please complete required fields: Plot Size and Dimensions'
+                            : projectType === 'interior'
+                                ? 'Please complete required fields: Style, Finish Level and Area'
+                                : projectType === 'exterior'
+                                    ? 'Please complete required fields: Style and Area'
+                                    : 'Please complete required fields: Plot Size and Dimensions'
                     });
                 }
                 if (!isBackground) setLoadingEst(false);
@@ -566,6 +619,12 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     };
 
     const [saveError, setSaveError] = useState(null);
+
+    const handleSmartUpgrade = (grade) => {
+        if (typeof onSmartUpgrade === 'function') {
+            onSmartUpgrade(grade);
+        }
+    };
 
     const handleSaveProject = async () => {
         if (!clientName) {
@@ -1157,7 +1216,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
         );
     }
 
-    if (projectType === 'rental' && ['site_type', 'plot_dimensions', 'floor_selection', 'plan'].includes(currentStep.id)) {
+    if (projectType === 'rental' && ['floor_selection', 'plan'].includes(currentStep.id)) {
         const siteType = inputs.site_type;
         const unitTypeBySite = projectConfigs.rental.rentalLogic.unitTypeBySite;
         const unitType = unitTypeBySite[siteType] || null;
@@ -2392,7 +2451,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                             textAlign: 'left'
                                         }}>
                                             ✓ Backend server is running on port 8080<br/>
-                                            ✓ All required fields are filled ({projectType === 'rental' ? 'Site Type, Dimensions, Floors, Plan' : 'Plot Size, Dimensions'})<br/>
+                                            ✓ All required fields are filled ({projectType === 'rental' ? 'Site Type, Dimensions, Floors, Plan' : projectType === 'interior' ? 'Style, Finish Level, Area' : projectType === 'exterior' ? 'Style, Area' : 'Plot Size, Dimensions'})<br/>
                                             ✓ Network connection is stable<br/>
                                             ✓ No firewall is blocking port 8080
                                         </div>
@@ -2635,7 +2694,117 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                     </div>
                                 </div>
 
-                                {/* Smart Upgrades section removed */}
+                                <div style={{ ...liquidGlass, padding: '40px', background: 'rgba(255,255,255,0)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
+                                        <div style={{ color: '#FCD34D', fontSize: '20px' }}>✨</div>
+                                        <h3 style={{ fontSize: '18px', fontWeight: 900, margin: 0, color: '#fff' }}>Smart Upgrade</h3>
+                                    </div>
+
+                                    <div style={{ padding: '24px', borderRadius: '16px', background: 'rgba(251,191,36,0.05)', border: '1px solid rgba(251,191,36,0.14)' }}>
+                                        {showUpgradePrompt && !showUpgradeOptions && (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                                <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.75)', margin: 0, lineHeight: 1.6, fontFamily: "'Outfit', sans-serif" }}>
+                                                    Would you like AI Smart Upgrades for this estimate before final authorization?
+                                                </p>
+                                                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowUpgradePrompt(false);
+                                                            setShowUpgradeOptions(true);
+                                                            setShowFinalize(false);
+                                                        }}
+                                                        style={{
+                                                            padding: '12px 24px',
+                                                            borderRadius: '10px',
+                                                            border: 'none',
+                                                            background: '#FCD34D',
+                                                            color: '#111827',
+                                                            fontWeight: 800,
+                                                            fontSize: '14px',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    >
+                                                        Yes, show upgrades
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowUpgradePrompt(false);
+                                                            setShowUpgradeOptions(false);
+                                                            setShowFinalize(true);
+                                                        }}
+                                                        style={{
+                                                            padding: '12px 24px',
+                                                            borderRadius: '10px',
+                                                            border: '1px solid rgba(255,255,255,0.2)',
+                                                            background: 'rgba(255,255,255,0.04)',
+                                                            color: '#fff',
+                                                            fontWeight: 700,
+                                                            fontSize: '14px',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    >
+                                                        No, continue
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {showUpgradeOptions && (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                                <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.65)', margin: 0, fontWeight: 700, letterSpacing: '0.04em' }}>
+                                                    SELECT UPGRADE GRADE
+                                                </p>
+
+                                                {availableUpgrades.length > 0 ? (
+                                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                                        {availableUpgrades.map((grade) => (
+                                                            <button
+                                                                key={grade}
+                                                                onClick={() => handleSmartUpgrade(grade)}
+                                                                style={{
+                                                                    padding: '12px 20px',
+                                                                    borderRadius: '10px',
+                                                                    border: 'none',
+                                                                    background: grade === 'Classic' ? '#FCD34D' : grade === 'Premium' ? '#A3E635' : '#38BDF8',
+                                                                    color: '#111827',
+                                                                    fontWeight: 800,
+                                                                    fontSize: '14px',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                            >
+                                                                {grade}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <p style={{ margin: 0, color: 'rgba(255,255,255,0.65)', fontSize: '14px' }}>
+                                                        No higher upgrade grades are available for this selected plan.
+                                                    </p>
+                                                )}
+
+                                                <button
+                                                    onClick={() => {
+                                                        setShowUpgradeOptions(false);
+                                                        setShowFinalize(true);
+                                                    }}
+                                                    style={{
+                                                        alignSelf: 'flex-start',
+                                                        padding: '10px 18px',
+                                                        borderRadius: '10px',
+                                                        border: '1px solid rgba(255,255,255,0.2)',
+                                                        background: 'rgba(255,255,255,0.04)',
+                                                        color: '#fff',
+                                                        fontWeight: 700,
+                                                        fontSize: '13px',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    Skip upgrades and continue
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
 
                             {/* ── 6. FINAL AUTHORIZATION BLOCK (Digital Signature) ── */}

@@ -213,70 +213,121 @@ export const projectConfigs = {
         theme: 'card-theme-blue',
         steps: [
             {
-                id: 'site_type',
-                title: 'Site Type',
-                field: 'site_type',
-                type: 'single-select',
-                options: [
-                    { value: 'half', label: 'Half Site', desc: 'Single bedroom repeated rental units', img: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1600&q=95' },
-                    { value: 'full', label: 'Full Site', desc: 'Double bedroom rental units', img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=95' },
-                    { value: 'double', label: 'Double Site', desc: 'Multiple bedroom larger rental layouts', img: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?auto=format&fit=crop&w=1600&q=95' }
-                ]
-            },
-            {
-                id: 'plot_dimensions',
-                title: 'Plot Dimensions',
-                field: 'dimensions',
-                type: 'single-select',
-                dependsOn: 'site_type',
-                optionsByParent: {
-                    half: [
-                        { value: '20x30', label: '20 × 30', desc: '600 sq ft', img: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1400&q=90' },
-                        { value: '20x40', label: '20 × 40', desc: '800 sq ft', img: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1400&q=90' },
-                        { value: '25x40', label: '25 × 40', desc: '1000 sq ft', img: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1400&q=90' },
-                        { value: '30x30', label: '30 × 30', desc: '900 sq ft', img: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1400&q=90' }
-                    ],
-                    full: [
-                        { value: '30x40', label: '30 × 40', desc: '1200 sq ft', img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=90' },
-                        { value: '30x50', label: '30 × 50', desc: '1500 sq ft', img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=90' },
-                        { value: '40x40', label: '40 × 40', desc: '1600 sq ft', img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=90' },
-                        { value: '40x50', label: '40 × 50', desc: '2000 sq ft', img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1400&q=90' }
-                    ],
-                    double: [
-                        { value: '40x60', label: '40 × 60', desc: '2400 sq ft', img: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?auto=format&fit=crop&w=1400&q=90' },
-                        { value: '50x80', label: '50 × 80', desc: '4000 sq ft', img: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?auto=format&fit=crop&w=1400&q=90' },
-                        { value: '60x80', label: '60 × 80', desc: '4800 sq ft', img: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?auto=format&fit=crop&w=1400&q=90' },
-                        { value: '60x100', label: '60 × 100', desc: '6000 sq ft', img: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?auto=format&fit=crop&w=1400&q=90' }
+                id: 'site_dimensions',
+                title: 'Site Type & Plot Dimensions',
+                type: 'split-selection',
+                leftSide: {
+                    label: 'Select Site Type',
+                    field: 'site_type',
+                    options: [
+                        { value: 'half', label: 'Half Site', desc: 'Single bedroom repeated rental units' },
+                        { value: 'full', label: 'Full Site', desc: 'Double bedroom rental units' },
+                        { value: 'double', label: 'Double Site', desc: 'Multiple bedroom larger rental layouts' }
                     ]
+                },
+                rightSide: {
+                    label: 'Select Plot Dimensions',
+                    field: 'dimensions',
+                    dependsOn: 'site_type',
+                    optionsByParent: {
+                        half: [
+                            { value: '20x30', label: '20 × 30', desc: '600 sq ft' },
+                            { value: '20x40', label: '20 × 40', desc: '800 sq ft' },
+                            { value: '25x40', label: '25 × 40', desc: '1000 sq ft' },
+                            { value: '30x30', label: '30 × 30', desc: '900 sq ft' }
+                        ],
+                        full: [
+                            { value: '30x40', label: '30 × 40', desc: '1200 sq ft' },
+                            { value: '30x50', label: '30 × 50', desc: '1500 sq ft' },
+                            { value: '40x40', label: '40 × 40', desc: '1600 sq ft' },
+                            { value: '40x50', label: '40 × 50', desc: '2000 sq ft' }
+                        ],
+                        double: [
+                            { value: '40x60', label: '40 × 60', desc: '2400 sq ft' },
+                            { value: '50x80', label: '50 × 80', desc: '4000 sq ft' },
+                            { value: '60x80', label: '60 × 80', desc: '4800 sq ft' },
+                            { value: '60x100', label: '60 × 100', desc: '6000 sq ft' }
+                        ]
+                    }
                 }
             },
             {
                 id: 'floor_selection',
-                title: 'Floors',
-                field: 'floors',
-                type: 'single-select',
-                options: [
-                    { value: 'G+1', label: 'G+1', desc: 'Base anchor around 22L for Half Site', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=90' },
-                    { value: 'G+2', label: 'G+2', desc: 'Base anchor around 30L for Half Site', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=90' },
-                    { value: 'G+3', label: 'G+3', desc: 'Base anchor around 38-39L for Half Site', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=90' },
-                    { value: 'custom', label: 'Custom', desc: 'Above G+3 add 7-8L per extra floor', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=90' }
-                ]
-            },
-            {
-                id: 'plan',
-                title: 'Rental Plan',
-                field: 'plan',
-                type: 'single-select',
-                options: [
+                title: 'Floors & Grade',
+                type: 'floor-grade',
+                floorField: 'floors',
+                gradeField: 'plan',
+                floorOptions: [
+                    { value: 'G+1', label: 'G+1', desc: 'Compact rental stack', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1600&q=95' },
+                    { value: 'G+2', label: 'G+2', desc: 'Balanced rental density', img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=95' },
+                    { value: 'G+3', label: 'G+3', desc: 'Higher rental yield', img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=95' }
+                ],
+                gradeOptions: [
                     { value: 'Base', label: 'Base', desc: 'Semi interior standard (1.00x)', img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=90' },
                     { value: 'Classic', label: 'Classic', desc: 'Improved rental finish (1.14x)', img: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1400&q=90' },
                     { value: 'Premium', label: 'Premium', desc: 'Best practical finish (1.28x)', img: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1400&q=90' }
                 ]
             },
             {
+                id: 'additional_details',
+                title: 'Additional Details',
+                type: 'complex-grid',
+                sections: [
+                    {
+                        label: 'Target Unit Count',
+                        field: 'target_unit_count',
+                        type: 'number-custom',
+                        hasCustom: false,
+                        options: [
+                            { value: 2, label: '2 Units' },
+                            { value: 4, label: '4 Units' },
+                            { value: 6, label: '6 Units' },
+                            { value: 8, label: '8 Units' }
+                        ]
+                    },
+                    { label: 'External Staircase Only?', field: 'external_staircase_only', type: 'toggle' },
+                    { label: 'Separate Meter Per Unit?', field: 'separate_meter_per_unit', type: 'toggle' }
+                ]
+            },
+            {
                 id: 'review',
-                title: 'Review Plan',
-                type: 'review',
+                title: 'Review Your Plan',
+                type: 'review'
+            },
+            {
+                id: 'interior_selection',
+                title: 'Interior Selection',
+                type: 'interior-select',
+                sections: [
+                    {
+                        label: 'Interior Package',
+                        field: 'interior_package',
+                        options: [
+                            {
+                                value: 'semi',
+                                label: 'Semi Interior',
+                                desc: 'Rental-ready package for repeated units',
+                                aiExplain: 'AI suggests Semi for rental projects because it balances durability, tenant appeal and payback period.',
+                                inclusions: [
+                                    'Modular kitchen basic setup',
+                                    'Wardrobe shutters in key bedrooms',
+                                    'Utility lighting and essential electrical points',
+                                    'Durable, low-maintenance finish selections'
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'project_specs',
+                title: 'Project Specifications & Add-ons',
+                type: 'addons',
+                addons: [
+                    { field: 'include_compound_wall', label: 'Compound Wall', desc: 'Boundary wall with gate', icon: '🧱', cost: '₹3L' },
+                    { field: 'include_rainwater_harvesting', label: 'Rainwater Harvesting', desc: 'Eco-friendly water system', icon: '🌧️', cost: '₹60K' },
+                    { field: 'include_car_parking', label: 'Car Parking Covering', desc: 'Dedicated car parking', icon: '🚗', cost: '₹55K' }
+                ]
             },
             {
                 id: 'final-estimate',
@@ -340,20 +391,134 @@ export const projectConfigs = {
     },
     interior: {
         title: 'Interior',
-        subtitle: 'Interior design and furnishing',
+        subtitle: 'Dataset-driven interior style estimation',
         image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&q=80',
         theme: 'card-theme-red',
         steps: [
-            { id: 'area_selection', field: 'total_sqft', title: 'Carpet Area', options: [{ value: 1000, label: '1,000 sqft', desc: 'Apartment' }, { value: 2000, label: '2,000 sqft', desc: 'Large Home' }] }
+            {
+                id: 'style_selection',
+                field: 'style',
+                title: 'Interior Style (Dataset)',
+                options: [
+                    { value: 'modern', label: 'Modern', desc: 'Clean and minimal' },
+                    { value: 'contemporary', label: 'Contemporary', desc: 'Current design language' },
+                    { value: 'scandinavian', label: 'Scandinavian', desc: 'Light and functional' },
+                    { value: 'transitional', label: 'Transitional', desc: 'Classic + modern balance' },
+                    { value: 'industrial', label: 'Industrial', desc: 'Raw and urban' },
+                    { value: 'farmhouse', label: 'Farmhouse', desc: 'Warm and rustic comfort' },
+                    { value: 'rustic', label: 'Rustic', desc: 'Natural textures and wood' },
+                    { value: 'traditional', label: 'Traditional', desc: 'Timeless formal design' },
+                    { value: 'victorian', label: 'Victorian', desc: 'Detailed ornamental style' },
+                    { value: 'french-country', label: 'French Country', desc: 'Elegant provincial charm' },
+                    { value: 'mid-century-modern', label: 'Mid-Century Modern', desc: 'Retro modern simplicity' },
+                    { value: 'mediterranean', label: 'Mediterranean', desc: 'Warm earthy elegance' },
+                    { value: 'coastal', label: 'Coastal', desc: 'Airy seaside feel' },
+                    { value: 'craftsman', label: 'Craftsman', desc: 'Handcrafted detailing' },
+                    { value: 'eclectic', label: 'Eclectic', desc: 'Curated mix of styles' },
+                    { value: 'asian', label: 'Asian', desc: 'Zen-inspired harmony' },
+                    { value: 'southwestern', label: 'Southwestern', desc: 'Desert tones and texture' },
+                    { value: 'shabby-chic-style', label: 'Shabby Chic Style', desc: 'Soft vintage aesthetic' },
+                    { value: 'tropical', label: 'Tropical', desc: 'Lush relaxed atmosphere' }
+                ]
+            },
+            {
+                id: 'finish_level',
+                field: 'finish_level',
+                title: 'Finish Level',
+                options: [
+                    { value: 'budget', label: 'Budget', desc: 'Cost-efficient setup' },
+                    { value: 'standard', label: 'Standard', desc: 'Balanced quality and cost' },
+                    { value: 'premium', label: 'Premium', desc: 'High-end material finish' }
+                ]
+            },
+            {
+                id: 'area_selection',
+                field: 'total_sqft',
+                title: 'Interior Area',
+                options: [
+                    { value: 800, label: '800 sqft', desc: 'Compact apartment' },
+                    { value: 1200, label: '1,200 sqft', desc: 'Standard home' },
+                    { value: 1800, label: '1,800 sqft', desc: 'Large family home' },
+                    { value: 2500, label: '2,500 sqft', desc: 'Premium residence' }
+                ]
+            },
+            {
+                id: 'interior_addons',
+                title: 'Interior Components',
+                type: 'complex-grid',
+                sections: [
+                    { label: 'False Ceiling', field: 'include_false_ceiling', type: 'toggle' },
+                    { label: 'Modular Kitchen', field: 'include_modular_kitchen', type: 'toggle' },
+                    { label: 'Wardrobes & Storage', field: 'include_wardrobes', type: 'toggle' }
+                ]
+            },
+            {
+                id: 'final-estimate',
+                title: 'Cost Estimation',
+                type: 'final-estimate'
+            }
         ]
     },
     exterior: {
         title: 'Exterior',
-        subtitle: 'Facade and outdoor improvements',
+        subtitle: 'Dataset-driven facade and outdoor estimation',
         image: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&q=80',
         theme: 'card-theme-white',
         steps: [
-            { id: 'exterior_items', title: 'Exterior Solutions', multi: true, fields: [{ id: 'include_compound_wall', label: 'Compound Wall', type: 'boolean' }] }
+            {
+                id: 'style_selection',
+                field: 'style',
+                title: 'Exterior Style (Dataset)',
+                options: [
+                    { value: 'modern', label: 'Modern', desc: 'Minimal geometric facade' },
+                    { value: 'contemporary', label: 'Contemporary', desc: 'Current urban expression' },
+                    { value: 'scandinavian', label: 'Scandinavian', desc: 'Simple clean elevations' },
+                    { value: 'transitional', label: 'Transitional', desc: 'Classic-modern blend' },
+                    { value: 'industrial', label: 'Industrial', desc: 'Bold raw materials' },
+                    { value: 'farmhouse', label: 'Farmhouse', desc: 'Rural modern blend' },
+                    { value: 'rustic', label: 'Rustic', desc: 'Stone and timber character' },
+                    { value: 'traditional', label: 'Traditional', desc: 'Formal and symmetric' },
+                    { value: 'victorian', label: 'Victorian', desc: 'Decorative heritage look' },
+                    { value: 'french-country', label: 'French Country', desc: 'European countryside elegance' },
+                    { value: 'mid-century-modern', label: 'Mid-Century Modern', desc: 'Horizontal clean volumes' },
+                    { value: 'mediterranean', label: 'Mediterranean', desc: 'Arches and warm texture' },
+                    { value: 'coastal', label: 'Coastal', desc: 'Bright and airy facade' },
+                    { value: 'craftsman', label: 'Craftsman', desc: 'Strong artisan details' },
+                    { value: 'eclectic', label: 'Eclectic', desc: 'Mixed personalized language' },
+                    { value: 'asian', label: 'Asian', desc: 'Calm horizontal balance' },
+                    { value: 'southwestern', label: 'Southwestern', desc: 'Earthy desert expression' },
+                    { value: 'shabby-chic-style', label: 'Shabby Chic Style', desc: 'Soft vintage exterior' },
+                    { value: 'tropical', label: 'Tropical', desc: 'Climate-ready airy skin' }
+                ]
+            },
+            {
+                id: 'area_selection',
+                field: 'total_sqft',
+                title: 'Exterior Area',
+                options: [
+                    { value: 1000, label: '1,000 sqft', desc: 'Compact frontage' },
+                    { value: 1500, label: '1,500 sqft', desc: 'Standard plot envelope' },
+                    { value: 2500, label: '2,500 sqft', desc: 'Large facade scope' },
+                    { value: 4000, label: '4,000 sqft', desc: 'Premium full envelope' }
+                ]
+            },
+            {
+                id: 'exterior_components',
+                title: 'Exterior Components',
+                type: 'complex-grid',
+                sections: [
+                    { label: 'Compound Wall', field: 'include_compound_wall', type: 'toggle' },
+                    { label: 'Waterproofing', field: 'include_waterproofing', type: 'toggle' },
+                    { label: 'Main Gate', field: 'include_gate', type: 'toggle' },
+                    { label: 'Elevation Treatment', field: 'include_elevation', type: 'toggle' },
+                    { label: 'Landscaping', field: 'include_landscaping', type: 'toggle' }
+                ]
+            },
+            {
+                id: 'final-estimate',
+                title: 'Cost Estimation',
+                type: 'final-estimate'
+            }
         ]
     }
 };
