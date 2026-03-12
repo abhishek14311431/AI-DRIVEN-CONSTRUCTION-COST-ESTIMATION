@@ -274,94 +274,19 @@ export const projectConfigs = {
                 type: 'complex-grid',
                 sections: [
                     {
-                        label: '1️⃣ Staircase Type',
-                        field: 'staircase_type',
+                        label: 'Target Unit Count',
+                        field: 'target_unit_count',
                         type: 'number-custom',
                         hasCustom: false,
                         options: [
-                            { value: 'external', label: 'External Staircase' },
-                            { value: 'internal', label: 'Internal Staircase' }
+                            { value: 2, label: '2 Units' },
+                            { value: 4, label: '4 Units' },
+                            { value: 6, label: '6 Units' },
+                            { value: 8, label: '8 Units' }
                         ]
                     },
-                    {
-                        label: '2️⃣ Parking Requirement',
-                        field: 'parking_requirement',
-                        type: 'number-custom',
-                        hasCustom: false,
-                        options: [
-                            { value: 'none', label: 'No Parking' },
-                            { value: 'two_wheeler', label: 'Two Wheeler' },
-                            { value: 'car', label: 'Car Parking' },
-                            { value: 'both', label: 'Both' }
-                        ]
-                    },
-                    {
-                        label: '3️⃣ Water Source',
-                        field: 'water_source',
-                        type: 'number-custom',
-                        hasCustom: false,
-                        options: [
-                            { value: 'borewell', label: 'Borewell' },
-                            { value: 'municipal', label: 'Municipal Water' },
-                            { value: 'both', label: 'Both' }
-                        ]
-                    },
-                    {
-                        label: '4️⃣ Water Storage System',
-                        field: 'water_storage',
-                        type: 'number-custom',
-                        hasCustom: false,
-                        options: [
-                            { value: 'overhead_tank', label: 'Overhead Tank' },
-                            { value: 'underground_sump', label: 'Underground Sump' },
-                            { value: 'both', label: 'Both' }
-                        ]
-                    },
-                    {
-                        label: '5️⃣ Terrace Usage',
-                        field: 'terrace_usage',
-                        type: 'number-custom',
-                        hasCustom: false,
-                        options: [
-                            { value: 'open_terrace', label: 'Open Terrace' },
-                            { value: 'utility_terrace', label: 'Utility Terrace' },
-                            { value: 'solar_panel', label: 'Solar Panel Area' }
-                        ]
-                    },
-                    {
-                        label: '6️⃣ Laundry / Washing Area',
-                        field: 'laundry_area',
-                        type: 'toggle'
-                    },
-                    {
-                        label: '7️⃣ Power Backup',
-                        field: 'power_backup',
-                        type: 'number-custom',
-                        hasCustom: false,
-                        options: [
-                            { value: 'none', label: 'None' },
-                            { value: 'inverter', label: 'Inverter Backup' },
-                            { value: 'generator', label: 'Generator Backup' }
-                        ]
-                    },
-                    {
-                        label: '8️⃣ Security System',
-                        field: 'security_system',
-                        type: 'number-custom',
-                        hasCustom: false,
-                        options: [
-                            { value: 'basic_gate', label: 'Basic Gate' },
-                            { value: 'cctv', label: 'CCTV Cameras' },
-                            { value: 'both', label: 'Both' }
-                        ]
-                    },
-                    {
-                        label: '9️⃣ Lift / Elevator',
-                        field: 'lift_required',
-                        type: 'toggle',
-                        conditional: true,
-                        showWhen: { field: 'floors', check: 'greaterThan', value: 'G+3' }
-                    }
+                    { label: 'External Staircase Only?', field: 'external_staircase_only', type: 'toggle' },
+                    { label: 'Separate Meter Per Unit?', field: 'separate_meter_per_unit', type: 'toggle' }
                 ]
             },
             {

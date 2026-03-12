@@ -874,11 +874,16 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
         };
 
         const plotImages = {
+            half: 'https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?auto=format&fit=crop&w=1800&q=95',
             full: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1800&q=95',
             double: 'https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=1800&q=95'
         };
 
         const dimensionImages = {
+            '20x30': 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=1800&q=95',
+            '20x40': 'https://images.unsplash.com/photo-1600607687644-c7171b42498f?auto=format&fit=crop&w=1800&q=95',
+            '25x40': 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=1800&q=95',
+            '30x30': 'https://images.unsplash.com/photo-1572120360610-d971b9d7767c?auto=format&fit=crop&w=1800&q=95',
             '30x40': 'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&w=1800&q=95',
             '30x50': 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=95',
             '40x40': 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1800&q=95',
@@ -900,7 +905,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.2rem' }}>
                                 {left.options.map(opt => {
                                     const isActive = inputs[left.field] === opt.value;
-                                    const image = plotImages[opt.value];
+                                    const image = plotImages[opt.value] || 'https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&w=1800&q=95';
                                     return (
                                         <div key={opt.value}
                                             onClick={() => { setField(left.field, opt.value); setField(right.field, null); }}
@@ -932,7 +937,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.2rem' }}>
                                     {rightOptions.map(opt => {
                                         const isActive = inputs[right.field] === opt.value;
-                                        const image = dimensionImages[opt.value];
+                                        const image = dimensionImages[opt.value] || 'https://images.unsplash.com/photo-1448630360428-65456885c650?auto=format&fit=crop&w=1800&q=95';
                                         return (
                                             <div key={opt.value}
                                                 onClick={() => setField(right.field, opt.value)}
@@ -1089,28 +1094,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     }
 
     if (currentStep.type === 'complex-grid') {
-        // Helper function to check if a section should be shown based on conditional logic
-        const shouldShowSection = (section) => {
-            if (!section.conditional) return true;
-            
-            if (section.showWhen) {
-                const { field, check, value } = section.showWhen;
-                const fieldValue = inputs[field];
-                
-                if (check === 'greaterThan') {
-                    // Special handling for floor comparison (G+1, G+2, G+3, G+4, etc.)
-                    const floorMap = { 'G+1': 1, 'G+2': 2, 'G+3': 3, 'G+4': 4, 'G+5': 5 };
-                    const fieldFloor = fieldValue?.startsWith('G+') ? parseInt(fieldValue.replace('G+', '')) : 0;
-                    const compareFloor = value?.startsWith('G+') ? floorMap[value] : parseInt(value);
-                    return fieldFloor > compareFloor;
-                }
-            }
-            return true;
-        };
-        
         const sectionValid = (section) => {
-            if (!shouldShowSection(section)) return true; // Hidden sections don't need validation
-            
             const value = inputs[section.field];
             if (section.type === 'toggle') return value === true || value === false;
             return value !== undefined && value !== null && value !== '';
@@ -1124,7 +1108,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                     <h2 style={{ fontSize: '2.8rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, marginBottom: '2rem' }}>{currentStep.title}</h2>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.9rem' }}>
-                        {(currentStep.sections || []).filter(shouldShowSection).map(section => {
+                        {(currentStep.sections || []).map(section => {
                             const value = inputs[section.field];
                             const options = section.optionsByPlotSize?.[inputs.plot_size] || section.options || [];
                             const customField = `${section.field}_custom`;
@@ -1165,7 +1149,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
 
                                     {section.type === 'number-custom' && (
                                         <>
-                                            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(options.length, 3)}, 1fr)`, gap: '0.85rem' }}>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.85rem' }}>
                                                 {options.map(opt => {
                                                     const optValue = opt.value;
                                                     const active = value === optValue;
