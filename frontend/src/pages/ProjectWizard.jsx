@@ -1089,7 +1089,28 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     }
 
     if (currentStep.type === 'complex-grid') {
+        // Helper function to check if a section should be shown based on conditional logic
+        const shouldShowSection = (section) => {
+            if (!section.conditional) return true;
+            
+            if (section.showWhen) {
+                const { field, check, value } = section.showWhen;
+                const fieldValue = inputs[field];
+                
+                if (check === 'greaterThan') {
+                    // Special handling for floor comparison (G+1, G+2, G+3, G+4, etc.)
+                    const floorMap = { 'G+1': 1, 'G+2': 2, 'G+3': 3, 'G+4': 4, 'G+5': 5 };
+                    const fieldFloor = fieldValue?.startsWith('G+') ? parseInt(fieldValue.replace('G+', '')) : 0;
+                    const compareFloor = value?.startsWith('G+') ? floorMap[value] : parseInt(value);
+                    return fieldFloor > compareFloor;
+                }
+            }
+            return true;
+        };
+        
         const sectionValid = (section) => {
+            if (!shouldShowSection(section)) return true; // Hidden sections don't need validation
+            
             const value = inputs[section.field];
             if (section.type === 'toggle') return value === true || value === false;
             return value !== undefined && value !== null && value !== '';
@@ -1103,7 +1124,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                     <h2 style={{ fontSize: '2.8rem', fontFamily: "'Playfair Display', serif", fontWeight: 700, marginBottom: '2rem' }}>{currentStep.title}</h2>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.9rem' }}>
-                        {(currentStep.sections || []).map(section => {
+                        {(currentStep.sections || []).filter(shouldShowSection).map(section => {
                             const value = inputs[section.field];
                             const options = section.optionsByPlotSize?.[inputs.plot_size] || section.options || [];
                             const customField = `${section.field}_custom`;
@@ -1144,7 +1165,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
 
                                     {section.type === 'number-custom' && (
                                         <>
-                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.85rem' }}>
+                                            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(options.length, 3)}, 1fr)`, gap: '0.85rem' }}>
                                                 {options.map(opt => {
                                                     const optValue = opt.value;
                                                     const active = value === optValue;

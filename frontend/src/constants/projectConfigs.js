@@ -263,9 +263,9 @@ export const projectConfigs = {
                     { value: 'G+3', label: 'G+3', desc: 'Higher rental yield', img: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=95' }
                 ],
                 gradeOptions: [
-                    { value: 'Base', label: 'Base', desc: 'Semi interior standard (1.00x)', img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=90' },
-                    { value: 'Classic', label: 'Classic', desc: 'Improved rental finish (1.14x)', img: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1400&q=90' },
-                    { value: 'Premium', label: 'Premium', desc: 'Best practical finish (1.28x)', img: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1400&q=90' }
+                    { value: 'Base', label: 'Base', desc: 'Base', img: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=90' },
+                    { value: 'Classic', label: 'Classic', desc: 'Classic', img: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1400&q=90' },
+                    { value: 'Premium', label: 'Premium', desc: 'Premium', img: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1400&q=90' }
                 ]
             },
             {
@@ -274,19 +274,94 @@ export const projectConfigs = {
                 type: 'complex-grid',
                 sections: [
                     {
-                        label: 'Target Unit Count',
-                        field: 'target_unit_count',
+                        label: '1️⃣ Staircase Type',
+                        field: 'staircase_type',
                         type: 'number-custom',
                         hasCustom: false,
                         options: [
-                            { value: 2, label: '2 Units' },
-                            { value: 4, label: '4 Units' },
-                            { value: 6, label: '6 Units' },
-                            { value: 8, label: '8 Units' }
+                            { value: 'external', label: 'External Staircase' },
+                            { value: 'internal', label: 'Internal Staircase' }
                         ]
                     },
-                    { label: 'External Staircase Only?', field: 'external_staircase_only', type: 'toggle' },
-                    { label: 'Separate Meter Per Unit?', field: 'separate_meter_per_unit', type: 'toggle' }
+                    {
+                        label: '2️⃣ Parking Requirement',
+                        field: 'parking_requirement',
+                        type: 'number-custom',
+                        hasCustom: false,
+                        options: [
+                            { value: 'none', label: 'No Parking' },
+                            { value: 'two_wheeler', label: 'Two Wheeler' },
+                            { value: 'car', label: 'Car Parking' },
+                            { value: 'both', label: 'Both' }
+                        ]
+                    },
+                    {
+                        label: '3️⃣ Water Source',
+                        field: 'water_source',
+                        type: 'number-custom',
+                        hasCustom: false,
+                        options: [
+                            { value: 'borewell', label: 'Borewell' },
+                            { value: 'municipal', label: 'Municipal Water' },
+                            { value: 'both', label: 'Both' }
+                        ]
+                    },
+                    {
+                        label: '4️⃣ Water Storage System',
+                        field: 'water_storage',
+                        type: 'number-custom',
+                        hasCustom: false,
+                        options: [
+                            { value: 'overhead_tank', label: 'Overhead Tank' },
+                            { value: 'underground_sump', label: 'Underground Sump' },
+                            { value: 'both', label: 'Both' }
+                        ]
+                    },
+                    {
+                        label: '5️⃣ Terrace Usage',
+                        field: 'terrace_usage',
+                        type: 'number-custom',
+                        hasCustom: false,
+                        options: [
+                            { value: 'open_terrace', label: 'Open Terrace' },
+                            { value: 'utility_terrace', label: 'Utility Terrace' },
+                            { value: 'solar_panel', label: 'Solar Panel Area' }
+                        ]
+                    },
+                    {
+                        label: '6️⃣ Laundry / Washing Area',
+                        field: 'laundry_area',
+                        type: 'toggle'
+                    },
+                    {
+                        label: '7️⃣ Power Backup',
+                        field: 'power_backup',
+                        type: 'number-custom',
+                        hasCustom: false,
+                        options: [
+                            { value: 'none', label: 'None' },
+                            { value: 'inverter', label: 'Inverter Backup' },
+                            { value: 'generator', label: 'Generator Backup' }
+                        ]
+                    },
+                    {
+                        label: '8️⃣ Security System',
+                        field: 'security_system',
+                        type: 'number-custom',
+                        hasCustom: false,
+                        options: [
+                            { value: 'basic_gate', label: 'Basic Gate' },
+                            { value: 'cctv', label: 'CCTV Cameras' },
+                            { value: 'both', label: 'Both' }
+                        ]
+                    },
+                    {
+                        label: '9️⃣ Lift / Elevator',
+                        field: 'lift_required',
+                        type: 'toggle',
+                        conditional: true,
+                        showWhen: { field: 'floors', check: 'greaterThan', value: 'G+3' }
+                    }
                 ]
             },
             {
