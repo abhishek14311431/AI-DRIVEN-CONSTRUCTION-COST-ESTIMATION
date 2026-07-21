@@ -1,4 +1,4 @@
-export const projectConfigs = {
+chnageexport const projectConfigs = {
     own_house: {
         title: 'Dream House',
         subtitle: 'Luxury custom-designed residence',
@@ -138,23 +138,23 @@ export const projectConfigs = {
                                 value: 'none',
                                 label: 'No Interior',
                                 desc: 'Civil-ready handover only',
-                                aiExplain: 'AI suggests this when you want minimum upfront spend and plan interiors later in phases.',
+                                aiExplain: 'suggests this when you want minimum upfront spend and plan interiors later in phases.',
                                 inclusions: ['Bare civil finish handover', 'No fixed wardrobes/modular units', 'No false ceiling or decor work']
                             },
                             {
                                 value: 'base',
                                 label: 'Base Interior',
                                 desc: 'Essential interior package',
-                                aiExplain: 'AI suggests Base for balanced cost and functionality with all daily-use essentials covered.',
+                                aiExplain: 'suggests Base for balanced cost and functionality with all daily-use essentials covered.',
                                 inclusions: ['Basic modular kitchen setup', 'Standard wardrobe shutters in key bedrooms', 'Basic lighting and utility-ready electrical points']
                             },
                             {
                                 value: 'semi',
                                 label: 'Semi Interior',
                                 desc: 'Enhanced comfort and finish',
-                                aiExplain: 'AI suggests Semi when you want strong everyday comfort, better aesthetics and higher storage quality without moving to full luxury spend.',
+                                aiExplain: 'suggests Semi when you want strong everyday comfort, better aesthetics and higher storage quality without moving to full luxury spend.',
                                 inclusions: [
-                                    // Removed upgraded modular kitchen for smart upgrades cleanup
+                                    'Removed upgraded modular kitchen for smart upgrades cleanup',
                                     'Wardrobes in all bedrooms with loft storage',
                                     'Selective false ceiling with cove and decor lighting',
                                     'TV unit for living room and compact foyer storage',
@@ -168,7 +168,7 @@ export const projectConfigs = {
                                 value: 'full_furnished',
                                 label: 'Full Furnished Interior',
                                 desc: 'Move-in ready premium setup',
-                                aiExplain: 'AI suggests Full Furnished for turnkey handover where every major interior element is planned for immediate move-in with premium finish quality.',
+                                aiExplain: 'suggests Full Furnished for turnkey handover where every major interior element is planned for immediate move-in with premium finish quality.',
                                 inclusions: [
                                     'Complete modular kitchen with pantry, utility units and appliances-ready planning',
                                     'Full-height wardrobes in all bedrooms with lofts and accessories',
@@ -177,7 +177,7 @@ export const projectConfigs = {
                                     'Layered premium lighting: ambient, task and accent circuits',
                                     'Vanity units, mirror cabinets and premium bathroom accessories',
                                     'Crockery/bar unit and dining-side storage where applicable',
-                                    // Removed premium veneer/laminate upgrade for smart upgrades cleanup
+                                    'premium veneer/laminate upgrade for smart upgrades cleanup',
                                     'Soft-close hardware package with high-duty runners and hinges',
                                     'Decor wall paneling/highlight surfaces in living and master bedroom',
                                     'Curtain pelmet/blind readiness with concealed channels',
