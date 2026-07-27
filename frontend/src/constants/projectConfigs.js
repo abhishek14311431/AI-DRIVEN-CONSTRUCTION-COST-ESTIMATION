@@ -1,4 +1,4 @@
-chnageexport const projectConfigs = {
+export const projectConfigs = {
     own_house: {
         title: 'Dream House',
         subtitle: 'Luxury custom-designed residence',
