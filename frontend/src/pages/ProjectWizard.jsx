@@ -323,7 +323,7 @@ const SignaturePad = ({ onSave, onClear }) => {
 };
 
 const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNext, onSmartUpgrade }) => {
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
     const [estData, setEstData] = useState(null);
     const [loadingEst, setLoadingEst] = useState(false);
     const [displayTotal, setDisplayTotal] = useState(0);
@@ -602,7 +602,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                 if (!isBackground) {
                     setEstData({ 
                         error: true, 
-                        message: "Cannot reach API server. Check if backend is running on port 8080." 
+                        message: "Cannot reach API server. Check if backend is running on port 8000." 
                     });
                 }
             } else {
@@ -2455,10 +2455,10 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                             lineHeight: '1.7',
                                             textAlign: 'left'
                                         }}>
-                                            ✓ Backend server is running on port 8080<br/>
+                                            ✓ Backend server is running on port 8000<br/>
                                             ✓ All required fields are filled ({projectType === 'rental' ? 'Site Type, Dimensions, Floors, Plan' : projectType === 'interior' ? 'Style, Finish Level, Area' : projectType === 'exterior' ? 'Style, Area' : 'Plot Size, Dimensions'})<br/>
                                             ✓ Network connection is stable<br/>
-                                            ✓ No firewall is blocking port 8080
+                                            ✓ No firewall is blocking port 8000
                                         </div>
                                         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
                                             <button 
