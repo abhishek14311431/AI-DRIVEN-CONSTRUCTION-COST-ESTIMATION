@@ -15,8 +15,9 @@ const AnimatedConstructionLogo = () => (
 const EstimationResult = ({ result, savedId, setView, saveProject, onSmartUpgrade }) => {
     const [showUpgradePrompt, setShowUpgradePrompt] = useState(true);
     const [showUpgradeOptions, setShowUpgradeOptions] = useState(false);
-    const breakdown = Array.isArray(result.breakdown) ? result.breakdown : [];
+    const breakdown = Array.isArray(result?.breakdown) ? result.breakdown : [];
     const gradePlan = result?.grade_plan || result?.inputs?.grade_plan || 'Base';
+    const isRental = result?.project_type === 'rental' || result?.rental_unit_count > 0;
     const [availableUpgrades, setAvailableUpgrades] = React.useState([
         ...(gradePlan === 'Base' ? ['Classic', 'Premium', 'Elite'] :
            gradePlan === 'Classic' ? ['Premium', 'Elite'] :
@@ -100,7 +101,7 @@ const EstimationResult = ({ result, savedId, setView, saveProject, onSmartUpgrad
                 <div style={{ padding: isRental ? '2.5rem' : '4rem', marginBottom: '3rem', textAlign: 'center', background: 'linear-gradient(145deg, rgba(8, 10, 14, 0.78), rgba(12, 14, 20, 0.62))', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '32px', backdropFilter: 'blur(55px) saturate(160%)', boxShadow: '0 24px 70px rgba(9, 30, 66, 0.18), inset 0 1px 0 rgba(255,255,255,0.14)', display: 'flex', flexDirection: 'column', width: '100%' }}>
                     <p style={{ fontSize: '0.9rem', letterSpacing: '6px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Total Estimated Investment</p>
                     <div style={{ fontSize: isRental ? '5rem' : '8rem', fontWeight: 1000, letterSpacing: '-6px', margin: '1.5rem 0', color: '#fff', textShadow: '0 0 60px rgba(103,232,249,0.3)' }}>
-                        ₹{typeof result.total_cost === 'number' ? result.total_cost.toLocaleString('en-IN') : result.total_cost}
+                        ₹{typeof result?.total_cost === 'number' ? result.total_cost.toLocaleString('en-IN') : result?.total_cost}
                     </div>
                     <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
                         <button className="btn-primary" onClick={saveProject} style={{ padding: '1.2rem 3rem', fontSize: '1.1rem' }}>
@@ -196,7 +197,7 @@ const EstimationResult = ({ result, savedId, setView, saveProject, onSmartUpgrad
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                    {breakdown.map((item, idx) => (
+                    {breakdown && breakdown.length > 0 ? breakdown.map((item, idx) => (
                         <div key={idx} style={{
                             padding: '2rem',
                             background: 'rgba(255,255,255,0.02)',
@@ -204,15 +205,34 @@ const EstimationResult = ({ result, savedId, setView, saveProject, onSmartUpgrad
                             borderRadius: '20px'
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 900, color: 'rgba(255,255,255,0.4)', marginBottom: '1rem', letterSpacing: '1px' }}>
-                                <span>{item.category}</span>
-                                <span style={{ color: '#67E8F9' }}>{item.percentage}%</span>
+                                <span>{item?.category || 'Construction'}</span>
+                                <span style={{ color: '#67E8F9' }}>{item?.percentage || 100}%</span>
                             </div>
-                            <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '0.5rem' }}>{item.component}</div>
+                            <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '0.5rem' }}>{item?.component || 'Base Cost'}</div>
                             <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#fff' }}>
-                                ₹{item.amount.toLocaleString('en-IN')}
+                                ₹{item?.amount?.toLocaleString('en-IN') || result?.total_cost?.toLocaleString('en-IN')}
                             </div>
                         </div>
-                    ))}
+                    )) : (
+                        // Default breakdown when API doesn't return breakdown array
+                        <>
+                            <div style={{ padding: '2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '20px' }}>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 900, color: 'rgba(255,255,255,0.4)', marginBottom: '1rem', letterSpacing: '1px' }}>CONSTRUCTION</div>
+                                <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '0.5rem' }}>Base Construction Cost</div>
+                                <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#fff' }}>₹{result?.construction_cost?.toLocaleString('en-IN') || result?.base_cost?.toLocaleString('en-IN')}</div>
+                            </div>
+                            <div style={{ padding: '2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '20px' }}>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 900, color: 'rgba(255,255,255,0.4)', marginBottom: '1rem', letterSpacing: '1px' }}>ADDONS</div>
+                                <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '0.5rem' }}>Additional Features</div>
+                                <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#fff' }}>₹{result?.addons_cost?.toLocaleString('en-IN') || '0'}</div>
+                            </div>
+                            <div style={{ padding: '2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '20px' }}>
+                                <div style={{ fontSize: '0.7rem', fontWeight: 900, color: 'rgba(255,255,255,0.4)', marginBottom: '1rem', letterSpacing: '1px' }}>UPGRADES</div>
+                                <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '0.5rem' }}>Smart Upgrades</div>
+                                <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#fff' }}>₹{result?.upgrade_cost?.toLocaleString('en-IN') || '0'}</div>
+                            </div>
+                        </>
+                    )}
                 </div>
             </section>
         </>
