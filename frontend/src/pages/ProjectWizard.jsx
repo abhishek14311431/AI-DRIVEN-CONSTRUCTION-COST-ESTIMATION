@@ -519,11 +519,12 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
             }
 
             const endpoint = `${API_BASE_URL}/${projectType.replace(/_/g, '-')}/estimate`;
-            console.log('Full endpoint URL:', endpoint);
             const payload = prepareEstimationPayload();
-            
-            console.log(`[Attempt ${retryCount + 1}/${maxRetries + 1}] Fetching from:`, endpoint);
-            console.log('Payload:', payload);
+
+            console.log('=== API CALL ===');
+            console.log('Endpoint:', endpoint);
+            console.log('Payload:', JSON.stringify(payload));
+            console.log('================');
 
             // Set a timeout for the fetch
             const controller = new AbortController();
@@ -580,7 +581,11 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                 }
             }
         } catch (err) {
-            console.error('Estimation fetch error:', err.message);
+            console.error('=== API ERROR ===');
+            console.error('Error:', err);
+            console.error('Error message:', err.message);
+            console.error('Error name:', err.name);
+            console.error('===============');
             
             if (err.name === 'AbortError') {
                 if (retryCount < maxRetries) {
