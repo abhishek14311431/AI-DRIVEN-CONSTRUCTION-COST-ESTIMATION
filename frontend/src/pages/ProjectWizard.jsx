@@ -518,7 +518,8 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                 return;
             }
 
-            const endpoint = `${API_BASE_URL}/${projectType.replace('_', '-')}/estimate`;
+            const endpoint = `${API_BASE_URL}/${projectType.replace(/_/g, '-')}/estimate`;
+            console.log('Full endpoint URL:', endpoint);
             const payload = prepareEstimationPayload();
             
             console.log(`[Attempt ${retryCount + 1}/${maxRetries + 1}] Fetching from:`, endpoint);
