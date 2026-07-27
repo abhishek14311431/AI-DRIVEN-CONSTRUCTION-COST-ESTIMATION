@@ -7,10 +7,11 @@ import EstimationResult from './pages/EstimationResult';
 import Archives from './pages/Archives';
 import UpgradesPage from './pages/UpgradesPage';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
 
 function App() {
   const [view, setView] = useState('dashboard');
+  const [error, setError] = useState(null);
   const [projectType, setProjectType] = useState(null);
   const [step, setStep] = useState(0);
   const [inputs, setInputs] = useState({});
@@ -126,6 +127,17 @@ function App() {
     };
     return staticBgs[view] || staticBgs.dashboard;
   };
+
+  // Error display for debugging
+  if (error) {
+    return (
+      <div style={{ padding: '2rem', background: '#1a0000', color: 'red', minHeight: '100vh' }}>
+        <h1>Error</h1>
+        <pre>{error}</pre>
+        <button onClick={() => setError(null)}>Dismiss</button>
+      </div>
+    );
+  }
 
   return (
     <div className="app-root">
