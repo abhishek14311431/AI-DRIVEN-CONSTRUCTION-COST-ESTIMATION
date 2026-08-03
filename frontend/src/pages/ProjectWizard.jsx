@@ -342,6 +342,26 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     const [availableUpgrades, setAvailableUpgrades] = useState(['Classic', 'Premium', 'Elite']);
     const [termsAccepted, setTermsAccepted] = useState(false);
 
+    const normalizeBreakdown = (rawBreakdown) => {
+        if (Array.isArray(rawBreakdown)) {
+            return rawBreakdown;
+        }
+
+        if (rawBreakdown && typeof rawBreakdown === 'object') {
+            return Object.entries(rawBreakdown).map(([component, amount], index) => ({
+                component: component
+                    .replace(/_/g, ' ')
+                    .replace(/\b\w/g, (char) => char.toUpperCase()),
+                category: component === 'addons' ? 'ADDONS' : component === 'upgrades' ? 'UPGRADES' : 'CONSTRUCTION',
+                amount: Number(amount) || 0,
+                percentage: 0,
+                _order: index,
+            }));
+        }
+
+        return [];
+    };
+
     const config = projectConfigs[projectType] || projectConfigs.own_house;
     const currentStep = config.steps?.[step] || config.steps?.[config.steps.length - 1];
     const total = config.steps.length;
@@ -676,7 +696,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                         valuation_year: "2026"
                     },
                     total_cost: estData.total_cost,
-                    breakdown_json: { items: estData.breakdown }
+                    breakdown_json: { items: normalizeBreakdown(estData.breakdown) }
                 })
             });
 
@@ -2401,8 +2421,9 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     if (currentStep.type === 'final-estimate') {
 
         const totalCost = estData?.total_cost || 0;
-        const breakdown = Array.isArray(estData?.breakdown) ? estData.breakdown : [];
-        const sorted = [...breakdown].sort((a, b) => (b.amount || 0) - (a.amount || 0));
+        const normalizedBreakdown = normalizeBreakdown(estData?.breakdown);
+        const sorted = [...normalizedBreakdown].sort((a, b) => (b.amount || 0) - (a.amount || 0));
+        const breakdownSource = sorted.length > 0 ? sorted : normalizedBreakdown;
 
         return (
             <div style={{
@@ -2631,7 +2652,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                 </div>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', fontFamily: "'Outfit', sans-serif" }}>
-                                    {(estData.breakdown || []).map((item, idx) => {
+                                    {breakdownSource.map((item, idx) => {
                                         const cat = item.category || 'STRUCTURE';
                                         const c = catColor[cat] || catColor['STRUCTURE'];
                                         return (
@@ -2656,7 +2677,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                                         border: `1px solid ${c.border}`, padding: '3px 9px', borderRadius: '5px',
                                                         letterSpacing: '0.18em', fontFamily: "'Outfit', sans-serif"
                                                     }}>{cat}</span>
-                                                    <div style={{ fontSize: '12px', color: '#67E8F9', fontWeight: 700, fontFamily: "'Outfit', sans-serif", letterSpacing: '0.05em' }}>{item.percentage}%</div>
+                                                    <div style={{ fontSize: '12px', color: '#67E8F9', fontWeight: 700, fontFamily: "'Outfit', sans-serif", letterSpacing: '0.05em' }}>{typeof item.percentage === 'number' ? item.percentage : Math.round((Number(item.amount || 0) / Math.max(totalCost, 1)) * 100)}%</div>
                                                 </div>
                                                 <div style={{
                                                     fontSize: '17px', fontWeight: 400, color: 'rgba(255,255,255,0.88)',
@@ -2667,7 +2688,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                                     fontSize: '29px', fontWeight: 900, color: '#fff', letterSpacing: '-0.5px',
                                                     fontFamily: "'Outfit', sans-serif"
                                                 }}>
-                                                    <CountUp end={item.amount} />
+                                                    <CountUp end={Number(item.amount || 0)} />
                                                 </div>
                                             </div>
                                         );
