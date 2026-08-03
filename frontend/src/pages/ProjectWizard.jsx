@@ -323,7 +323,7 @@ const SignaturePad = ({ onSave, onClear }) => {
 };
 
 const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNext, onSmartUpgrade }) => {
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
     const [estData, setEstData] = useState(null);
     const [loadingEst, setLoadingEst] = useState(false);
     const [displayTotal, setDisplayTotal] = useState(0);
@@ -343,8 +343,26 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     const [termsAccepted, setTermsAccepted] = useState(false);
 
     const config = projectConfigs[projectType] || projectConfigs.own_house;
-    const currentStep = config.steps[step];
+    const currentStep = config.steps?.[step] || config.steps?.[config.steps.length - 1];
     const total = config.steps.length;
+    const rentalLogic = projectConfigs.rental?.rentalLogic || {
+        unitTypeBySite: {},
+        unitDetails: {},
+    };
+
+    if (!currentStep) {
+        return (
+            <WizardShell config={config} step={step} inputs={inputs} onBack={() => setView('selection')} onNext={handleNext} total={total} showTopNext={false}>
+                <GlassCard style={{ minHeight: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+                    <div>
+                        <h2 style={{ marginTop: 0 }}>Unable to load this step</h2>
+                        <p style={{ color: 'rgba(255,255,255,0.72)' }}>The wizard state is out of sync. Please go back and start the project again.</p>
+                        <button onClick={() => setView('selection')} style={{ padding: '0.9rem 1.4rem', borderRadius: '999px', border: 'none', cursor: 'pointer' }}>Back to project selection</button>
+                    </div>
+                </GlassCard>
+            </WizardShell>
+        );
+    }
 
     useEffect(() => {
         if (currentStep.type === 'final-estimate') {
@@ -608,7 +626,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                 if (!isBackground) {
                     setEstData({ 
                         error: true, 
-                        message: "Cannot reach API server. Check if backend is running on port 8000." 
+                        message: `Cannot reach API server. Check if the backend is running at ${API_BASE_URL}.`
                     });
                 }
             } else {
@@ -682,7 +700,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     const onBack = () => step === 0 ? setView('selection') : handleNext(-1);
     const setField = (field, value) => {
         if (projectType === 'rental' && field === 'site_type') {
-            const unitTypeBySite = projectConfigs.rental.rentalLogic.unitTypeBySite;
+            const unitTypeBySite = rentalLogic.unitTypeBySite;
             setInputs(prev => ({
                 ...prev,
                 site_type: value,
@@ -1229,7 +1247,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
 
     if (projectType === 'rental' && ['floor_selection', 'plan'].includes(currentStep.id)) {
         const siteType = inputs.site_type;
-        const unitTypeBySite = projectConfigs.rental.rentalLogic.unitTypeBySite;
+        const unitTypeBySite = rentalLogic.unitTypeBySite;
         const unitType = unitTypeBySite[siteType] || null;
 
         const options = currentStep.dependsOn
@@ -1323,7 +1341,6 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
     if (currentStep.type === 'review') {
         // Rental Homes: show only relevant fields and auto-assign unit type
         if (projectType === 'rental') {
-            const rentalLogic = projectConfigs.rental.rentalLogic;
             const siteType = inputs.site_type;
             const unitType = rentalLogic.unitTypeBySite[siteType] || '';
             const unitDetails = rentalLogic.unitDetails[siteType] || {};
@@ -2461,10 +2478,10 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                             lineHeight: '1.7',
                                             textAlign: 'left'
                                         }}>
-                                            ✓ Backend server is running on port 8000<br/>
+                                            ✓ Backend server is running at {API_BASE_URL}<br/>
                                             ✓ All required fields are filled ({projectType === 'rental' ? 'Site Type, Dimensions, Floors, Plan' : projectType === 'interior' ? 'Style, Finish Level, Area' : projectType === 'exterior' ? 'Style, Area' : 'Plot Size, Dimensions'})<br/>
                                             ✓ Network connection is stable<br/>
-                                            ✓ No firewall is blocking port 8000
+                                            ✓ No firewall is blocking the backend port
                                         </div>
                                         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
                                             <button 
