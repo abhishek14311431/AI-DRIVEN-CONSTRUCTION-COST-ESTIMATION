@@ -1,262 +1,152 @@
-# 🏗️ AI-Driven Construction Cost Estimation
+# AI-Driven Construction Cost Estimation
 
-A comprehensive AI-powered construction cost estimation platform that provides precise project valuations using advanced algorithms and real-time market analysis. Perfect for architects, builders, and construction companies to estimate project costs accurately.
+Construction cost estimation platform with a FastAPI backend, a Vite + React frontend, dataset assets for style-based workflows, and deployment settings for Render and Vercel.
 
-![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
-![Python](https://img.shields.io/badge/Python-3.9+-blue)
-![React](https://img.shields.io/badge/React-18+-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
+## Overview
 
----
+The repository is organized around two runnable application roots:
 
-## 📋 Features
+- `app/` is the primary FastAPI backend used by the root deployment config and local backend runs.
+- `frontend/` is the Vite application and should be the Vercel project root.
 
-### 🎯 Core Functionality
-- **Multi-Project Type Support**: Own House, Commercial, Villa, Rental, Exterior, Interior
-- **Smart Upgrade System**: AI-powered suggestions for Classic, Premium, and Elite grade upgrades
-- **Detailed Cost Breakdown**: Component-wise cost analysis with percentage allocation
-- **Market Analysis**: Real-time 2026 market dynamics and inflation factors
-- **Project Archive**: Save and retrieve previous project valuations
-- **PDF Reports**: Generate professional cost estimation reports
+There is also a `backend/` folder that contains a secondary backend scaffold and requirements file. The production backend entrypoint used by `render.yaml` is `app/main.py`.
 
-### 🤖 AI Features
-- **Smart Upgrade Module**: Evaluates current configuration and suggests grade upgrades
-- **Market-Driven Valuation**: Analyzes market trends and construction indices
-- **Dynamic Pricing**: Inflation margins and market escalation factors
-- **Breakdown Engine**: Detailed component-wise cost estimation
+## Features
 
-### 🎨 User Interface
-- **Modern Design**: Glassmorphism UI with liquid glass panels
-- **Interactive Wizard**: Step-by-step project configuration
-- **Real-time Updates**: Live cost calculations
-- **Responsive Layout**: Works on desktop and tablet devices
+- Multi-project estimation flows for own house, commercial, villa, rental, exterior, and interior projects.
+- Smart upgrade flows with Classic, Premium, and Elite levels.
+- Detailed breakdowns and saved project archives.
+- PDF report generation.
+- Exterior and interior dataset folders for style-aware workflows.
 
----
+## Repository Structure
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Python 3.9+
-- Node.js 16+
-- npm or yarn
-
-### Installation
-
-#### 1. Clone the Repository
-```bash
-git clone https://github.com/abhishek14311431/AI-DRIVEN-CONSTRUCTION-COST-ESTIMATION.git
-cd AI-DRIVEN-CONSTRUCTION-COST-ESTIMATION
+```text
+.
+├── app/
+│   ├── api/routes/
+│   ├── core/
+│   ├── database/
+│   ├── engines/
+│   ├── models/
+│   ├── schemas/
+│   ├── services/
+│   └── main.py
+├── backend/
+│   ├── app/
+│   └── requirements.txt
+├── dataset/
+│   ├── train/dataset_train/
+│   └── test/dataset_test/
+├── frontend/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── constants/
+│   │   ├── pages/
+│   │   ├── App.jsx
+│   │   ├── App.css
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── package.json
+│   ├── package-lock.json
+│   └── vite.config.js
+├── requirements.txt
+├── render.yaml
+├── start.bat
+└── README.md
 ```
 
-#### 2. Backend Setup
+## Local Setup
+
+### Prerequisites
+
+- Python 3.9+
+- Node.js 18+
+- npm
+
+### Backend
 
 ```bash
-# Create virtual environment
 python -m venv venv
-
-# Activate virtual environment
-# Windows:
+# Windows
 venv\Scripts\activate
-# macOS/Linux:
+# macOS/Linux
 source venv/bin/activate
 
-# Install dependencies
 pip install -r requirements.txt
-
-# Run the backend server
 python app/main.py
 ```
 
-Backend will run on: `http://localhost:8080`
+The backend runs on `http://localhost:8080`.
 
-#### 3. Frontend Setup
+### Frontend
 
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
 ```
 
-Frontend will run on: `http://localhost:5173`
+The frontend runs on `http://localhost:5173`.
 
----
+## Deployment Notes
 
-## 📁 Project Structure
+- Render backend command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- Render build command: `pip install -r requirements.txt`
+- Vercel project root should be `frontend/`
+- Vercel build command: `npm run build`
+- Vercel install command: `npm install`
 
-```
-AI-Driven Construction Cost Estimation/
-├── app/                          # Backend application
-│   ├── api/routes/              # API endpoints
-│   │   ├── own_house.py
-│   │   ├── commercial.py
-│   │   ├── villa.py
-│   │   ├── rental.py
-│   │   ├── exterior.py
-│   │   ├── interior.py
-│   │   └── projects.py
-│   ├── engines/                 # Cost estimation engines
-│   │   ├── own_house_engine.py
-│   │   ├── commercial_engine.py
-│   │   ├── breakdown_engine.py
-│   │   └── ...
-│   ├── models/                  # SQLAlchemy models
-│   │   ├── project.py
-│   │   ├── saved_project.py
-│   │   └── ...
-│   ├── schemas/                 # Pydantic schemas
-│   │   ├── own_house_schema.py
-│   │   └── ...
-│   ├── services/                # Business logic
-│   │   ├── project_service.py
-│   │   └── pdf_service.py
-│   ├── core/                    # Configuration
-│   │   ├── config.py
-│   │   └── constants.py
-│   ├── database/                # Database setup
-│   │   ├── session.py
-│   │   └── base.py
-│   └── main.py                  # FastAPI app entry point
-│
-├── frontend/                    # React Vite application
-│   ├── src/
-│   │   ├── pages/              # Page components
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── ProjectSelection.jsx
-│   │   │   ├── ProjectWizard.jsx
-│   │   │   ├── EstimationResult.jsx
-│   │   │   ├── UpgradesPage.jsx
-│   │   │   └── Archives.jsx
-│   │   ├── components/         # Reusable components
-│   │   │   ├── ConfirmationModal.jsx
-│   │   │   ├── ExteriorSelector.jsx
-│   │   │   └── InteriorSelector.jsx
-│   │   ├── constants/          # Project configurations
-│   │   │   └── projectConfigs.js
-│   │   ├── App.jsx             # Main app component
-│   │   ├── App.css
-│   │   └── index.css           # Global styles
-│   ├── public/                 # Static assets
-│   ├── package.json
-│   └── vite.config.js
-│
-├── exterior_dataset/           # Exterior design styles
-└── interior_dataset/           # Interior design styles
+## API Routes
+
+The FastAPI app exposes these route groups under `/api/v1`:
+
+- `/own-house`
+- `/rental`
+- `/villa`
+- `/commercial`
+- `/interior`
+- `/exterior`
+- `/projects`
+
+Root health check:
+
+```text
+GET /
 ```
 
----
-
-## 🔌 API Endpoints
-
-### Own House
-- `POST /api/v1/own-house/estimate` - Get cost estimation
-- `POST /api/v1/own-house/save` - Save project
-
-### Commercial
-- `POST /api/v1/commercial/estimate` - Get cost estimation
-- `POST /api/v1/commercial/save` - Save project
-
-### Similar endpoints for:
-- `/api/v1/villa`
-- `/api/v1/rental`
-- `/api/v1/exterior`
-- `/api/v1/interior`
-
-### Projects
-- `GET /api/v1/projects` - List all saved projects
-- `GET /api/v1/projects/{id}` - Get project details
-- `DELETE /api/v1/projects/{id}` - Delete project
-
----
-
-## 💻 Technology Stack
+## Tech Stack
 
 ### Backend
-- **Framework**: FastAPI
-- **Database**: SQLite (SQLAlchemy ORM)
-- **Validation**: Pydantic
-- **PDF Generation**: reportlab
-- **Server**: Uvicorn
+
+- FastAPI
+- SQLAlchemy
+- SQLite
+- Pydantic
+- Uvicorn
+- reportlab
 
 ### Frontend
-- **Framework**: React 18
-- **Build Tool**: Vite
-- **Styling**: CSS with Glassmorphism effects
-- **HTTP Client**: Fetch API
-- **UI State**: React Hooks (useState, useEffect)
 
----
+- React 19
+- Vite 7
+- ESLint 8
+- Fetch API
 
-## 📊 Smart Upgrade Feature
+## Configuration
 
-The Smart Upgrade system evaluates your current configuration and suggests enhancements:
-
-### Grade Levels
-1. **Classic** (Base + Standard Upgrades)
-   - Enhanced finishes
-   - Better materials
-   - ~30% cost increase
-
-2. **Premium** (Classic + Premium Features)
-   - Premium fixtures
-   - Enhanced automation
-   - ~60% cost increase
-
-3. **Elite** (Full Luxury)
-   - Top-tier materials
-   - Advanced systems
-   - ~100% cost increase
-
-### Editable Upgrades
-Each grade includes customizable facilities:
-- Sanitary fixtures
-- Electrical systems
-- Flooring options
-- Finishing details
-- And more...
-
----
-
-## 🎯 Usage
-
-### Creating a Project
-1. **Dashboard** → Start estimation
-2. **Project Selection** → Choose project type (Own House, Commercial, etc.)
-3. **Wizard** → Configure step-by-step:
-   - Plot dimensions
-   - Building specifications
-   - Interior preferences
-   - Additional details
-4. **Estimation** → View detailed cost breakdown
-5. **Market Analysis** → Review 2026 market insights
-6. **Smart Upgrade** → Explore upgrade options
-
-### Smart Upgrades
-1. Click "Yes" to Smart Upgrades prompt
-2. Choose grade (Classic, Premium, or Elite)
-3. Navigate to Upgrades page
-4. Toggle desirable facilities
-5. Finalize to update costs
-
-### Saving Projects
-- Click "SECURE THIS VALUATION" to save
-- Access via Archives tab later
-- Download PDF reports
-
----
-
-## ⚙️ Configuration
-
-### Environment Variables
-Create a `.env` file in the root directory:
+Create a `.env` file in the repository root if you want to override the default database location:
 
 ```env
 DATABASE_URL=sqlite:///./test.db
 PYTHONUNBUFFERED=1
 ```
+
+## Notes
+
+- Generated directories such as `.venv/`, `venv/`, `frontend/node_modules/`, and `frontend/dist/` are intentionally ignored and should not be committed.
+- If you redeploy on Vercel, make sure the project root points to `frontend/` so it installs the correct dependencies.
 
 ### API Base URL
 Frontend communicates via: `http://localhost:8080/api/v1`
