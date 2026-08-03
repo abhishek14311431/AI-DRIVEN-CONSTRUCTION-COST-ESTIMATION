@@ -28,6 +28,26 @@ const Archives = ({ setView, API_BASE_URL }) => {
         projectToDelete: null
     });
 
+    const normalizeBreakdown = (rawBreakdown) => {
+        if (Array.isArray(rawBreakdown)) {
+            return rawBreakdown;
+        }
+
+        if (rawBreakdown && typeof rawBreakdown === 'object') {
+            return Object.entries(rawBreakdown).map(([component, amount], index) => ({
+                component: component
+                    .replace(/_/g, ' ')
+                    .replace(/\b\w/g, (char) => char.toUpperCase()),
+                category: component === 'addons' ? 'ADDONS' : component === 'upgrades' ? 'UPGRADES' : 'CONSTRUCTION',
+                amount: Number(amount) || 0,
+                percentage: 0,
+                _order: index,
+            }));
+        }
+
+        return [];
+    };
+
     useEffect(() => {
         const timer = setInterval(() => setDateTime(new Date()), 1000);
         return () => clearInterval(timer);
@@ -381,7 +401,7 @@ const Archives = ({ setView, API_BASE_URL }) => {
                                 
                                 {selectedProject.breakdown_json && (
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
-                                        {(selectedProject.breakdown_json.items || selectedProject.breakdown_json).map((item, idx) => (
+                                        {normalizeBreakdown(selectedProject.breakdown_json.items || selectedProject.breakdown_json).map((item, idx) => (
                                             <div key={idx} style={{
                                                 padding: '1.5rem', 
                                                 background: 'rgba(255,255,255,0.04)',
