@@ -362,6 +362,131 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
         return [];
     };
 
+    const parseCostValue = (value) => {
+        if (typeof value === 'number') {
+            return value;
+        }
+
+        if (typeof value === 'string') {
+            const normalized = value
+                .toUpperCase()
+                .replace(/[^0-9.KM]/g, '');
+
+            if (!normalized) {
+                return 0;
+            }
+
+            if (normalized.includes('L')) {
+                return Number(normalized.replace('L', '')) * 100000 || 0;
+            }
+
+            if (normalized.includes('K')) {
+                return Number(normalized.replace('K', '')) * 1000 || 0;
+            }
+
+            return Number(normalized) || 0;
+        }
+
+        return 0;
+    };
+
+    const buildFeatureLinkedBreakdown = () => {
+        const breakdownItems = [];
+        const seenFields = new Set();
+        const projectStepList = projectConfigs[projectType]?.steps || [];
+
+        const addItem = (field, component, category, amount) => {
+            if (seenFields.has(field) || !amount || amount <= 0) {
+                return;
+            }
+
+            seenFields.add(field);
+            breakdownItems.push({
+                component,
+                category,
+                amount,
+                percentage: 0,
+            });
+        };
+
+        const ownHouseToggleCosts = {
+            include_compound_wall: { component: 'Compound Wall', amount: 300000, category: 'EXTERIOR' },
+            include_rainwater_harvesting: { component: 'Rainwater Harvesting', amount: 60000, category: 'EXTERIOR' },
+            include_car_parking: { component: 'Car Parking Covering', amount: 55000, category: 'EXTERIOR' },
+            lift_required: { component: 'Lift / Elevator', amount: 500000, category: 'STRUCTURE' },
+            pooja_room: { component: 'Pooja Room', amount: 75000, category: 'OPTIONAL' },
+            terrace_guest_bedroom: { component: 'Terrace Guest Bedroom', amount: 200000, category: 'OPTIONAL' },
+        };
+
+        projectStepList.forEach((stepConfig) => {
+            (stepConfig.addons || []).forEach((addon) => {
+                if (inputs[addon.field]) {
+                    addItem(addon.field, addon.label || addon.field, 'EXTERIOR', parseCostValue(addon.cost));
+                }
+            });
+
+            (stepConfig.sections || []).forEach((section) => {
+                if (section.type === 'toggle' && inputs[section.field]) {
+                    const matchedCost = ownHouseToggleCosts[section.field];
+                    if (matchedCost) {
+                        addItem(section.field, matchedCost.component, matchedCost.category, matchedCost.amount);
+                    }
+                }
+            });
+        });
+
+        const selectedInteriorPackage = inputs.interior_package;
+        if (selectedInteriorPackage && selectedInteriorPackage !== 'none') {
+            const packageLabel = selectedInteriorPackage
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, (char) => char.toUpperCase());
+
+            const estimatedInteriorValue = Number(estData?.base_cost || 0) > 0
+                ? Math.max(Math.round(Number(estData.total_cost || 0) * 0.08), 0)
+                : 0;
+
+            addItem('interior_package', `${packageLabel} Interior`, 'OPTIONAL', estimatedInteriorValue);
+        }
+
+        const upgradeCost = Number(estData?.upgrade_cost || 0);
+        if (upgradeCost > 0) {
+            breakdownItems.push({
+                component: 'Smart Upgrades',
+                category: 'OPTIONAL',
+                amount: upgradeCost,
+                percentage: 0,
+            });
+        }
+
+        const inflationAmount = Number(estData?.inflation_amount || 0);
+        if (inflationAmount > 0) {
+            breakdownItems.push({
+                component: 'Market Inflation',
+                category: 'STRUCTURE',
+                amount: inflationAmount,
+                percentage: 0,
+            });
+        }
+
+        const selectedFeatureTotal = breakdownItems.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+        const totalCostValue = Number(estData?.total_cost || 0);
+        const coreAmount = Math.max(totalCostValue - selectedFeatureTotal, 0);
+
+        if (coreAmount > 0) {
+            breakdownItems.unshift({
+                component: 'Core Construction & Structural Works',
+                category: 'STRUCTURE',
+                amount: coreAmount,
+                percentage: 0,
+            });
+        }
+
+        return breakdownItems.map((item) => ({
+            ...item,
+            percentage: totalCostValue > 0 ? Math.round((Number(item.amount || 0) / totalCostValue) * 100) : 0,
+        }));
+    };
+
     const config = projectConfigs[projectType] || projectConfigs.own_house;
     const currentStep = config.steps?.[step] || config.steps?.[config.steps.length - 1];
     const total = config.steps.length;
@@ -2422,8 +2547,10 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
 
         const totalCost = estData?.total_cost || 0;
         const normalizedBreakdown = normalizeBreakdown(estData?.breakdown);
-        const sorted = [...normalizedBreakdown].sort((a, b) => (b.amount || 0) - (a.amount || 0));
-        const breakdownSource = sorted.length > 0 ? sorted : normalizedBreakdown;
+        const featureLinkedBreakdown = buildFeatureLinkedBreakdown();
+        const breakdownSource = normalizedBreakdown.length >= 5 ? normalizedBreakdown : featureLinkedBreakdown;
+        const sorted = [...breakdownSource].sort((a, b) => (b.amount || 0) - (a.amount || 0));
+        const displayBreakdown = sorted.length > 0 ? sorted : breakdownSource;
 
         return (
             <div style={{
@@ -2652,7 +2779,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                 </div>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', fontFamily: "'Outfit', sans-serif" }}>
-                                    {breakdownSource.map((item, idx) => {
+                                    {displayBreakdown.map((item, idx) => {
                                         const cat = item.category || 'STRUCTURE';
                                         const c = catColor[cat] || catColor['STRUCTURE'];
                                         return (
