@@ -13,16 +13,6 @@ const AnimatedConstructionLogo = () => (
 );
 
 const EstimationResult = ({ result, savedId, setView, saveProject, onSmartUpgrade }) => {
-    // Guard against null/undefined result
-    if (!result) {
-        return (
-            <div style={{ padding: '4rem', textAlign: 'center', color: '#fff' }}>
-                <h2>No estimation data available</h2>
-                <button className="btn-primary" onClick={() => setView('wizard')}>Go Back</button>
-            </div>
-        );
-    }
-
     const [showUpgradePrompt, setShowUpgradePrompt] = useState(true);
     const [showUpgradeOptions, setShowUpgradeOptions] = useState(false);
     const breakdown = Array.isArray(result?.breakdown) ? result.breakdown : [];
@@ -37,6 +27,15 @@ const EstimationResult = ({ result, savedId, setView, saveProject, onSmartUpgrad
     const handleSmartUpgrade = (grade) => {
         if (typeof onSmartUpgrade === 'function') onSmartUpgrade(grade);
     };
+
+    if (!result) {
+        return (
+            <div style={{ padding: '4rem', textAlign: 'center', color: '#fff' }}>
+                <h2>No estimation data available</h2>
+                <button className="btn-primary" onClick={() => setView('wizard')}>Go Back</button>
+            </div>
+        );
+    }
 
     return (
         <>

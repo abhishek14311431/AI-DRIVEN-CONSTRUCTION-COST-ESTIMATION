@@ -29,8 +29,9 @@ const UPGRADE_GRADES = {
 };
 
 const UpgradesPage = ({ grade, onFinalize, onBack }) => {
+  const gradeConfig = UPGRADE_GRADES[grade] || [];
   const [upgrades, setUpgrades] = useState(
-    UPGRADE_GRADES[grade].map(u => ({ ...u, keep: true }))
+    gradeConfig.map(u => ({ ...u, keep: true }))
   );
 
   const handleToggle = idx => {
@@ -42,6 +43,11 @@ const UpgradesPage = ({ grade, onFinalize, onBack }) => {
   return (
     <section style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
       <h2 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '2rem' }}>Edit Upgrades ({grade})</h2>
+      {gradeConfig.length === 0 && (
+        <div style={{ marginBottom: '1.5rem', color: '#FCA5A5', fontWeight: 700 }}>
+          No upgrade package is available for this selection.
+        </div>
+      )}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
         {upgrades.map((upgrade, idx) => (
           <div key={upgrade.label} style={{
