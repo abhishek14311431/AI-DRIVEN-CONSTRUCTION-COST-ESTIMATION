@@ -6,6 +6,7 @@ import ProjectWizard from './pages/ProjectWizard';
 import EstimationResult from './pages/EstimationResult';
 import Archives from './pages/Archives';
 import UpgradesPage from './pages/UpgradesPage';
+import AppErrorBoundary from './components/AppErrorBoundary';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
@@ -145,46 +146,57 @@ function App() {
         style={{ backgroundImage: `linear-gradient(to bottom, rgba(10, 10, 11, 0.2), rgba(10, 10, 11, 0.65)), url(${getBg()})` }}>
       </div>
 
-      <div id="app">
-        {view === 'dashboard' && <Dashboard setView={setView} />}
+      <AppErrorBoundary onReset={() => {
+        setError(null);
+        setView('dashboard');
+        setProjectType(null);
+        setStep(0);
+        setInputs({});
+        setResult(null);
+        setSavedId(null);
+        setUpgradeGrade(null);
+      }}>
+        <div id="app">
+          {view === 'dashboard' && <Dashboard setView={setView} />}
 
-        {view === 'selection' && <ProjectSelection setView={setView} startProject={startProject} />}
+          {view === 'selection' && <ProjectSelection setView={setView} startProject={startProject} />}
 
-        {view === 'wizard' && (
-          <ProjectWizard
-            projectType={projectType}
-            step={step}
-            inputs={inputs}
-            setInputs={setInputs}
-            setView={setView}
-            handleNext={handleNext}
-            API_BASE_URL={API_BASE_URL}
-            onSmartUpgrade={handleSmartUpgrade}
-          />
-        )}
+          {view === 'wizard' && (
+            <ProjectWizard
+              projectType={projectType}
+              step={step}
+              inputs={inputs}
+              setInputs={setInputs}
+              setView={setView}
+              handleNext={handleNext}
+              API_BASE_URL={API_BASE_URL}
+              onSmartUpgrade={handleSmartUpgrade}
+            />
+          )}
 
-        {view === 'result' && (
-          <EstimationResult
-            result={result}
-            savedId={savedId}
-            setView={setView}
-            saveProject={saveProject}
-            onSmartUpgrade={handleSmartUpgrade}
-          />
-        )}
+          {view === 'result' && (
+            <EstimationResult
+              result={result}
+              savedId={savedId}
+              setView={setView}
+              saveProject={saveProject}
+              onSmartUpgrade={handleSmartUpgrade}
+            />
+          )}
 
-        {view === 'upgrade' && (
-          <UpgradesPage
-            grade={upgradeGrade}
-            onFinalize={handleFinalizeUpgrades}
-            onBack={() => setView('result')}
-          />
-        )}
+          {view === 'upgrade' && (
+            <UpgradesPage
+              grade={upgradeGrade}
+              onFinalize={handleFinalizeUpgrades}
+              onBack={() => setView('result')}
+            />
+          )}
 
-        {view === 'archives' && (
-          <Archives setView={setView} API_BASE_URL={API_BASE_URL} />
-        )}
-      </div>
+          {view === 'archives' && (
+            <Archives setView={setView} API_BASE_URL={API_BASE_URL} />
+          )}
+        </div>
+      </AppErrorBoundary>
     </div>
   );
 }
