@@ -13,6 +13,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+def _breakdown_item(component: str, category: str, amount: float) -> Dict[str, Any]:
+    return {
+        "component": component,
+        "category": category,
+        "amount": round(amount),
+        "percentage": 0,
+    }
+
 # Flexible model that accepts any fields
 class EstimationRequest(BaseModel):
     plot_size: Optional[str] = None
@@ -91,27 +100,64 @@ def calculate_cost(data: EstimationRequest) -> Dict[str, Any]:
         interior_map = {'none': 1.0, 'base': 1.08, 'semi': 1.15, 'full_furnished': 1.35}
         interior_multiplier = interior_map.get(data.interior_package, 1.0)
 
-    # Calculate base construction cost
-    construction_cost = sqft * base_cost * floor_multiplier * grade_multiplier * interior_multiplier
+    breakdown_items = []
+
+    base_construction = sqft * base_cost
+    floor_uplift = base_construction * max(floor_multiplier - 1.0, 0)
+    grade_uplift = base_construction * floor_multiplier * max(grade_multiplier - 1.0, 0)
+    interior_uplift = base_construction * floor_multiplier * grade_multiplier * max(interior_multiplier - 1.0, 0)
+
+    breakdown_items.append(_breakdown_item('Base Civil Works', 'CONSTRUCTION', base_construction))
+
+    if floor_uplift > 0:
+        floor_label = data.floor or data.floors or 'G+1'
+        breakdown_items.append(_breakdown_item(f'Height / Floor Uplift ({floor_label})', 'CONSTRUCTION', floor_uplift))
+
+    if grade_uplift > 0:
+        grade_label = data.structural_style or data.plan or 'Base'
+        breakdown_items.append(_breakdown_item(f'Grade Premium ({grade_label})', 'CONSTRUCTION', grade_uplift))
+
+    if interior_uplift > 0:
+        package_label = data.interior_package.replace('_', ' ').title() if data.interior_package else 'Interior'
+        breakdown_items.append(_breakdown_item(f'Interior Package ({package_label})', 'INTERIORS', interior_uplift))
+
+    construction_cost = base_construction + floor_uplift + grade_uplift + interior_uplift
 
     # Additional costs
     addons_cost = 0
     if data.include_compound_wall:
+        breakdown_items.append(_breakdown_item('Compound Wall', 'ADDONS', 300000))
         addons_cost += 300000
     if data.include_rainwater_harvesting:
+        breakdown_items.append(_breakdown_item('Rainwater Harvesting', 'ADDONS', 60000))
         addons_cost += 60000
     if data.include_car_parking:
+        breakdown_items.append(_breakdown_item('Car Parking Covering', 'ADDONS', 55000))
         addons_cost += 55000
     if data.lift_required:
+        breakdown_items.append(_breakdown_item('Lift / Elevator', 'ADDONS', 500000))
         addons_cost += 500000
     if data.pooja_room:
+        breakdown_items.append(_breakdown_item('Pooja Room', 'ADDONS', 75000))
         addons_cost += 75000
     if data.terrace_guest_bedroom:
+        breakdown_items.append(_breakdown_item('Terrace Guest Bedroom', 'ADDONS', 200000))
         addons_cost += 200000
 
     upgrade_cost = 5000 * len(data.upgrades) if data.upgrades else 0
+    if data.upgrades:
+        for upgrade in data.upgrades:
+            breakdown_items.append(_breakdown_item(f'Smart Upgrade: {upgrade}', 'UPGRADES', 5000))
 
-    total_cost = construction_cost + addons_cost + upgrade_cost
+    subtotal_before_inflation = construction_cost + addons_cost + upgrade_cost
+    inflation_amount = round(subtotal_before_inflation * 0.0102)
+    if inflation_amount > 0:
+        breakdown_items.append(_breakdown_item('2026 Inflation Margin', 'INFLATION', inflation_amount))
+
+    total_cost = subtotal_before_inflation + inflation_amount
+
+    for item in breakdown_items:
+        item['percentage'] = round((item['amount'] / max(total_cost, 1)) * 100)
 
     return {
         "sqft": sqft,
@@ -121,12 +167,9 @@ def calculate_cost(data: EstimationRequest) -> Dict[str, Any]:
         "base_cost": round(construction_cost),
         "addons_cost": addons_cost,
         "upgrade_cost": upgrade_cost,
+        "inflation_amount": inflation_amount,
         "total_cost": round(total_cost),
-        "breakdown": {
-            "construction": round(construction_cost),
-            "addons": addons_cost,
-            "upgrades": upgrade_cost
-        }
+        "breakdown": breakdown_items
     }
 
 @app.post("/api/v1/own-house/estimate")

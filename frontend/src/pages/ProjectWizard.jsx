@@ -2548,9 +2548,15 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
         const totalCost = estData?.total_cost || 0;
         const normalizedBreakdown = normalizeBreakdown(estData?.breakdown);
         const featureLinkedBreakdown = buildFeatureLinkedBreakdown();
-        const breakdownSource = normalizedBreakdown.length >= 5 ? normalizedBreakdown : featureLinkedBreakdown;
+        const hasStructuredBreakdown = Array.isArray(estData?.breakdown);
+        const breakdownSource = hasStructuredBreakdown && normalizedBreakdown.length > 0 ? normalizedBreakdown : featureLinkedBreakdown;
         const sorted = [...breakdownSource].sort((a, b) => (b.amount || 0) - (a.amount || 0));
         const displayBreakdown = sorted.length > 0 ? sorted : breakdownSource;
+        const hasInflationLine = displayBreakdown.some((item) => {
+            const label = String(item?.component || '').toLowerCase();
+            const category = String(item?.category || '').toUpperCase();
+            return category === 'INFLATION' || label.includes('inflation');
+        });
 
         return (
             <div style={{
@@ -2822,7 +2828,7 @@ const ProjectWizard = ({ projectType, step, inputs, setInputs, setView, handleNe
                                     })}
 
                                     {/* ── 2026 Inflation Margin Card ── */}
-                                    {estData && (
+                                    {estData && !hasInflationLine && (
                                         <>
                                             <div style={{
                                                 ...liquidGlass,
